@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order History - Zimbabwe Supermarket{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">My Orders</h2>
+    
+    {% if orders %}
+    <div class="row">
+        {% for order in orders %}
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Order #{{ order.order_number }}</h6>
+                    <span class="badge bg-{% if order.status == 'delivered' %}success{% elif order.status == 'cancelled' %}danger{% elif order.status == 'shipped' %}info{% else %}warning{% endif %}">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Order Date:</strong> {{ order.created_at|date:"M d, Y" }}</p>
+                            <p class="mb-1"><strong>Total:</strong> ${{ order.total_amount }}</p>
+                            <p class="mb-1"><strong>Items:</strong> {{ order.items.count }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>City:</strong> {{ order.delivery_city }}</p>
+                            <p class="mb-1"><strong>Province:</strong> {{ order.delivery_province }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <a href="{% url 'order_detail' order.id %}" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-eye me-2"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if orders.has_other_pages %}
+    <nav aria-label="Orders pagination">
+        <ul class="pagination justify-content-center">
+            {% if orders.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ orders.previous_page_number }}">Previous</a>
+                </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link">{{ orders.number }} of {{ orders.paginator.num_pages }}</span>
+            </li>
+            
+            {% if orders.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ orders.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ orders.paginator.num_pages }}">Last</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-shopping-bag fa-5x text-muted mb-4"></i>
+        <h3>No orders yet</h3>
+        <p class="text-muted mb-4">You haven't placed any orders yet. Start shopping to see your orders here.</p>
+        <a href="{% url 'product_list' %}" class="btn btn-success btn-lg">
+            <i class="fas fa-shopping-bag me-2"></i>Start Shopping
+        </a>
+    </div>
+    {% endif %}
+    
+    <!-- Contact Support -->
+    <div class="row mt-4">
+        <div class="col-lg-6 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Need Help with Your Orders?</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text small">
+                        Questions about your orders or need support? Contact us directly.
+                    </p>
+                    <div class="d-grid gap-2">
+                        <a href="https://wa.me/263771938039" target="_blank" class="btn btn-outline-success btn-sm">
+                            <i class="fab fa-whatsapp me-2"></i>WhatsApp (0771938039)
+                        </a>
+                        <a href="sms:+263771938039" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-sms me-2"></i>SMS (0771938039)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

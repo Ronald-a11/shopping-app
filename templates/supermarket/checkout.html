@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - Zimbabwe Supermarket{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Checkout</h2>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Delivery Information</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.delivery_address.id_for_label }}" class="form-label">Delivery Address</label>
+                                {{ form.delivery_address }}
+                                {% if form.delivery_address.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.delivery_address.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.delivery_city.id_for_label }}" class="form-label">City/Town</label>
+                                {{ form.delivery_city }}
+                                {% if form.delivery_city.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.delivery_city.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.delivery_phone.id_for_label }}" class="form-label">Phone Number</label>
+                                {{ form.delivery_phone }}
+                                {% if form.delivery_phone.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.delivery_phone.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-credit-card me-2"></i>Place Order
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    {% for item in cart_items %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <small class="fw-bold">{{ item.product.name }}</small>
+                            <br>
+                            <small class="text-muted">{{ item.quantity }} x ${{ item.product.price }}</small>
+                        </div>
+                        <span class="fw-bold">${{ item.get_total }}</span>
+                    </div>
+                    {% endfor %}
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span>${{ cart.get_total }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Delivery:</span>
+                        <span class="text-success">Free</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between h5">
+                        <span>Total:</span>
+                        <span class="text-success">${{ cart.get_total }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Methods -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-credit-card me-2"></i>Payment Methods
+                    </h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-primary">Cash on Delivery</span>
+                        <span class="badge bg-success">Mobile Money</span>
+                        <span class="badge bg-info">Bank Transfer</span>
+                    </div>
+                    <small class="text-muted mt-2 d-block">
+                        We accept various payment methods including mobile money and cash on delivery.
+                    </small>
+                </div>
+            </div>
+            
+            <!-- Security -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-shield-alt me-2"></i>Secure Checkout
+                    </h6>
+                    <ul class="list-unstyled small">
+                        <li><i class="fas fa-check text-success me-2"></i>SSL Encrypted</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Secure Payment</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Privacy Protected</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

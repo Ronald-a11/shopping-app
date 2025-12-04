@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Message Detail - JKC Supermarket Shopping Assistant{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'founder_dashboard' %}">Founder Dashboard</a></li>
+                    <li class="breadcrumb-item active">Message Detail</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Message Details</h5>
+                    <div>
+                        {% if message.is_urgent %}
+                            <span class="badge bg-danger me-2">Urgent</span>
+                        {% endif %}
+                        {% if message.is_read %}
+                            <span class="badge bg-success">Read</span>
+                        {% else %}
+                            <span class="badge bg-warning">Unread</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Name:</strong> {{ message.name }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Phone:</strong> {{ message.phone_number }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Gender:</strong> {{ message.get_gender_display }}
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Age Group:</strong> {{ message.get_age_group_display }}
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Message Type:</strong> 
+                            <span class="badge bg-{% if message.message_type == 'complaint' %}danger{% elif message.message_type == 'inquiry' %}info{% else %}secondary{% endif %}">
+                                {{ message.get_message_type_display }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Subject:</strong> {{ message.subject }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Message:</strong>
+                        <div class="border p-3 mt-2 bg-light">
+                            {{ message.message|linebreaks }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Received:</strong> {{ message.created_at|date:"F d, Y \a\t H:i" }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-{% if message.is_urgent %}danger{% else %}warning{% endif %}" 
+                                onclick="toggleUrgent({{ message.id }})">
+                            <i class="fas fa-fire me-2"></i>
+                            {% if message.is_urgent %}Remove Urgent{% else %}Mark as Urgent{% endif %}
+                        </button>
+                        
+                        <button class="btn btn-{% if message.is_read %}secondary{% else %}success{% endif %}" 
+                                onclick="toggleRead({{ message.id }})">
+                            <i class="fas fa-{% if message.is_read %}eye-slash{% else %}check{% endif %} me-2"></i>
+                            {% if message.is_read %}Mark as Unread{% else %}Mark as Read{% endif %}
+                        </button>
+                        
+                        <a href="tel:{{ message.phone_number }}" class="btn btn-primary">
+                            <i class="fas fa-phone me-2"></i>Call Customer
+                        </a>
+                        
+                        <a href="https://wa.me/{{ message.phone_number|slice:'1:' }}" class="btn btn-success" target="_blank">
+                            <i class="fab fa-whatsapp me-2"></i>WhatsApp
+                        </a>
+                        
+                        <a href="{% url 'founder_dashboard' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">Customer Info</h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> {{ message.name }}</p>
+                    <p><strong>Phone:</strong> {{ message.phone_number }}</p>
+                    <p><strong>Gender:</strong> {{ message.get_gender_display }}</p>
+                    <p><strong>Age Group:</strong> {{ message.get_age_group_display }}</p>
+                    <p><strong>Message Type:</strong> {{ message.get_message_type_display }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleUrgent(messageId) {
+    fetch(`/founder/mark-urgent/${messageId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function toggleRead(messageId) {
+    fetch(`/founder/mark-read/${messageId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us - JKC Supermarket Shopping Assistant{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Get in Touch</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.name.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number</label>
+                                {{ form.phone_number }}
+                                {% if form.phone_number.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.phone_number.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.gender.id_for_label }}" class="form-label">Gender</label>
+                                {{ form.gender }}
+                                {% if form.gender.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.gender.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.age_group.id_for_label }}" class="form-label">Age Group</label>
+                                {{ form.age_group }}
+                                {% if form.age_group.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.age_group.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.message_type.id_for_label }}" class="form-label">Message Type</label>
+                                {{ form.message_type }}
+                                {% if form.message_type.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.message_type.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.subject.id_for_label }}" class="form-label">Subject</label>
+                            {{ form.subject }}
+                            {% if form.subject.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.subject.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.message.id_for_label }}" class="form-label">Message</label>
+                            {{ form.message }}
+                            {% if form.message.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.message.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-paper-plane me-2"></i>Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Contact Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6><i class="fas fa-map-marker-alt text-success me-2"></i>Address</h6>
+                        <p class="mb-0">5637 Westroad<br>Chiredzi, Zimbabwe</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h6><i class="fas fa-phone text-success me-2"></i>Phone</h6>
+                        <p class="mb-0">+263 771938039<br>+263 788574080</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h6><i class="fas fa-envelope text-success me-2"></i>Email</h6>
+                        <p class="mb-0">jimuronald7@gmail.com<br>chenjeraikosmas29@gmail.com<br>cherryshmugwisi0@gmail.com</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h6><i class="fas fa-clock text-success me-2"></i>Business Hours</h6>
+                        <p class="mb-0">
+                            Monday - Friday: 8:00 AM - 6:00 PM<br>
+                            Saturday: 8:00 AM - 4:00 PM<br>
+                            Sunday: 9:00 AM - 2:00 PM
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-headset me-2"></i>Customer Support
+                    </h6>
+                    <p class="card-text small">
+                        Our customer support team is available to help you with any questions or concerns. 
+                        We typically respond within 24 hours.
+                    </p>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="https://wa.me/263771938039" target="_blank" class="btn btn-outline-success btn-sm">
+                            <i class="fab fa-whatsapp me-1"></i>WhatsApp (0771938039)
+                        </a>
+                        <a href="sms:+263771938039" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-sms me-1"></i>SMS (0771938039)
+                        </a>
+                        <a href="https://www.facebook.com/zimbabwesupermarket" target="_blank" class="btn btn-outline-primary btn-sm">
+                            <i class="fab fa-facebook me-1"></i>Facebook
+                        </a>
+                        {% if user.is_authenticated and user.profile.phone_number == '0771938039' or user.profile.phone_number == '+263771938039' %}
+                        <a href="{% url 'founder_dashboard' %}" class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-cog me-1"></i>Admin Panel
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

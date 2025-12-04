@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Delivery - JKC Supermarket Shopping Assistant{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Book a Delivery</h4>
+                </div>
+                <div class="card-body p-4">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    {% if has_orders %}
+                    <div class="alert alert-success">
+                        <h6><i class="fas fa-check-circle me-2"></i>Order Confirmed</h6>
+                        <p class="mb-0">You have pending orders. You can now book delivery for your items.</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle me-2"></i>Delivery Information</h6>
+                        <ul class="mb-0">
+                            <li><strong>Standard Delivery:</strong> $5 delivery fee, 1-2 hours delivery time</li>
+                            <li><strong>Extended Areas:</strong> $10 delivery fee, 2-4 hours delivery time</li>
+                            <li><strong>Remote Areas:</strong> $15 delivery fee, 4-6 hours delivery time</li>
+                            <li>Delivery available Monday to Saturday</li>
+                            <li>WhatsApp notifications sent to +263 771938039 for all deliveries</li>
+                        </ul>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.delivery_date.id_for_label }}" class="form-label">Delivery Date</label>
+                                {{ form.delivery_date }}
+                                {% if form.delivery_date.errors %}
+                                    <div class="text-danger small">{{ form.delivery_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.time_slot.id_for_label }}" class="form-label">Time Slot</label>
+                                {{ form.time_slot }}
+                                {% if form.time_slot.errors %}
+                                    <div class="text-danger small">{{ form.time_slot.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.delivery_address.id_for_label }}" class="form-label">Delivery Address</label>
+                            {{ form.delivery_address }}
+                            {% if form.delivery_address.errors %}
+                                <div class="text-danger small">{{ form.delivery_address.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.delivery_city.id_for_label }}" class="form-label">City/Town <span class="text-danger">*</span></label>
+                            {{ form.delivery_city }}
+                            {% if form.delivery_city.errors %}
+                                <div class="text-danger small">{{ form.delivery_city.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Enter your city or town name</small>
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    <strong>Popular locations:</strong><br>
+                                    <span class="badge bg-light text-dark me-1">Harare</span>
+                                    <span class="badge bg-light text-dark me-1">Bulawayo</span>
+                                    <span class="badge bg-light text-dark me-1">Gweru</span>
+                                    <span class="badge bg-light text-dark me-1">Mutare</span>
+                                    <span class="badge bg-light text-dark me-1">Kwekwe</span>
+                                    <span class="badge bg-light text-dark me-1">Kadoma</span>
+                                    <span class="badge bg-light text-dark me-1">Chinhoyi</span>
+                                    <span class="badge bg-light text-dark me-1">Masvingo</span>
+                                    <span class="badge bg-light text-dark me-1">Bindura</span>
+                                    <span class="badge bg-light text-dark me-1">Marondera</span>
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.delivery_phone.id_for_label }}" class="form-label">Contact Phone</label>
+                            {{ form.delivery_phone }}
+                            {% if form.delivery_phone.errors %}
+                                <div class="text-danger small">{{ form.delivery_phone.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.special_instructions.id_for_label }}" class="form-label">Special Instructions (Optional)</label>
+                            {{ form.special_instructions }}
+                            {% if form.special_instructions.errors %}
+                                <div class="text-danger small">{{ form.special_instructions.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">Book Delivery</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Support -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Need Help?</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text small">
+                        Having trouble with your delivery booking? Contact our support team directly.
+                    </p>
+                    <div class="d-grid gap-2">
+                        <a href="https://wa.me/263771938039" target="_blank" class="btn btn-outline-success btn-sm">
+                            <i class="fab fa-whatsapp me-2"></i>WhatsApp (0771938039)
+                        </a>
+                        <a href="sms:+263771938039" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-sms me-2"></i>SMS (0771938039)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cityInput = document.getElementById('{{ form.delivery_city.id_for_label }}');
+    
+    // Make city/town suggestions clickable
+    const citySuggestions = document.querySelectorAll('.badge');
+    citySuggestions.forEach(badge => {
+        badge.style.cursor = 'pointer';
+        badge.addEventListener('click', function() {
+            cityInput.value = this.textContent.trim();
+            cityInput.focus();
+        });
+    });
+    
+    // Add hover effects to city suggestions
+    citySuggestions.forEach(badge => {
+        badge.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#e9ecef';
+            this.style.transform = 'scale(1.05)';
+        });
+        
+        badge.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+            this.style.transform = 'scale(1)';
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Products - JKC Supermarket Shopping Assistant{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Filter Products</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Search -->
+                    <form method="GET" class="mb-4">
+                        <div class="mb-3">
+                            <label for="search" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="search" name="search" value="{{ search_query }}" placeholder="Search products...">
+                        </div>
+                        
+                        <!-- Category Filter -->
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="">All Categories</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ category.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- Quick Filter Buttons -->
+                        <div class="mb-3">
+                            <label class="form-label">Quick Filters</label>
+                            <div class="d-grid gap-2">
+                                <button type="submit" name="filter_type" value="cheap" class="btn btn-outline-success btn-sm">Cheap Products (< $10)</button>
+                                <button type="submit" name="filter_type" value="expensive" class="btn btn-outline-success btn-sm">Expensive Products (> $20)</button>
+                                <button type="submit" name="filter_type" value="recent" class="btn btn-outline-success btn-sm">Recently Added</button>
+                                <button type="submit" name="filter_type" value="available" class="btn btn-outline-success btn-sm">In Stock</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Local Products Filter -->
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="local" name="local" value="1" {% if local_only %}checked{% endif %}>
+                                <label class="form-check-label" for="local">
+                                    Local Products Only
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Sort -->
+                        <div class="mb-3">
+                            <label for="sort" class="form-label">Sort By</label>
+                            <select class="form-select" id="sort" name="sort">
+                                <option value="">Newest First</option>
+                                <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest First</option>
+                                <option value="oldest" {% if sort_by == 'oldest' %}selected{% endif %}>Oldest First</option>
+                                <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name A-Z</option>
+                                <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                                <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success w-100">Apply Filters</button>
+                        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary w-100 mt-2">Clear Filters</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Products -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Products</h2>
+                <div class="text-muted">
+                    Showing {{ products.start_index }}-{{ products.end_index }} of {{ products.paginator.count }} products
+                </div>
+            </div>
+            
+            {% if products %}
+                <div class="row">
+                    {% for product in products %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card product-card h-100 shadow-sm">
+                            {% if product.image %}
+                                <img src="{{ product.image }}" class="card-img-top" alt="{{ product.name }}" style="height: 220px; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="product-image-fallback" style="height: 220px; display: none;">
+                                    <i class="fas fa-shopping-bag fa-3x text-muted"></i>
+                                </div>
+                            {% else %}
+                                <div class="product-image-fallback" style="height: 220px;">
+                                    <i class="fas fa-shopping-bag fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                            <div class="card-body d-flex flex-column">
+                                <h6 class="card-title">{{ product.name }}</h6>
+                                <p class="card-text text-muted small">{{ product.description|truncatewords:15 }}</p>
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="h5 text-success mb-0">${{ product.price }}</span>
+                                        <div>
+                                            {% if product.is_local_product %}
+                                                <span class="badge bg-warning text-dark me-1">Local</span>
+                                            {% endif %}
+                                            {% if product.stock_quantity <= 5 %}
+                                                <span class="badge bg-danger">Low Stock</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-success btn-sm flex-fill">View Details</a>
+                                        <form method="post" action="{% url 'add_to_cart' product.id %}" class="flex-fill">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="btn btn-success btn-sm w-100" {% if product.stock_quantity == 0 %}disabled{% endif %}>
+                                                <i class="fas fa-cart-plus"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if products.has_other_pages %}
+                <nav aria-label="Products pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if products.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if local_only %}&local=1{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if local_only %}&local=1{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Previous</a>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="page-item active">
+                            <span class="page-link">{{ products.number }} of {{ products.paginator.num_pages }}</span>
+                        </li>
+                        
+                        {% if products.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if local_only %}&local=1{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if local_only %}&local=1{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Last</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4>No products found</h4>
+                    <p class="text-muted">Try adjusting your search criteria or browse all products.</p>
+                    <a href="{% url 'product_list' %}" class="btn btn-success">View All Products</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

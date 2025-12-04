@@ -1,0 +1,35 @@
+<section id="contact">
+  <h2>Contact</h2>
+
+  <p><strong>Address:</strong> 5637 Westroad Chiredzi</p>
+
+  <p><strong>Phone:</strong>
+    +263 771938039
+    (<a href="https://wa.me/263771938039" target="_blank" rel="noopener">Chat on WhatsApp</a>)
+    · +263 788574030
+  </p>
+
+  <p><strong>Email:</strong>
+    <a href="mailto:jimuronald7@gmail.com">jimuronald7@gmail.com</a>,
+    <a href="mailto:chenjeraikosmas29@gmail.com">chenjeraikosmas29@gmail.com</a>,
+    <a href="mailto:cherryshmugwisi0@gmail.com">cherryshmugwisi0@gmail.com</a>
+  </p>
+</section>
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView
+
+class ProductListView(LoginRequiredMixin, ListView):
+    login_url = '/login/'  # adjust if your login URL differs
+    model = Product  # adjust if your model differs
+    template_name = 'products.html'  # adjust if your template differs
+    context_object_name = 'products'  # adjust if your context object name differs
+    paginate_by = 10  # adjust if you want to paginate
+
+    def get_queryset(self):
+        return Product.objects.all()  # adjust if you want to filter or order
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        return context

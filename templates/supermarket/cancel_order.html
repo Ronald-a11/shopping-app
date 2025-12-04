@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cancel Order - JKC Supermarket Shopping Assistant{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="fas fa-times-circle me-2"></i>Cancel Order</h4>
+                </div>
+                <div class="card-body p-4">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-exclamation-triangle me-2"></i>Important Notice</h6>
+                        <p class="mb-0">Cancelling this order will add all items back to your cart for reordering. This action cannot be undone.</p>
+                    </div>
+                    
+                    <!-- Order Details -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">Order Details</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+                                    <p><strong>Status:</strong> 
+                                        <span class="badge bg-{% if order.status == 'pending' %}warning{% elif order.status == 'processing' %}info{% elif order.status == 'shipped' %}primary{% elif order.status == 'delivered' %}success{% else %}secondary{% endif %}">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                    </p>
+                                    <p><strong>Total Amount:</strong> ${{ order.total_amount }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Delivery Address:</strong> {{ order.delivery_address }}</p>
+                                    <p><strong>City:</strong> {{ order.delivery_city }}</p>
+                                    <p><strong>Phone:</strong> {{ order.delivery_phone }}</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Order Items -->
+                            <div class="mt-3">
+                                <h6>Order Items:</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in order_items %}
+                                            <tr>
+                                                <td>{{ item.product.name }}</td>
+                                                <td>{{ item.quantity }}</td>
+                                                <td>${{ item.price }}</td>
+                                                <td>${{ item.get_total }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'order_detail' order.id %}" class="btn btn-secondary me-md-2">Back to Order</a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-times-circle me-2"></i>Cancel Order & Add to Cart
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Delivery Bookings - Zimbabwe Supermarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>My Delivery Bookings</h2>
+                <a href="{% url 'delivery_booking' %}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Book New Delivery
+                </a>
+            </div>
+            
+            {% if bookings %}
+                <div class="row">
+                    {% for booking in bookings %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Booking #{{ booking.id }}</h6>
+                                <span class="badge bg-{% if booking.status == 'pending' %}warning{% elif booking.status == 'confirmed' %}info{% elif booking.status == 'in_transit' %}primary{% elif booking.status == 'delivered' %}success{% else %}danger{% endif %}">
+                                    {{ booking.get_status_display }}
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>Date:</strong> {{ booking.delivery_date }}<br>
+                                    <strong>Time:</strong> {{ booking.get_time_slot_display }}<br>
+                                    <strong>City:</strong> {{ booking.delivery_city }}<br>
+                                    <strong>Province:</strong> {{ booking.delivery_province }}<br>
+                                    <strong>Fee:</strong> ${{ booking.delivery_fee }}
+                                </p>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <strong>Address:</strong> {{ booking.delivery_address|truncatewords:10 }}
+                                    </small>
+                                </p>
+                                {% if booking.special_instructions %}
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <strong>Instructions:</strong> {{ booking.special_instructions|truncatewords:8 }}
+                                    </small>
+                                </p>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer">
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'delivery_booking_detail' booking.id %}" class="btn btn-outline-success btn-sm">
+                                        <i class="fas fa-eye me-1"></i>View Details
+                                    </a>
+                                    {% if booking.can_be_cancelled %}
+                                    <a href="{% url 'cancel_delivery' booking.id %}" class="btn btn-outline-danger btn-sm">
+                                        <i class="fas fa-times me-1"></i>Cancel
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-truck fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No delivery bookings yet</h4>
+                    <p class="text-muted">Book your first delivery to get started!</p>
+                    <a href="{% url 'delivery_booking' %}" class="btn btn-success">
+                        <i class="fas fa-plus me-2"></i>Book Delivery
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Contact Support -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Need Help?</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text small">
+                        Questions about your delivery? Contact our support team directly.
+                    </p>
+                    <div class="d-grid gap-2">
+                        <a href="https://wa.me/263771938039" target="_blank" class="btn btn-outline-success btn-sm">
+                            <i class="fab fa-whatsapp me-2"></i>WhatsApp (0771938039)
+                        </a>
+                        <a href="sms:+263771938039" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-sms me-2"></i>SMS (0771938039)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

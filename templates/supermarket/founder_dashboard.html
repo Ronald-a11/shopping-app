@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Founder Dashboard - JKC Supermarket Shopping Assistant{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-crown text-warning me-2"></i>Founder Dashboard</h2>
+                <div class="text-muted">
+                    <i class="fas fa-phone me-1"></i>+263 771938039
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-envelope fa-2x mb-2"></i>
+                    <h4>{{ total_messages }}</h4>
+                    <p class="mb-0">Total Messages</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                    <h4>{{ unread_messages }}</h4>
+                    <p class="mb-0">Unread Messages</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-comments fa-2x mb-2"></i>
+                    <h4>{{ total_complaints }}</h4>
+                    <p class="mb-0">Complaints</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-fire fa-2x mb-2"></i>
+                    <h4>{{ urgent_count }}</h4>
+                    <p class="mb-0">Urgent</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Filters</h5>
+                </div>
+                <div class="card-body">
+                    <div class="btn-group" role="group">
+                        <a href="?filter=all" class="btn btn-outline-primary">All Messages</a>
+                        <a href="?filter=unread" class="btn btn-outline-warning">Unread</a>
+                        <a href="?filter=complaints" class="btn btn-outline-danger">Complaints</a>
+                        <a href="?filter=urgent" class="btn btn-outline-info">Urgent</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Messages Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Customer Messages & Complaints</h5>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Phone</th>
+                                        <th>Type</th>
+                                        <th>Subject</th>
+                                        <th>Gender</th>
+                                        <th>Age</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for message in messages %}
+                                    <tr class="{% if not message.is_read %}table-warning{% endif %} {% if message.is_urgent %}table-danger{% endif %}">
+                                        <td>
+                                            <strong>{{ message.name }}</strong>
+                                            {% if message.is_urgent %}
+                                                <i class="fas fa-fire text-danger ms-1"></i>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ message.phone_number }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if message.message_type == 'complaint' %}danger{% elif message.message_type == 'inquiry' %}info{% else %}secondary{% endif %}">
+                                                {{ message.get_message_type_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ message.subject|truncatechars:30 }}</td>
+                                        <td>{{ message.get_gender_display }}</td>
+                                        <td>{{ message.get_age_group_display }}</td>
+                                        <td>{{ message.created_at|date:"M d, Y H:i" }}</td>
+                                        <td>
+                                            {% if message.is_read %}
+                                                <span class="badge bg-success">Read</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Unread</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{% url 'message_detail' message.id %}" class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <button class="btn btn-outline-{% if message.is_urgent %}danger{% else %}warning{% endif %} btn-sm" 
+                                                        onclick="toggleUrgent({{ message.id }})">
+                                                    <i class="fas fa-fire"></i>
+                                                </button>
+                                                <button class="btn btn-outline-{% if message.is_read %}secondary{% else %}success{% endif %} btn-sm" 
+                                                        onclick="toggleRead({{ message.id }})">
+                                                    <i class="fas fa-{% if message.is_read %}eye-slash{% else %}check{% endif %}"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Pagination -->
+                        {% if messages.has_other_pages %}
+                        <nav aria-label="Messages pagination">
+                            <ul class="pagination justify-content-center">
+                                {% if messages.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1">First</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ messages.previous_page_number }}">Previous</a>
+                                    </li>
+                                {% endif %}
+                                
+                                <li class="page-item active">
+                                    <span class="page-link">{{ messages.number }} of {{ messages.paginator.num_pages }}</span>
+                                </li>
+                                
+                                {% if messages.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ messages.next_page_number }}">Next</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ messages.paginator.num_pages }}">Last</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <h4>No messages found</h4>
+                            <p class="text-muted">No customer messages or complaints at the moment.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleUrgent(messageId) {
+    fetch(`/founder/mark-urgent/${messageId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function toggleRead(messageId) {
+    fetch(`/founder/mark-read/${message_id}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}
