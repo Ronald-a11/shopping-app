@@ -8,10 +8,15 @@ from django.core.paginator import Paginator
 
 
 def is_founder(user):
-    """Check if user is the founder (phone number 0771938039)"""
-    if hasattr(user, 'profile'):
-        return user.profile.phone_number == '0771938039' or user.profile.phone_number == '+263771938039'
-    return False
+    """Check if the user is allowed into the founder dashboard.
+
+    This used to compare the profile's phone number against a hardcoded
+    value. That number is printed on the public contact and delivery pages,
+    and any registered user could type it into their own profile to grant
+    themselves access to every customer's messages, orders and addresses.
+    Staff status is set by a superuser and cannot be self-assigned.
+    """
+    return user.is_authenticated and user.is_staff
 
 
 @user_passes_test(is_founder)

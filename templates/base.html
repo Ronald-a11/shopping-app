@@ -83,7 +83,7 @@
                                 <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
                                 <li><a class="dropdown-item" href="{% url 'order_history' %}">My Orders</a></li>
                                 <li><a class="dropdown-item" href="{% url 'delivery_bookings' %}">My Deliveries</a></li>
-                                {% if user.profile.phone_number == '0771938039' or user.profile.phone_number == '+263771938039' %}
+                                {% if user.is_staff %}
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{% url 'founder_dashboard' %}"><i class="fas fa-cog me-2"></i>Admin Panel</a></li>
                                 {% endif %}

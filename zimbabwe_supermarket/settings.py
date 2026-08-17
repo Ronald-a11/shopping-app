@@ -21,14 +21,19 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get('DJANGO_DEBUG', '') == '1'
 
 # Set DJANGO_ALLOWED_HOSTS on the server to a comma-separated list of the
-# domains the site is served from, e.g. 'yourname.pythonanywhere.com'.
-# The fallback below covers local development only.
+# domains the site is served from. The fallback below covers local development.
 ALLOWED_HOSTS = [
     h.strip() for h in os.environ.get(
         'DJANGO_ALLOWED_HOSTS',
         'localhost,127.0.0.1'
     ).split(',') if h.strip()
 ]
+
+# Railway injects the generated domain here, so the site works on a fresh
+# deploy without anyone having to copy the hostname into a variable by hand.
+RAILWAY_PUBLIC_DOMAIN = os.environ.get('RAILWAY_PUBLIC_DOMAIN', '').strip()
+if RAILWAY_PUBLIC_DOMAIN and RAILWAY_PUBLIC_DOMAIN not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
 
 # Application definition
 INSTALLED_APPS = [
@@ -43,6 +48,10 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # Serves collected static files in production. Django's own static serving
+    # is disabled when DEBUG is off, and Railway has no separate web server in
+    # front of the app, so without this the site loads with no CSS.
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -72,12 +81,25 @@ TEMPLATES = [
 WSGI_APPLICATION = 'zimbabwe_supermarket.wsgi.application'
 
 # Database
+# SQLite locally. On Railway the filesystem is wiped on every redeploy, so a
+# SQLite file there would silently lose every order and account; the Postgres
+# service supplies DATABASE_URL and is used instead whenever it is present.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+DATABASE_URL = os.environ.get('DATABASE_URL', '').strip()
+if DATABASE_URL:
+    import dj_database_url
+
+    DATABASES['default'] = dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -106,9 +128,21 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
-# collectstatic target. On PythonAnywhere set DJANGO_STATIC_ROOT to
-# /home/29KChenje/shopping-app/staticfiles; locally it stays inside the project.
+# Where `collectstatic` writes, and where WhiteNoise serves from.
 STATIC_ROOT = os.environ.get('DJANGO_STATIC_ROOT', BASE_DIR / 'staticfiles')
+
+# Compresses static files and gives them content-hashed names so they can be
+# cached forever. Only applied when DEBUG is off: the manifest backend raises
+# on any file missing from the manifest, which is a nuisance in development.
+if not DEBUG:
+    STORAGES = {
+        'default': {
+            'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        },
+    }
 
 # Media files
 MEDIA_URL = '/media/'
