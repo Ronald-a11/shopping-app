@@ -1,6 +1,9 @@
 @echo off
 echo Starting Zimbabwe Supermarket...
 echo.
+rem Local development mode: serves static files and skips the HTTPS redirect.
+rem Never set this on the production server.
+set DJANGO_DEBUG=1
 echo Installing dependencies...
 pip install Django==4.2.7
 pip install Pillow

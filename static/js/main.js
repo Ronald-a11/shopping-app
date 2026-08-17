@@ -42,10 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Form validation
     initializeFormValidation();
-    
-    // Search functionality
-    initializeSearch();
-    
+
     // Quantity input validation
     initializeQuantityInputs();
 });
@@ -102,15 +99,22 @@ function addToCart(productId, quantity, form) {
             'X-Requested-With': 'XMLHttpRequest'
         }
     })
-    .then(response => response.json())
+    .then(response => response.json().catch(() => ({
+        success: response.ok,
+        message: response.ok ? null : 'Error adding product to cart'
+    })))
     .then(data => {
         if (data.success) {
             // Show success message
-            showNotification('Product added to cart!', 'success');
-            
+            showNotification(data.message || 'Product added to cart!', 'success');
+
             // Update cart count
-            updateCartCount();
-            
+            if (typeof data.count === 'number') {
+                setCartCount(data.count);
+            } else {
+                updateCartCount();
+            }
+
             // Add animation to button
             button.classList.add('btn-success');
             setTimeout(() => {
@@ -131,6 +135,15 @@ function addToCart(productId, quantity, form) {
     });
 }
 
+// Render a cart count into the navbar badge
+function setCartCount(count) {
+    const cartCount = document.getElementById('cart-count');
+    if (cartCount) {
+        cartCount.textContent = count || 0;
+        cartCount.style.display = count > 0 ? 'flex' : 'none';
+    }
+}
+
 // Update cart count
 function updateCartCount() {
     fetch('/cart-count/', {
@@ -140,13 +153,7 @@ function updateCartCount() {
         }
     })
     .then(response => response.json())
-    .then(data => {
-        const cartCount = document.getElementById('cart-count');
-        if (cartCount) {
-            cartCount.textContent = data.count || 0;
-            cartCount.style.display = data.count > 0 ? 'flex' : 'none';
-        }
-    })
+    .then(data => setCartCount(data.count))
     .catch(error => {
         console.error('Error updating cart count:', error);
     });
@@ -233,41 +240,6 @@ function isValidEmail(email) {
 function isValidPhone(phone) {
     const phoneRegex = /^(\+263|0)[0-9]{9}$/;
     return phoneRegex.test(phone.replace(/\s/g, ''));
-}
-
-// Search functionality
-function initializeSearch() {
-    const searchInput = document.querySelector('input[name="search"]');
-    if (searchInput) {
-        let searchTimeout;
-        
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                performSearch(this.value);
-            }, 500);
-        });
-    }
-}
-
-// Perform search
-function performSearch(query) {
-    if (query.length < 2) return;
-    
-    fetch(`/api/search/?q=${encodeURIComponent(query)}`, {
-        method: 'GET',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Handle search results
-        console.log('Search results:', data);
-    })
-    .catch(error => {
-        console.error('Search error:', error);
-    });
 }
 
 // Quantity input validation

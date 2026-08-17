@@ -1,4 +1,7 @@
+from decimal import Decimal
+
 from django.db import models
+from django.db.models import DecimalField, F, Sum
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.validators import MinValueValidator
@@ -57,10 +60,17 @@ class Cart(models.Model):
         return f"Cart {self.session_key}"
     
     def get_total(self):
-        total = 0
-        for item in self.items.all():
-            total += item.get_total()
-        return total
+        """Total value of the cart, summed in the database in a single query."""
+        total = self.items.aggregate(
+            total=Sum(F('quantity') * F('product__price'),
+                      output_field=DecimalField(max_digits=10, decimal_places=2))
+        )['total'] or Decimal('0')
+        # Quantize so prices always render with two decimal places.
+        return total.quantize(Decimal('0.01'))
+
+    def get_item_count(self):
+        """Total number of units in the cart."""
+        return self.items.aggregate(count=Sum('quantity'))['count'] or 0
 
 
 class CartItem(models.Model):

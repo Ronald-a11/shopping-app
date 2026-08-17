@@ -154,3 +154,6 @@ Thumbs.db
 *.db
 .env.local
 .env.production
+
+# Claude Code local config
+.claude/

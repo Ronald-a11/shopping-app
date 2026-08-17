@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.utils import timezone
 from .models import ContactMessage, Order, UserProfile, DeliveryBooking
 
 
@@ -168,6 +169,14 @@ class DeliveryBookingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['delivery_city'].required = True
+        # Stop the date picker offering days that are already gone.
+        self.fields['delivery_date'].widget.attrs['min'] = timezone.localdate().isoformat()
+
+    def clean_delivery_date(self):
+        delivery_date = self.cleaned_data['delivery_date']
+        if delivery_date < timezone.localdate():
+            raise forms.ValidationError("Delivery date cannot be in the past.")
+        return delivery_date
 
 
 class DeliveryCancellationForm(forms.Form):

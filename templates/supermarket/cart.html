@@ -87,7 +87,7 @@
                         {% else %}
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle me-2"></i>
-                                Please <a href="{% url 'admin:login' %}">login</a> to proceed with checkout.
+                                Please <a href="{% url 'login' %}?next={% url 'checkout' %}">login</a> to proceed with checkout.
                             </div>
                         {% endif %}
                     </div>
