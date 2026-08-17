@@ -1,139 +1,117 @@
-# Deploying to PythonAnywhere
+# Deployment
 
-This project is a Django application, so it needs a Python host. GitHub Pages
-cannot run it — Pages serves static files only, and this app has a database,
-authentication, and a shopping cart.
+The app is deployed on **Railway** at
+https://web-production-7cb68.up.railway.app
 
-PythonAnywhere's free tier is a good fit: it gives you one web app at
-`<username>.pythonanywhere.com`, a real persistent filesystem (so the SQLite
-database survives restarts and redeploys), and it needs no credit card.
+GitHub Pages cannot host this project. Pages serves static files only, and this
+is a Django app with a database, authentication and a cart. The empty
+`index.html` at the repository root is a leftover from an attempt at that and
+has no effect.
 
-Replace `YOURUSERNAME` throughout with your PythonAnywhere username.
+## How the Railway project is put together
 
----
+The project `shopping-app` contains two services:
 
-## 1. Create the account
-
-Sign up for a free "Beginner" account at https://www.pythonanywhere.com/registration/register/beginner/
-
-Your site will be served at `YOURUSERNAME.pythonanywhere.com`.
-
-## 2. Clone the repository
-
-On the **Consoles** tab, start a **Bash** console and run:
-
-```bash
-git clone https://github.com/Ronald-a11/shopping-app.git
-cd shopping-app
-```
-
-## 3. Create the virtualenv and install dependencies
-
-```bash
-mkvirtualenv --python=/usr/bin/python3.10 shopping-app
-pip install -r requirements.txt
-```
-
-`mkvirtualenv` leaves the new environment active, and it will be created at
-`/home/YOURUSERNAME/.virtualenvs/shopping-app`. You need that path in step 5.
-
-## 4. Set up the database and static files
-
-Still in the Bash console, from inside `~/shopping-app`:
-
-```bash
-export DJANGO_SECRET_KEY='the-key-you-generated'
-export DJANGO_ALLOWED_HOSTS='YOURUSERNAME.pythonanywhere.com'
-export DJANGO_STATIC_ROOT="$HOME/shopping-app/staticfiles"
-
-python manage.py migrate
-python manage.py collectstatic --noinput
-python manage.py populate_data
-python manage.py createsuperuser
-```
-
-Notes:
-
-- These `export`s apply only to this console session. The web app reads its
-  configuration from the WSGI file in step 6 instead.
-- `populate_data` uses `get_or_create`, so it is safe to re-run after future
-  deployments — it will not duplicate categories or products.
-- `createsuperuser` is interactive and creates your admin login for `/admin`.
-
-## 5. Create the web app
-
-On the **Web** tab:
-
-1. **Add a new web app** → **Manual configuration** (*not* the "Django" option,
-   which would scaffold a brand-new project over yours) → **Python 3.10**.
-2. Under **Code**, set **Source code** to `/home/YOURUSERNAME/shopping-app`.
-3. Under **Virtualenv**, enter
-   `/home/YOURUSERNAME/.virtualenvs/shopping-app`.
-
-## 6. Configure the WSGI file
-
-Under **Code**, click the **WSGI configuration file** link
-(`/var/www/YOURUSERNAME_pythonanywhere_com_wsgi.py`). Delete everything in it
-and paste the contents of [`deploy/pythonanywhere_wsgi.py`](deploy/pythonanywhere_wsgi.py)
-from this repository, filling in your username and secret key.
-
-The secret key lives here rather than in the repository because `/var/www/` is
-private to your account, while this repository is public.
-
-## 7. Map the static and media files
-
-Django does not serve static files when `DEBUG` is off — the web server must.
-On the **Web** tab, under **Static files**, add two mappings:
-
-| URL | Directory |
+| Service | What it is |
 | --- | --- |
-| `/static/` | `/home/YOURUSERNAME/shopping-app/staticfiles` |
-| `/media/` | `/home/YOURUSERNAME/shopping-app/media` |
+| `web` | This repository, built with Railpack and served by gunicorn |
+| `Postgres` | The database, on a persistent volume |
 
-Skipping this is the usual cause of a site that loads but has no styling.
+Railway's application filesystem is wiped on every deploy, so SQLite is not
+usable there — every order and account would vanish on redeploy. `settings.py`
+therefore switches to Postgres whenever `DATABASE_URL` is present and keeps
+SQLite for local development.
 
-## 8. Reload
+### Environment variables on the `web` service
 
-Press the green **Reload** button at the top of the Web tab, then visit
-`https://YOURUSERNAME.pythonanywhere.com`.
+| Variable | Value | Why |
+| --- | --- | --- |
+| `DJANGO_SECRET_KEY` | *(generated, secret)* | Signs sessions and CSRF tokens. The value committed in the repo's history is a public placeholder and must never be used. |
+| `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` | A Railway reference, so it tracks the database service automatically. |
+| `DJANGO_SECURE_SSL_REDIRECT` | `1` | Redirects HTTP to HTTPS. Set to `0` if you ever hit a redirect loop. |
+| `PYTHON_VERSION` | `3.11` | Belt-and-braces alongside `.python-version`. |
+| `RAILWAY_PUBLIC_DOMAIN` | *(injected by Railway)* | `settings.py` appends it to `ALLOWED_HOSTS`, so a new domain works without editing anything. |
 
----
+`DJANGO_DEBUG` is deliberately unset: `settings.py` treats anything other than
+`1` as debug-off, which is what production wants.
 
-## Deploying later changes
+### Start command
 
-```bash
-cd ~/shopping-app
-git pull
-workon shopping-app
-python manage.py migrate
-python manage.py collectstatic --noinput
+From the [`Procfile`](Procfile):
+
+```
+web: python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn zimbabwe_supermarket.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --log-file -
 ```
 
-Then press **Reload** on the Web tab. Code changes do not take effect until you
-reload.
+`collectstatic` runs on start rather than at build time because `staticfiles/`
+is gitignored, so it does not exist in the container otherwise and WhiteNoise
+would have nothing to serve — the site would load with no styling.
+
+## Deploying a change
+
+```bash
+git push origin main
+railway up --service web
+```
+
+`railway up` uploads the working directory. To have Railway build from GitHub
+automatically on every push instead, connect the repository to the `web`
+service in the Railway dashboard under **Settings → Source**.
+
+## One-off commands against production
+
+```bash
+railway ssh --service web "python manage.py <command>"
+```
+
+Used for the initial setup:
+
+```bash
+railway ssh --service web "python manage.py populate_data"
+railway ssh --service web "python manage.py createsuperuser --noinput --username admin --email you@example.com"
+```
+
+`populate_data` uses `get_or_create`, so re-running it will not duplicate
+categories or products.
+
+## Admin access
+
+Django admin is at `/admin/`, and the founder dashboard at `/founder/`.
+
+Access to `/founder/` requires **staff status**, which only a superuser can
+grant. Grant it in Django admin under **Users → (pick user) → Staff status**.
+
+> This previously worked by comparing the user's profile phone number against a
+> hardcoded number. That number is printed publicly on the contact and delivery
+> pages, and users can edit their own phone number, so anyone who registered
+> could read every customer's messages, orders and home addresses. Do not
+> reintroduce a check of that shape.
+
+## Local development
+
+```bash
+start.bat
+```
+
+Or manually — `DJANGO_DEBUG=1` matters, because with debug off Django enables
+the HTTPS redirect and stops serving static files itself:
+
+```bash
+set DJANGO_DEBUG=1
+python manage.py migrate
+python manage.py runserver
+```
+
+Local runs use SQLite (`db.sqlite3`) because `DATABASE_URL` is not set.
 
 ## Troubleshooting
 
-Check the **Error log** link on the Web tab first — it has the traceback.
+Logs: `railway logs --service web`, build logs: `railway logs --build --service web`.
 
 | Symptom | Cause |
 | --- | --- |
-| `DisallowedHost` | `DJANGO_ALLOWED_HOSTS` in the WSGI file does not match your real domain. |
-| Site loads, no CSS or images | The `/static/` mapping in step 7 is missing or points at the wrong directory, or `collectstatic` was never run. |
-| `ImproperlyConfigured: SECRET_KEY` | `DJANGO_SECRET_KEY` is missing from the WSGI file. |
-| Too many redirects | Set `DJANGO_SECURE_SSL_REDIRECT` to `'0'` in the WSGI file. |
-| `OperationalError: no such table` | `migrate` was not run, or was run against a different directory. |
-| Changes not showing | You did not press **Reload** after `git pull`. |
-
-## Things to know about the free tier
-
-- **Uploaded images** are written to `media/` on PythonAnywhere's disk. They
-  persist, but they are not in git, so they are not backed up. Download them if
-  they matter.
-- **The database is SQLite** on a real disk, so data persists across reloads.
-  Back it up by downloading `db.sqlite3` from the **Files** tab.
-- **Free web apps expire every three months.** PythonAnywhere emails you a link
-  to click to keep the site running; if you ignore it the site goes offline
-  until you log in and renew.
-- Free accounts can only make outbound network requests to allowlisted sites.
-  This app does not make any, so it is not a problem today.
+| HTTP 400 on every page | The domain is not in `ALLOWED_HOSTS`. Redeploy so `RAILWAY_PUBLIC_DOMAIN` is present in the container, or set `DJANGO_ALLOWED_HOSTS` explicitly. |
+| Site loads with no CSS | `collectstatic` did not run — check the start command and the build logs. |
+| `No directory at: /app/staticfiles/` | Same cause as above. |
+| Build fails compiling a dependency | The Python version drifted. Check `.python-version` is committed — it sits under a `# pyenv` rule in `.gitignore` that previously excluded it. |
+| Data disappeared after a deploy | The app fell back to SQLite. Confirm `DATABASE_URL` is set on the `web` service. |
