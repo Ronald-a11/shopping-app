@@ -1,171 +1,257 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}JKC Supermarket Shopping Assistant{% endblock %}</title>
-    
-    {% load static %}
-    
-    <!-- Favicon -->
+    <meta name="theme-color" content="#065f46">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>{% block title %}Home{% endblock %} · JKC Supermarket</title>
+
+    <script>
+        // Runs before paint: enables JS-only styles and decides whether to show the splash loader.
+        document.documentElement.classList.add('js');
+        try {
+            if (!sessionStorage.getItem('jkc-preloaded')) document.documentElement.classList.add('show-preloader');
+        } catch (e) {}
+    </script>
+
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link href="{% static 'css/style.css' %}" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Loaded without blocking the first paint (it took ~1s on a slow link); text shows in the system font until it arrives. -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* Font Awesome goes in the lowest cascade layer; otherwise its unlayered
+           `display: inline-block` on icons beats Tailwind utilities like `hidden`. */
+        @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css") layer(vendor);
+    </style>
+    <link href="{% static 'css/app.css' %}" rel="stylesheet">
     {% block extra_css %}{% endblock %}
 </head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{% url 'home' %}">
-                <i class="fas fa-shopping-cart me-2"></i>
-                JKC Supermarket Shopping Assistant
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'product_list' %}">Products</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'about' %}">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'gallery' %}">Gallery</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'contact' %}">Contact</a>
-                    </li>
-                </ul>
-                
-                <!-- Search Form -->
-                <form class="d-flex me-3" method="GET" action="{% url 'product_list' %}">
-                    <input class="form-control me-2" type="search" name="search" placeholder="Search products..." value="{{ request.GET.search }}">
-                    <button class="btn btn-outline-light" type="submit">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </form>
-                
-                <!-- Cart and User Menu -->
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link position-relative" href="{% url 'cart' %}">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-count">
-                                0
-                            </span>
-                        </a>
-                    </li>
-                    {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'delivery_booking' %}">
-                                <i class="fas fa-truck"></i> Delivery
-                            </a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user"></i> {{ user.first_name|default:user.username }}
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
-                                <li><a class="dropdown-item" href="{% url 'order_history' %}">My Orders</a></li>
-                                <li><a class="dropdown-item" href="{% url 'delivery_bookings' %}">My Deliveries</a></li>
-                                {% if user.is_staff %}
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'founder_dashboard' %}"><i class="fas fa-cog me-2"></i>Admin Panel</a></li>
-                                {% endif %}
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">
-                                <i class="fas fa-sign-in-alt"></i> Login
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'register' %}">
-                                <i class="fas fa-user-plus"></i> Register
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
+<body class="flex min-h-screen flex-col">
+    <!-- Splash loader (first page view of a session only) -->
+    <div id="preloader" aria-hidden="true">
+        <div class="flex flex-col items-center gap-5">
+            <div class="relative grid size-16 place-items-center rounded-2xl bg-linear-to-br from-emerald-500 to-emerald-700 text-2xl text-white shadow-xl shadow-emerald-600/30 animate-pop">
+                <span class="absolute inset-0 -z-10 animate-ping rounded-2xl bg-emerald-400 opacity-40"></span>
+                <i class="fas fa-basket-shopping"></i>
+            </div>
+            <p class="text-sm font-extrabold tracking-wide text-slate-900">JKC Supermarket</p>
+            <div class="flex gap-1.5">
+                <span class="preloader-dot"></span><span class="preloader-dot"></span><span class="preloader-dot"></span>
             </div>
         </div>
-    </nav>
+    </div>
+    <!-- Navigation progress bar -->
+    <div id="page-progress" aria-hidden="true"></div>
 
-    <!-- Messages -->
-    {% if messages %}
-        <div class="container mt-3">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[120] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:shadow-lg">Skip to content</a>
+
+    <!-- Announcement bar -->
+    <div class="hidden bg-emerald-950 text-emerald-50 sm:block">
+        <div class="container-page flex h-9 items-center justify-between text-xs font-medium">
+            <p class="flex items-center gap-2">
+                <i class="fas fa-truck-fast text-amber-300"></i>
+                Delivery in 1–2 hours in Harare &amp; Bulawayo, from $5
+            </p>
+            <div class="flex items-center gap-5">
+                <a href="https://wa.me/263771938039" target="_blank" rel="noopener" class="flex items-center gap-1.5 transition hover:text-white">
+                    <i class="fab fa-whatsapp text-sm"></i> +263 77 193 8039
+                </a>
+                <span class="hidden items-center gap-1.5 md:flex"><i class="fas fa-location-dot"></i> Chiredzi, Zimbabwe</span>
+            </div>
         </div>
-    {% endif %}
+    </div>
 
-    <!-- Main Content -->
-    <main>
+    {% with url_name=request.resolver_match.url_name %}
+    <header class="site-header">
+        <div class="container-page flex h-16 items-center gap-3 lg:h-[72px]">
+            <a href="{% url 'home' %}" class="group flex shrink-0 items-center gap-2.5" aria-label="JKC Supermarket home">
+                <span class="grid size-10 place-items-center rounded-xl bg-linear-to-br from-emerald-500 to-emerald-700 text-white shadow-md shadow-emerald-600/25 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105">
+                    <i class="fas fa-basket-shopping"></i>
+                </span>
+                <span class="leading-tight">
+                    <span class="block text-base font-extrabold tracking-tight text-slate-900">JKC Supermarket</span>
+                    <span class="hidden text-[11px] font-medium text-slate-500 sm:block">Shopping Assistant</span>
+                </span>
+            </a>
+
+            <nav class="ml-4 hidden items-center gap-0.5 lg:flex xl:ml-8" aria-label="Main">
+                <a href="{% url 'home' %}" class="nav-link {% if url_name == 'home' %}is-active{% endif %}">Home</a>
+                <a href="{% url 'product_list' %}" class="nav-link {% if url_name == 'product_list' or url_name == 'product_detail' %}is-active{% endif %}">Shop</a>
+                <a href="{% url 'gallery' %}" class="nav-link {% if url_name == 'gallery' %}is-active{% endif %}">Gallery</a>
+                <a href="{% url 'about' %}" class="nav-link {% if url_name == 'about' %}is-active{% endif %}">About</a>
+                <a href="{% url 'contact' %}" class="nav-link {% if url_name == 'contact' %}is-active{% endif %}">Contact</a>
+            </nav>
+
+            <form method="get" action="{% url 'product_list' %}" class="ml-auto hidden w-full max-w-xs md:block" role="search">
+                <label class="relative block">
+                    <span class="sr-only">Search products</span>
+                    <i class="fas fa-magnifying-glass pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-sm text-slate-400"></i>
+                    <input type="search" name="search" value="{{ request.GET.search }}" placeholder="Search products…" class="input rounded-full bg-slate-100 pl-10 ring-transparent focus:bg-white focus:ring-emerald-500">
+                </label>
+            </form>
+
+            <div class="ml-auto flex items-center gap-1 md:ml-2">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'delivery_bookings' %}" class="icon-btn hidden sm:grid {% if url_name == 'delivery_bookings' %}bg-emerald-50 text-emerald-700{% endif %}" title="My deliveries" aria-label="My deliveries">
+                        <i class="fas fa-truck"></i>
+                    </a>
+                {% endif %}
+                <a href="{% url 'cart' %}" class="icon-btn {% if url_name == 'cart' %}bg-emerald-50 text-emerald-700{% endif %}" data-cart-icon aria-label="Cart">
+                    <i class="fas fa-cart-shopping"></i>
+                    <span class="cart-badge" data-cart-count {% if not cart_count %}hidden{% endif %}>{{ cart_count|default:0 }}</span>
+                </a>
+
+                {% if user.is_authenticated %}
+                    <div class="dropdown relative" data-dropdown>
+                        <button type="button" class="flex items-center gap-2 rounded-full p-1 transition hover:bg-slate-100 sm:pr-2.5" data-dropdown-toggle aria-expanded="false" aria-haspopup="true" aria-label="Account menu">
+                            <span class="grid size-8 place-items-center rounded-full bg-linear-to-br from-emerald-100 to-emerald-200 text-sm font-extrabold text-emerald-800">{{ user.first_name|default:user.username|first|upper }}</span>
+                            <i class="fas fa-chevron-down hidden text-[10px] text-slate-400 sm:inline"></i>
+                        </button>
+                        <div class="dropdown-menu" role="menu">
+                            <div class="mb-1 border-b border-slate-100 px-3 pt-2 pb-3">
+                                <p class="truncate text-sm font-bold text-slate-900">{{ user.get_full_name|default:user.username }}</p>
+                                {% if user.email %}<p class="truncate text-xs text-slate-500">{{ user.email }}</p>{% endif %}
+                            </div>
+                            <a href="{% url 'profile' %}" class="dropdown-item" role="menuitem"><i class="fas fa-user"></i> My profile</a>
+                            <a href="{% url 'order_history' %}" class="dropdown-item" role="menuitem"><i class="fas fa-receipt"></i> My orders</a>
+                            <a href="{% url 'delivery_bookings' %}" class="dropdown-item" role="menuitem"><i class="fas fa-truck"></i> My deliveries</a>
+                            <a href="{% url 'delivery_booking' %}" class="dropdown-item" role="menuitem"><i class="fas fa-calendar-plus"></i> Book a delivery</a>
+                            {% if user.is_staff %}
+                                <div class="my-1 border-t border-slate-100"></div>
+                                <a href="{% url 'founder_dashboard' %}" class="dropdown-item" role="menuitem"><i class="fas fa-chart-line"></i> Founder dashboard</a>
+                                <a href="{% url 'admin:index' %}" class="dropdown-item" role="menuitem"><i class="fas fa-screwdriver-wrench"></i> Django admin</a>
+                            {% endif %}
+                            <div class="my-1 border-t border-slate-100"></div>
+                            <a href="{% url 'logout' %}" class="dropdown-item text-rose-600 hover:bg-rose-50 hover:text-rose-700" role="menuitem"><i class="fas fa-arrow-right-from-bracket"></i> Log out</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-ghost btn-sm hidden sm:inline-flex">Log in</a>
+                    <a href="{% url 'register' %}" class="btn btn-primary btn-sm hidden sm:inline-flex">Sign up</a>
+                {% endif %}
+
+                <button type="button" class="menu-toggle icon-btn lg:hidden" data-mobile-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+                    <i class="fas fa-bars icon-open"></i>
+                    <i class="fas fa-xmark icon-close"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="mobile-menu" data-mobile-menu>
+            <div>
+                <div class="container-page space-y-3 border-t border-slate-100 pt-4 pb-5">
+                    <form method="get" action="{% url 'product_list' %}" class="md:hidden" role="search">
+                        <label class="relative block">
+                            <span class="sr-only">Search products</span>
+                            <i class="fas fa-magnifying-glass pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-sm text-slate-400"></i>
+                            <input type="search" name="search" value="{{ request.GET.search }}" placeholder="Search products…" class="input pl-10">
+                        </label>
+                    </form>
+                    <nav class="grid gap-1" aria-label="Mobile">
+                        <a href="{% url 'home' %}" class="mobile-link {% if url_name == 'home' %}is-active{% endif %}"><i class="fas fa-house"></i> Home</a>
+                        <a href="{% url 'product_list' %}" class="mobile-link {% if url_name == 'product_list' or url_name == 'product_detail' %}is-active{% endif %}"><i class="fas fa-store"></i> Shop</a>
+                        <a href="{% url 'gallery' %}" class="mobile-link {% if url_name == 'gallery' %}is-active{% endif %}"><i class="fas fa-images"></i> Gallery</a>
+                        <a href="{% url 'about' %}" class="mobile-link {% if url_name == 'about' %}is-active{% endif %}"><i class="fas fa-circle-info"></i> About</a>
+                        <a href="{% url 'contact' %}" class="mobile-link {% if url_name == 'contact' %}is-active{% endif %}"><i class="fas fa-envelope"></i> Contact</a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'delivery_bookings' %}" class="mobile-link {% if url_name == 'delivery_bookings' %}is-active{% endif %}"><i class="fas fa-truck"></i> My deliveries</a>
+                        {% endif %}
+                    </nav>
+                    {% if not user.is_authenticated %}
+                        <div class="grid grid-cols-2 gap-2 pt-1">
+                            <a href="{% url 'login' %}" class="btn btn-secondary">Log in</a>
+                            <a href="{% url 'register' %}" class="btn btn-primary">Sign up</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+    {% endwith %}
+
+    {% block page_header %}{% endblock %}
+
+    <!-- Toast notifications (Django messages are shown here; main.js adds more) -->
+    <div id="toast-root" aria-live="polite">
+        {% for message in messages %}
+            <div class="toast toast-{{ message.tags|default:'info' }}" role="{% if message.tags == 'error' %}alert{% else %}status{% endif %}">
+                <span class="toast-icon">
+                    <i class="fas {% if message.tags == 'success' %}fa-circle-check{% elif message.tags == 'error' %}fa-circle-exclamation{% elif message.tags == 'warning' %}fa-triangle-exclamation{% else %}fa-circle-info{% endif %}"></i>
+                </span>
+                <p class="toast-message">{{ message }}</p>
+                <button type="button" class="toast-close" aria-label="Dismiss"><i class="fas fa-xmark"></i></button>
+                <span class="toast-progress"></span>
+            </div>
+        {% endfor %}
+    </div>
+
+    <main id="main" class="flex-1">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-light py-5 mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>JKC Supermarket Shopping Assistant</h5>
-                    <p>Your trusted local supermarket for quality products at affordable prices.</p>
-                    <div class="social-links">
-                        <a href="#" class="text-light me-3"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-light me-3"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="{% url 'home' %}" class="text-light">Home</a></li>
-                        <li><a href="{% url 'product_list' %}" class="text-light">Products</a></li>
-                        <li><a href="{% url 'about' %}" class="text-light">About Us</a></li>
-                        <li><a href="{% url 'contact' %}" class="text-light">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>Contact Info</h5>
-                    <p><i class="fas fa-map-marker-alt me-2"></i> 5637 Westroad, Chiredzi, Zimbabwe</p>
-                    <p><i class="fas fa-phone me-2"></i> +263 771938039 / +263 788574080</p>
-                    <p><i class="fas fa-envelope me-2"></i> jimuronald7@gmail.com</p>
-                </div>
+    <footer class="relative mt-20 overflow-hidden bg-slate-950 text-slate-400">
+        <div aria-hidden="true" class="pointer-events-none absolute -top-24 left-1/2 h-48 w-[40rem] max-w-full -translate-x-1/2 rounded-full bg-emerald-500/15 blur-3xl"></div>
+        <div class="container-page relative grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-12">
+            <div class="lg:col-span-4">
+                <a href="{% url 'home' %}" class="flex items-center gap-2.5">
+                    <span class="grid size-10 place-items-center rounded-xl bg-linear-to-br from-emerald-500 to-emerald-700 text-white"><i class="fas fa-basket-shopping"></i></span>
+                    <span class="text-lg font-extrabold text-white">JKC Supermarket</span>
+                </a>
+                <p class="mt-4 max-w-xs text-sm leading-relaxed">Your trusted local supermarket for quality products at affordable prices, supporting farmers and businesses across Zimbabwe.</p>
+                <a href="https://wa.me/263771938039" target="_blank" rel="noopener" class="btn btn-whatsapp btn-sm mt-5">
+                    <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+                </a>
             </div>
-            <hr class="my-4">
-            <div class="text-center">
-                <p>&copy; 2024 JKC Supermarket Shopping Assistant. All rights reserved.</p>
+            <div class="lg:col-span-2">
+                <h3 class="text-sm font-bold text-white">Shop</h3>
+                <ul class="mt-4 space-y-2.5 text-sm">
+                    <li><a href="{% url 'product_list' %}" class="transition hover:text-emerald-400">All products</a></li>
+                    <li><a href="{% url 'product_list' %}?local=1" class="transition hover:text-emerald-400">Local products</a></li>
+                    <li><a href="{% url 'product_list' %}?filter_type=recent" class="transition hover:text-emerald-400">New arrivals</a></li>
+                    <li><a href="{% url 'gallery' %}" class="transition hover:text-emerald-400">Gallery</a></li>
+                </ul>
+            </div>
+            <div class="lg:col-span-2">
+                <h3 class="text-sm font-bold text-white">Account</h3>
+                <ul class="mt-4 space-y-2.5 text-sm">
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'order_history' %}" class="transition hover:text-emerald-400">My orders</a></li>
+                        <li><a href="{% url 'delivery_bookings' %}" class="transition hover:text-emerald-400">My deliveries</a></li>
+                        <li><a href="{% url 'profile' %}" class="transition hover:text-emerald-400">Profile</a></li>
+                    {% else %}
+                        <li><a href="{% url 'login' %}" class="transition hover:text-emerald-400">Log in</a></li>
+                        <li><a href="{% url 'register' %}" class="transition hover:text-emerald-400">Create account</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'cart' %}" class="transition hover:text-emerald-400">Cart</a></li>
+                    <li><a href="{% url 'contact' %}" class="transition hover:text-emerald-400">Contact us</a></li>
+                </ul>
+            </div>
+            <div class="sm:col-span-2 lg:col-span-4">
+                <h3 class="text-sm font-bold text-white">Get in touch</h3>
+                <ul class="mt-4 space-y-3 text-sm">
+                    <li class="flex gap-3"><i class="fas fa-location-dot mt-1 w-4 text-emerald-500"></i> 5637 Westroad, Chiredzi, Zimbabwe</li>
+                    <li class="flex gap-3"><i class="fas fa-phone mt-1 w-4 text-emerald-500"></i> +263 771 938 039 / +263 788 574 080</li>
+                    <li class="flex gap-3"><i class="fas fa-envelope mt-1 w-4 text-emerald-500"></i> jimuronald7@gmail.com</li>
+                    <li class="flex gap-3"><i class="fas fa-clock mt-1 w-4 text-emerald-500"></i> Mon–Fri 8am–6pm · Sat 8am–4pm · Sun 9am–2pm</li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-white/5">
+            <div class="container-page flex flex-col items-center justify-between gap-2 py-6 text-xs sm:flex-row">
+                <p>&copy; {% now "Y" %} JKC Supermarket Shopping Assistant. All rights reserved.</p>
+                <p>Proudly supporting local Zimbabwean producers</p>
             </div>
         </div>
     </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
-    <script src="{% static 'js/main.js' %}"></script>
-    
+    <button type="button" class="back-to-top" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+
+    <script src="{% static 'js/main.js' %}" defer></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

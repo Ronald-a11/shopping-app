@@ -1,0 +1,27 @@
+{% comment %}
+WhatsApp / SMS support box.
+
+    {% include 'partials/support_card.html' with title="Need help with your orders?" text="…" %}
+{% endcomment %}
+<div class="card overflow-hidden">
+    <div class="relative overflow-hidden bg-linear-to-br from-emerald-600 to-emerald-800 p-5 text-white">
+        <div aria-hidden="true" class="absolute -top-10 -right-10 size-32 rounded-full bg-white/10 blur-2xl"></div>
+        <div class="relative flex items-center gap-3">
+            <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-white/15 text-lg ring-1 ring-white/20">
+                <i class="fas fa-headset"></i>
+            </span>
+            <div>
+                <p class="font-bold">{{ title|default:"Need help?" }}</p>
+                <p class="text-xs text-emerald-100">{{ text|default:"Chat to our support team directly." }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="grid gap-2 p-4">
+        <a href="https://wa.me/263771938039" target="_blank" rel="noopener" class="btn btn-whatsapp w-full">
+            <i class="fab fa-whatsapp text-base"></i> WhatsApp 0771 938 039
+        </a>
+        <a href="sms:+263771938039" class="btn btn-secondary w-full">
+            <i class="fas fa-comment-sms text-base"></i> SMS 0771 938 039
+        </a>
+    </div>
+</div>

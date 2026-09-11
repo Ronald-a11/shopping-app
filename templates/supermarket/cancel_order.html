@@ -1,96 +1,91 @@
 {% extends 'base.html' %}
-{% load static %}
 
-{% block title %}Cancel Order - JKC Supermarket Shopping Assistant{% endblock %}
+{% block title %}Cancel order #{{ order.order_number }}{% endblock %}
+
+{% block page_header %}
+    {% url 'order_history' as orders_url %}
+    {% with eyebrow="Order #"|add:order.order_number %}
+        {% include 'partials/page_header.html' with eyebrow=eyebrow title="Cancel order" subtitle="Check the details below before you cancel." icon="fa-ban" parent_label="My orders" parent_url=orders_url %}
+    {% endwith %}
+{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <div class="card shadow">
-                <div class="card-header bg-danger text-white">
-                    <h4 class="mb-0"><i class="fas fa-times-circle me-2"></i>Cancel Order</h4>
-                </div>
-                <div class="card-body p-4">
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                    
-                    <div class="alert alert-warning">
-                        <h6><i class="fas fa-exclamation-triangle me-2"></i>Important Notice</h6>
-                        <p class="mb-0">Cancelling this order will add all items back to your cart for reordering. This action cannot be undone.</p>
-                    </div>
-                    
-                    <!-- Order Details -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h6 class="mb-0">Order Details</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Order Number:</strong> {{ order.order_number }}</p>
-                                    <p><strong>Status:</strong> 
-                                        <span class="badge bg-{% if order.status == 'pending' %}warning{% elif order.status == 'processing' %}info{% elif order.status == 'shipped' %}primary{% elif order.status == 'delivered' %}success{% else %}secondary{% endif %}">
-                                            {{ order.get_status_display }}
-                                        </span>
-                                    </p>
-                                    <p><strong>Total Amount:</strong> ${{ order.total_amount }}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Delivery Address:</strong> {{ order.delivery_address }}</p>
-                                    <p><strong>City:</strong> {{ order.delivery_city }}</p>
-                                    <p><strong>Phone:</strong> {{ order.delivery_phone }}</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Order Items -->
-                            <div class="mt-3">
-                                <h6>Order Items:</h6>
-                                <div class="table-responsive">
-                                    <table class="table table-sm">
-                                        <thead>
-                                            <tr>
-                                                <th>Product</th>
-                                                <th>Quantity</th>
-                                                <th>Price</th>
-                                                <th>Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for item in order_items %}
-                                            <tr>
-                                                <td>{{ item.product.name }}</td>
-                                                <td>{{ item.quantity }}</td>
-                                                <td>${{ item.price }}</td>
-                                                <td>${{ item.get_total }}</td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{% url 'order_detail' order.id %}" class="btn btn-secondary me-md-2">Back to Order</a>
-                            <button type="submit" class="btn btn-danger">
-                                <i class="fas fa-times-circle me-2"></i>Cancel Order & Add to Cart
-                            </button>
-                        </div>
-                    </form>
-                </div>
+<div class="container-page py-10">
+    <div class="mx-auto max-w-3xl space-y-6">
+        <div class="alert alert-warning animate-fade-up" role="note">
+            <i class="fas fa-triangle-exclamation mt-0.5 text-amber-600"></i>
+            <div>
+                <p class="font-bold">Before you cancel</p>
+                <p class="mt-0.5">Cancelling this order moves all of its items back to your cart so you can reorder. This can't be undone.</p>
             </div>
         </div>
+
+        <section class="card overflow-hidden animate-fade-up [animation-delay:100ms]" aria-labelledby="cancel-summary-title">
+            <div class="card-header">
+                <div class="min-w-0">
+                    <p class="text-[11px] font-bold tracking-wider text-slate-400 uppercase">Order</p>
+                    <h2 id="cancel-summary-title" class="truncate text-lg font-extrabold text-slate-900">#{{ order.order_number }}</h2>
+                </div>
+                {% include 'partials/status_badge.html' with status=order.status label=order.get_status_display %}
+            </div>
+
+            <div class="card-body grid gap-x-8 sm:grid-cols-2">
+                <dl>
+                    <div class="kv"><dt>Placed</dt><dd>{{ order.created_at|date:"M j, Y · H:i" }}</dd></div>
+                    <div class="kv"><dt>Items</dt><dd>{{ order_items|length }}</dd></div>
+                    <div class="kv"><dt>Total</dt><dd class="text-emerald-700">${{ order.total_amount }}</dd></div>
+                </dl>
+                <dl class="border-t border-dashed border-slate-200 sm:border-t-0">
+                    <div class="kv"><dt>Address</dt><dd>{{ order.delivery_address|linebreaksbr }}</dd></div>
+                    <div class="kv"><dt>City</dt><dd>{{ order.delivery_city }}</dd></div>
+                    <div class="kv"><dt>Phone</dt><dd>{{ order.delivery_phone }}</dd></div>
+                </dl>
+            </div>
+
+            <div class="border-t border-slate-100">
+                <h3 class="flex items-center gap-2 px-5 pt-5 pb-3 text-sm font-bold text-slate-900 sm:px-6">
+                    <i class="fas fa-basket-shopping text-emerald-600"></i> Items going back to your cart
+                </h3>
+                <div class="table-wrap">
+                    <table class="table min-w-[28rem]">
+                        <thead>
+                            <tr>
+                                <th scope="col">Product</th>
+                                <th scope="col" class="text-center">Qty</th>
+                                <th scope="col" class="text-right">Price</th>
+                                <th scope="col" class="text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order_items %}
+                                <tr>
+                                    <td class="font-semibold text-slate-900">{{ item.product.name }}</td>
+                                    <td class="text-center">{{ item.quantity }}</td>
+                                    <td class="text-right whitespace-nowrap">${{ item.price }}</td>
+                                    <td class="text-right font-bold whitespace-nowrap text-slate-900">${{ item.get_total }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th scope="row" colspan="3" class="text-right">Items total</th>
+                                <td class="text-right">${{ order.total_amount }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <form method="post" class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end animate-fade-up [animation-delay:200ms]">
+            {% csrf_token %}
+            <a href="{% url 'order_detail' order.id %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Keep my order
+            </a>
+            <button type="submit" class="btn btn-danger" data-confirm="This cancels order #{{ order.order_number }} and moves its items back to your cart." data-confirm-title="Cancel this order?" data-confirm-ok="Yes, cancel order" data-loading-text="Cancelling…">
+                <i class="fas fa-ban"></i> Cancel order &amp; move items to cart
+            </button>
+        </form>
     </div>
 </div>
 {% endblock %}
-

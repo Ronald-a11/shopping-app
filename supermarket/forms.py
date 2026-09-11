@@ -11,28 +11,28 @@ class ContactForm(forms.ModelForm):
         fields = ['name', 'phone_number', 'gender', 'age_group', 'message_type', 'subject', 'message']
         widgets = {
             'name': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'placeholder': 'Your Name'
             }),
             'phone_number': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'placeholder': '+263 XX XXX XXXX'
             }),
             'gender': forms.Select(attrs={
-                'class': 'form-control'
+                'class': 'input'
             }),
             'age_group': forms.Select(attrs={
-                'class': 'form-control'
+                'class': 'input'
             }),
             'message_type': forms.Select(attrs={
-                'class': 'form-control'
+                'class': 'input'
             }),
             'subject': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'placeholder': 'Subject'
             }),
             'message': forms.Textarea(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'rows': 5,
                 'placeholder': 'Your message or complaint...'
             }),
@@ -45,16 +45,16 @@ class OrderForm(forms.ModelForm):
         fields = ['delivery_address', 'delivery_city', 'delivery_phone']
         widgets = {
             'delivery_address': forms.Textarea(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'rows': 3,
                 'placeholder': 'Enter your full address'
             }),
             'delivery_city': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'placeholder': 'Enter your city or town'
             }),
             'delivery_phone': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'placeholder': '+263 XX XXX XXXX'
             }),
         }
@@ -72,7 +72,7 @@ class CustomUserCreationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs['class'] = 'input'
     
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -90,27 +90,27 @@ class UserProfileForm(forms.ModelForm):
         fields = ['phone_number', 'address', 'city', 'province', 'postal_code', 'date_of_birth']
         widgets = {
             'phone_number': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'placeholder': '+263 XX XXX XXXX'
             }),
             'address': forms.Textarea(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'rows': 3,
                 'placeholder': 'Enter your full address'
             }),
             'city': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'placeholder': 'Enter your city or town'
             }),
             'province': forms.Select(attrs={
-                'class': 'form-control'
+                'class': 'input'
             }),
             'postal_code': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'placeholder': 'Postal Code'
             }),
             'date_of_birth': forms.DateInput(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'type': 'date'
             }),
         }
@@ -140,27 +140,27 @@ class DeliveryBookingForm(forms.ModelForm):
         fields = ['delivery_date', 'time_slot', 'delivery_address', 'delivery_city', 'delivery_phone', 'special_instructions']
         widgets = {
             'delivery_date': forms.DateInput(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'type': 'date'
             }),
             'time_slot': forms.Select(attrs={
-                'class': 'form-control'
+                'class': 'input'
             }),
             'delivery_address': forms.Textarea(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'rows': 3,
                 'placeholder': 'Enter delivery address'
             }),
             'delivery_city': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'placeholder': 'Enter your city or town'
             }),
             'delivery_phone': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'placeholder': '+263 XX XXX XXXX'
             }),
             'special_instructions': forms.Textarea(attrs={
-                'class': 'form-control',
+                'class': 'input',
                 'rows': 3,
                 'placeholder': 'Any special delivery instructions (optional)'
             }),
@@ -183,13 +183,13 @@ class DeliveryCancellationForm(forms.Form):
     cancellation_reason = forms.ChoiceField(
         choices=DeliveryBooking.CANCELLATION_REASONS,
         widget=forms.Select(attrs={
-            'class': 'form-control'
+            'class': 'input'
         })
     )
     cancellation_notes = forms.CharField(
         required=False,
         widget=forms.Textarea(attrs={
-            'class': 'form-control',
+            'class': 'input',
             'rows': 3,
             'placeholder': 'Additional notes (optional)'
         })

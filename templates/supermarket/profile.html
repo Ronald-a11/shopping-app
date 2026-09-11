@@ -1,84 +1,152 @@
 {% extends 'base.html' %}
-{% load static %}
 
-{% block title %}Profile - Zimbabwe Supermarket{% endblock %}
+{% block title %}My profile{% endblock %}
+
+{% block page_header %}
+    {% include 'partials/page_header.html' with title="My profile" subtitle="Keep your delivery details up to date." icon="fa-user" %}
+{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0">My Profile</h4>
+<div class="container-page py-10">
+    <div class="grid gap-6 lg:grid-cols-3">
+
+        <!-- Account summary -->
+        <aside class="lg:sticky lg:top-24 lg:self-start">
+            <div class="card overflow-hidden animate-fade-up">
+                <div class="relative isolate h-24 overflow-hidden bg-linear-to-br from-emerald-500 to-emerald-800">
+                    <div aria-hidden="true" class="page-header-pattern"></div>
+                    <div aria-hidden="true" class="page-header-blob -top-16 -right-10 size-40 bg-teal-300"></div>
                 </div>
-                <div class="card-body p-4">
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
+                <div class="relative -mt-12 px-6 pb-6 text-center">
+                    <span class="mx-auto grid size-24 place-items-center rounded-full bg-linear-to-br from-emerald-100 to-emerald-200 text-3xl font-extrabold text-emerald-800 shadow-lg ring-4 ring-white animate-pop">
+                        {% if user.first_name %}{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}{% else %}{{ user.username|first|upper }}{% endif %}
+                    </span>
+                    <h2 class="mt-4 text-lg font-extrabold text-slate-900">{{ user.get_full_name|default:user.username }}</h2>
+                    <p class="text-sm text-slate-500">@{{ user.username }}</p>
+                    {% if user.email %}
+                        <p class="mt-1 truncate text-sm text-slate-500"><i class="fas fa-envelope mr-1 text-slate-400"></i> {{ user.email }}</p>
                     {% endif %}
-                    
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number</label>
-                                {{ form.phone_number }}
-                                {% if form.phone_number.errors %}
-                                    <div class="text-danger small">{{ form.phone_number.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.date_of_birth.id_for_label }}" class="form-label">Date of Birth</label>
-                                {{ form.date_of_birth }}
-                                {% if form.date_of_birth.errors %}
-                                    <div class="text-danger small">{{ form.date_of_birth.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.address.id_for_label }}" class="form-label">Address</label>
-                            {{ form.address }}
-                            {% if form.address.errors %}
-                                <div class="text-danger small">{{ form.address.errors.0 }}</div>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.city.id_for_label }}" class="form-label">City/Town</label>
-                                {{ form.city }}
-                                {% if form.city.errors %}
-                                    <div class="text-danger small">{{ form.city.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.province.id_for_label }}" class="form-label">Province</label>
-                                {{ form.province }}
-                                {% if form.province.errors %}
-                                    <div class="text-danger small">{{ form.province.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.postal_code.id_for_label }}" class="form-label">Postal Code</label>
-                            {{ form.postal_code }}
-                            {% if form.postal_code.errors %}
-                                <div class="text-danger small">{{ form.postal_code.errors.0 }}</div>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-success btn-lg">Update Profile</button>
-                        </div>
-                    </form>
+                    <p class="mt-4"><span class="badge badge-green"><i class="fas fa-calendar-days"></i> Member since {{ user.date_joined|date:'F Y' }}</span></p>
                 </div>
+                <nav class="grid gap-1 border-t border-slate-100 p-3" aria-label="Account shortcuts">
+                    <a href="{% url 'order_history' %}" class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-emerald-50 hover:text-emerald-700">
+                        <span class="grid size-8 place-items-center rounded-lg bg-slate-100 text-slate-500 transition group-hover:bg-emerald-100 group-hover:text-emerald-600"><i class="fas fa-receipt"></i></span>
+                        My orders
+                        <span class="ml-auto text-xs text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-emerald-500"><i class="fas fa-chevron-right"></i></span>
+                    </a>
+                    <a href="{% url 'delivery_bookings' %}" class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-emerald-50 hover:text-emerald-700">
+                        <span class="grid size-8 place-items-center rounded-lg bg-slate-100 text-slate-500 transition group-hover:bg-emerald-100 group-hover:text-emerald-600"><i class="fas fa-truck"></i></span>
+                        My deliveries
+                        <span class="ml-auto text-xs text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-emerald-500"><i class="fas fa-chevron-right"></i></span>
+                    </a>
+                    <a href="{% url 'delivery_booking' %}" class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-emerald-50 hover:text-emerald-700">
+                        <span class="grid size-8 place-items-center rounded-lg bg-slate-100 text-slate-500 transition group-hover:bg-emerald-100 group-hover:text-emerald-600"><i class="fas fa-calendar-plus"></i></span>
+                        Book a delivery
+                        <span class="ml-auto text-xs text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-emerald-500"><i class="fas fa-chevron-right"></i></span>
+                    </a>
+                </nav>
             </div>
+        </aside>
+
+        <!-- Profile form -->
+        <div class="lg:col-span-2">
+            <form method="post" class="card animate-fade-up [animation-delay:120ms]" data-tabs>
+                {% csrf_token %}
+
+                <div class="card-header flex-wrap">
+                    <h2 class="card-title"><i class="fas fa-pen-to-square text-emerald-600"></i> Edit profile</h2>
+                    <div class="tabs w-fit">
+                        <button type="button" class="tab" data-tab="personal">
+                            <i class="fas fa-id-card"></i> Personal details
+                            {% if form.phone_number.errors or form.date_of_birth.errors %}<span class="size-2 rounded-full bg-rose-500" aria-hidden="true"></span><span class="sr-only">(has errors)</span>{% endif %}
+                        </button>
+                        <button type="button" class="tab" data-tab="address">
+                            <i class="fas fa-location-dot"></i> Delivery address
+                            {% if form.address.errors or form.city.errors or form.province.errors or form.postal_code.errors %}<span class="size-2 rounded-full bg-rose-500" aria-hidden="true"></span><span class="sr-only">(has errors)</span>{% endif %}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger mb-6" role="alert">
+                            <i class="fas fa-circle-exclamation mt-0.5"></i>
+                            <div>{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Personal details -->
+                    <div data-tab-panel="personal">
+                        <div class="mb-6">
+                            <h3 class="font-bold text-slate-900">Personal details</h3>
+                            <p class="text-sm text-slate-500">Your contact number and date of birth.</p>
+                        </div>
+                        <div class="grid gap-5 sm:grid-cols-2">
+                            <div>
+                                <label for="{{ form.phone_number.id_for_label }}" class="label">Phone number</label>
+                                {{ form.phone_number }}
+                                {% for error in form.phone_number.errors %}
+                                    <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            <div>
+                                <label for="{{ form.date_of_birth.id_for_label }}" class="label">Date of birth</label>
+                                {{ form.date_of_birth }}
+                                {% for error in form.date_of_birth.errors %}
+                                    <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery address -->
+                    <div data-tab-panel="address">
+                        <div class="mb-6">
+                            <h3 class="font-bold text-slate-900">Delivery address</h3>
+                            <p class="text-sm text-slate-500">Where should we bring your groceries?</p>
+                        </div>
+                        <div class="grid gap-5 sm:grid-cols-2">
+                            <div class="sm:col-span-2">
+                                <label for="{{ form.address.id_for_label }}" class="label">Address</label>
+                                {{ form.address }}
+                                {% for error in form.address.errors %}
+                                    <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            <div>
+                                <label for="{{ form.city.id_for_label }}" class="label">City / town</label>
+                                {{ form.city }}
+                                {% for error in form.city.errors %}
+                                    <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            <div>
+                                <label for="{{ form.province.id_for_label }}" class="label">Province</label>
+                                {{ form.province }}
+                                {% for error in form.province.errors %}
+                                    <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            <div>
+                                <label for="{{ form.postal_code.id_for_label }}" class="label">Postal code</label>
+                                {{ form.postal_code }}
+                                {% for error in form.postal_code.errors %}
+                                    <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer justify-between">
+                    <p class="flex items-center gap-2 text-xs text-slate-500">
+                        <i class="fas fa-circle-info text-slate-400"></i> Changes on both tabs are saved together.
+                    </p>
+                    <button type="submit" class="btn btn-primary" data-loading-text="Saving…">
+                        <i class="fas fa-floppy-disk"></i> Save changes
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

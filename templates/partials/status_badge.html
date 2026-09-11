@@ -1,0 +1,16 @@
+{% comment %}
+Coloured status pill for orders and delivery bookings.
+
+    {% include 'partials/status_badge.html' with status=order.status label=order.get_status_display %}
+
+In-progress statuses get a pulsing dot.
+{% endcomment %}
+<span class="badge {% if status == 'delivered' %}badge-green{% elif status == 'cancelled' %}badge-red{% elif status == 'processing' or status == 'confirmed' %}badge-blue{% elif status == 'shipped' or status == 'in_transit' %}badge-indigo{% else %}badge-amber{% endif %}">
+    <span class="relative flex size-1.5">
+        {% if status != 'delivered' and status != 'cancelled' %}
+            <span class="absolute inline-flex size-full animate-ping rounded-full bg-current opacity-60"></span>
+        {% endif %}
+        <span class="relative inline-flex size-1.5 rounded-full bg-current"></span>
+    </span>
+    {{ label }}
+</span>

@@ -1,0 +1,36 @@
+{% comment %}
+Page navigation that keeps the current search/filter query string.
+
+    {% include 'partials/pagination.html' with page_obj=products %}
+{% endcomment %}
+{% load shop_tags %}
+{% if page_obj.has_other_pages %}
+<nav class="mt-10 flex flex-wrap items-center justify-center gap-2" aria-label="Pagination">
+    {% if page_obj.has_previous %}
+        <a class="page-btn" href="?{% query_transform page=page_obj.previous_page_number %}" aria-label="Previous page">
+            <i class="fas fa-chevron-left text-xs"></i>
+        </a>
+    {% else %}
+        <span class="page-btn is-disabled" aria-hidden="true"><i class="fas fa-chevron-left text-xs"></i></span>
+    {% endif %}
+
+    {% elided_page_range page_obj as page_numbers %}
+    {% for number in page_numbers %}
+        {% if number == page_obj.paginator.ELLIPSIS %}
+            <span class="px-1 text-slate-400">&hellip;</span>
+        {% elif number == page_obj.number %}
+            <span class="page-btn is-active" aria-current="page">{{ number }}</span>
+        {% else %}
+            <a class="page-btn" href="?{% query_transform page=number %}">{{ number }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a class="page-btn" href="?{% query_transform page=page_obj.next_page_number %}" aria-label="Next page">
+            <i class="fas fa-chevron-right text-xs"></i>
+        </a>
+    {% else %}
+        <span class="page-btn is-disabled" aria-hidden="true"><i class="fas fa-chevron-right text-xs"></i></span>
+    {% endif %}
+</nav>
+{% endif %}

@@ -1,0 +1,51 @@
+{% comment %}
+Page banner shown under the site header.
+
+    {% include 'partials/page_header.html' with title="My Orders" subtitle="…" icon="fa-receipt" %}
+
+Optional: eyebrow, subtitle, icon (Font Awesome name), crumb (breadcrumb label,
+defaults to title), parent_label + parent_url (middle breadcrumb),
+action_url + action_label + action_icon (button on the right).
+{% endcomment %}
+<section class="page-header">
+    <div aria-hidden="true" class="page-header-pattern"></div>
+    <div aria-hidden="true" class="page-header-blob -top-24 -right-16 size-72 bg-emerald-400"></div>
+    <div aria-hidden="true" class="page-header-blob -bottom-40 left-1/4 size-80 bg-teal-300 [animation-delay:-5s]"></div>
+
+    <div class="container-page relative py-10 sm:py-14">
+        <nav aria-label="Breadcrumb" class="breadcrumb animate-fade-in">
+            <a href="{% url 'home' %}"><i class="fas fa-house text-[10px]"></i> Home</a>
+            {% if parent_label %}
+                <i class="fas fa-chevron-right text-[8px] opacity-60"></i>
+                <a href="{{ parent_url }}">{{ parent_label }}</a>
+            {% endif %}
+            <i class="fas fa-chevron-right text-[8px] opacity-60"></i>
+            <span class="text-white" aria-current="page">{{ crumb|default:title }}</span>
+        </nav>
+
+        <div class="mt-5 flex flex-wrap items-end justify-between gap-6">
+            <div class="flex items-center gap-4">
+                {% if icon %}
+                    <span class="hidden size-14 shrink-0 place-items-center rounded-2xl bg-white/15 text-2xl text-white shadow-lg shadow-emerald-950/20 ring-1 ring-white/25 animate-pop sm:grid">
+                        <i class="fas {{ icon }}"></i>
+                    </span>
+                {% endif %}
+                <div class="animate-fade-up">
+                    {% if eyebrow %}
+                        <p class="text-xs font-bold tracking-widest text-amber-300 uppercase">{{ eyebrow }}</p>
+                    {% endif %}
+                    <h1 class="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">{{ title }}</h1>
+                    {% if subtitle %}
+                        <p class="mt-2 max-w-2xl text-sm text-emerald-50/80 sm:text-base">{{ subtitle }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% if action_url %}
+                <a href="{{ action_url }}" class="btn btn-light animate-fade-up [animation-delay:120ms]">
+                    {% if action_icon %}<i class="fas {{ action_icon }}"></i>{% endif %}
+                    {{ action_label }}
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>

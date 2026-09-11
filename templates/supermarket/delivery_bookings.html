@@ -1,100 +1,90 @@
 {% extends 'base.html' %}
-{% load static %}
 
-{% block title %}My Delivery Bookings - Zimbabwe Supermarket{% endblock %}
+{% block title %}My deliveries{% endblock %}
+
+{% block page_header %}
+    {% url 'delivery_booking' as book_url %}
+    {% include 'partials/page_header.html' with title="My deliveries" subtitle="See when your groceries are on the way and manage upcoming bookings." icon="fa-truck" action_url=book_url action_label="Book delivery" action_icon="fa-plus" %}
+{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>My Delivery Bookings</h2>
-                <a href="{% url 'delivery_booking' %}" class="btn btn-success">
-                    <i class="fas fa-plus me-2"></i>Book New Delivery
-                </a>
-            </div>
-            
+{% url 'delivery_booking' as book_url %}
+<div class="container-page py-10">
+    <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+        <div class="min-w-0">
             {% if bookings %}
-                <div class="row">
-                    {% for booking in bookings %}
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h6 class="mb-0">Booking #{{ booking.id }}</h6>
-                                <span class="badge bg-{% if booking.status == 'pending' %}warning{% elif booking.status == 'confirmed' %}info{% elif booking.status == 'in_transit' %}primary{% elif booking.status == 'delivered' %}success{% else %}danger{% endif %}">
-                                    {{ booking.get_status_display }}
-                                </span>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text">
-                                    <strong>Date:</strong> {{ booking.delivery_date }}<br>
-                                    <strong>Time:</strong> {{ booking.get_time_slot_display }}<br>
-                                    <strong>City:</strong> {{ booking.delivery_city }}<br>
-                                    <strong>Province:</strong> {{ booking.delivery_province }}<br>
-                                    <strong>Fee:</strong> ${{ booking.delivery_fee }}
-                                </p>
-                                <p class="card-text">
-                                    <small class="text-muted">
-                                        <strong>Address:</strong> {{ booking.delivery_address|truncatewords:10 }}
-                                    </small>
-                                </p>
-                                {% if booking.special_instructions %}
-                                <p class="card-text">
-                                    <small class="text-muted">
-                                        <strong>Instructions:</strong> {{ booking.special_instructions|truncatewords:8 }}
-                                    </small>
-                                </p>
-                                {% endif %}
-                            </div>
-                            <div class="card-footer">
-                                <div class="btn-group" role="group">
-                                    <a href="{% url 'delivery_booking_detail' booking.id %}" class="btn btn-outline-success btn-sm">
-                                        <i class="fas fa-eye me-1"></i>View Details
+                <div data-filter-group>
+                    <div class="tabs w-fit animate-fade-in" aria-label="Filter deliveries">
+                        <button type="button" class="tab is-active" data-filter="all">All <span class="tab-count">{{ bookings|length }}</span></button>
+                        <button type="button" class="tab" data-filter="upcoming">Upcoming <span class="tab-count"></span></button>
+                        <button type="button" class="tab" data-filter="delivered">Delivered <span class="tab-count"></span></button>
+                        <button type="button" class="tab" data-filter="cancelled">Cancelled <span class="tab-count"></span></button>
+                    </div>
+
+                    <div class="mt-6 grid gap-5 sm:grid-cols-2" data-reveal-stagger="80">
+                        {% for booking in bookings %}
+                            <article class="card card-hover flex h-full flex-col" data-filter-item="{% if booking.status == 'delivered' %}delivered{% elif booking.status == 'cancelled' %}cancelled{% else %}upcoming{% endif %}">
+                                <div class="card-body flex flex-1 gap-4">
+                                    <div class="flex w-16 shrink-0 flex-col self-start overflow-hidden rounded-xl text-center ring-1 ring-slate-200">
+                                        <span class="py-1 text-[11px] font-bold tracking-wider text-white uppercase {% if booking.status == 'cancelled' %}bg-slate-400{% elif booking.status == 'delivered' %}bg-emerald-700{% else %}bg-emerald-600{% endif %}">{{ booking.delivery_date|date:"M" }}</span>
+                                        <span class="bg-white py-1.5 text-2xl leading-none font-extrabold {% if booking.status == 'cancelled' %}text-slate-400 line-through{% else %}text-slate-900{% endif %}">{{ booking.delivery_date|date:"j" }}</span>
+                                        <span class="bg-white pb-1.5 text-[10px] font-semibold text-slate-400">{{ booking.delivery_date|date:"D" }}</span>
+                                    </div>
+
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex flex-wrap items-center justify-between gap-2">
+                                            <h3 class="text-sm font-bold text-slate-900">Booking #{{ booking.id }}</h3>
+                                            {% include 'partials/status_badge.html' with status=booking.status label=booking.get_status_display %}
+                                        </div>
+                                        <p class="mt-1 flex items-center gap-1.5 text-xs font-medium text-slate-500">
+                                            <i class="fas fa-clock text-[10px] text-slate-400"></i> {{ booking.get_time_slot_display }}
+                                        </p>
+
+                                        <dl class="mt-3">
+                                            <div class="kv py-2">
+                                                <dt><i class="fas fa-location-dot mr-1 text-slate-400"></i> City</dt>
+                                                <dd class="min-w-0 truncate">{{ booking.delivery_city }}{% if booking.delivery_province %}, {{ booking.delivery_province }}{% endif %}</dd>
+                                            </div>
+                                            <div class="kv py-2">
+                                                <dt><i class="fas fa-receipt mr-1 text-slate-400"></i> Fee</dt>
+                                                <dd>${{ booking.delivery_fee }}</dd>
+                                            </div>
+                                        </dl>
+
+                                        <p class="mt-2 text-xs text-slate-500"><span class="font-semibold text-slate-600">Address:</span> {{ booking.delivery_address|truncatewords:10 }}</p>
+                                        {% if booking.special_instructions %}
+                                            <p class="mt-1 text-xs text-slate-500"><span class="font-semibold text-slate-600">Instructions:</span> {{ booking.special_instructions|truncatewords:8 }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="card-footer rounded-b-2xl">
+                                    <a href="{% url 'delivery_booking_detail' booking.id %}" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-eye"></i> View details
                                     </a>
                                     {% if booking.can_be_cancelled %}
-                                    <a href="{% url 'cancel_delivery' booking.id %}" class="btn btn-outline-danger btn-sm">
-                                        <i class="fas fa-times me-1"></i>Cancel
-                                    </a>
+                                        <a href="{% url 'cancel_delivery' booking.id %}" class="btn btn-danger-outline btn-sm ml-auto">
+                                            <i class="fas fa-xmark"></i> Cancel
+                                        </a>
                                     {% endif %}
                                 </div>
-                            </div>
-                        </div>
+                            </article>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
+
+                    <div data-filter-empty hidden class="card mt-6 flex flex-col items-center px-6 py-12 text-center">
+                        <span class="grid size-14 place-items-center rounded-full bg-slate-100 text-xl text-slate-400"><i class="fas fa-filter"></i></span>
+                        <p class="mt-4 font-bold text-slate-900">No bookings here</p>
+                        <p class="mt-1 text-sm text-slate-500">Nothing matches this filter. Try another tab.</p>
+                    </div>
                 </div>
             {% else %}
-                <div class="text-center py-5">
-                    <i class="fas fa-truck fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">No delivery bookings yet</h4>
-                    <p class="text-muted">Book your first delivery to get started!</p>
-                    <a href="{% url 'delivery_booking' %}" class="btn btn-success">
-                        <i class="fas fa-plus me-2"></i>Book Delivery
-                    </a>
-                </div>
+                {% include 'partials/empty_state.html' with icon="fa-truck" title="No delivery bookings yet" text="Book your first delivery to get started!" cta_url=book_url cta_label="Book delivery" cta_icon="fa-plus" %}
             {% endif %}
         </div>
-        
-        <!-- Contact Support -->
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Need Help?</h5>
-                </div>
-                <div class="card-body">
-                    <p class="card-text small">
-                        Questions about your delivery? Contact our support team directly.
-                    </p>
-                    <div class="d-grid gap-2">
-                        <a href="https://wa.me/263771938039" target="_blank" class="btn btn-outline-success btn-sm">
-                            <i class="fab fa-whatsapp me-2"></i>WhatsApp (0771938039)
-                        </a>
-                        <a href="sms:+263771938039" class="btn btn-outline-info btn-sm">
-                            <i class="fas fa-sms me-2"></i>SMS (0771938039)
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+        <aside class="lg:sticky lg:top-24">
+            {% include 'partials/support_card.html' with title="Need help?" text="Questions about your delivery? Chat to our team." %}
+        </aside>
     </div>
 </div>
 {% endblock %}

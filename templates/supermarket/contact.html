@@ -1,172 +1,236 @@
 {% extends 'base.html' %}
-{% load static %}
 
-{% block title %}Contact Us - JKC Supermarket Shopping Assistant{% endblock %}
+{% block title %}Contact us{% endblock %}
+
+{% block page_header %}
+    {% include 'partials/page_header.html' with title="Contact us" subtitle="Questions, complaints or suggestions — we're listening." icon="fa-envelope" %}
+{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="mb-0">Get in Touch</h4>
-                </div>
+<div class="container-page py-10">
+    <div class="grid gap-6 lg:grid-cols-3">
+
+        <!-- Message / chat -->
+        <div class="lg:col-span-2">
+            <div class="card animate-fade-up" data-tabs>
                 <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
-                                {{ form.name }}
-                                {% if form.name.errors %}
-                                    <div class="text-danger">
+                    <div class="flex flex-wrap items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-900">Get in touch</h2>
+                            <p class="text-sm text-slate-500">We typically respond within 24 hours.</p>
+                        </div>
+                        <div class="tabs w-fit">
+                            <button type="button" class="tab" data-tab="message">
+                                <i class="fas fa-paper-plane"></i> Send a message
+                                {% if form.errors %}<span class="size-2 rounded-full bg-rose-500" aria-hidden="true"></span><span class="sr-only">(has errors)</span>{% endif %}
+                            </button>
+                            <button type="button" class="tab" data-tab="chat"><i class="fab fa-whatsapp"></i> Chat instantly</button>
+                        </div>
+                    </div>
+
+                    <!-- Send a message -->
+                    <div class="mt-6" data-tab-panel="message">
+                        <form method="post" class="space-y-8">
+                            {% csrf_token %}
+
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    <i class="fas fa-circle-exclamation mt-0.5"></i>
+                                    <div>{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>
+                                </div>
+                            {% endif %}
+
+                            <fieldset>
+                                <legend class="flex items-center gap-2.5 text-sm font-bold text-slate-900">
+                                    <span class="grid size-7 place-items-center rounded-lg bg-emerald-50 text-xs text-emerald-600"><i class="fas fa-user"></i></span>
+                                    About you
+                                </legend>
+                                <div class="mt-4 grid gap-5 sm:grid-cols-2">
+                                    <div>
+                                        <label for="{{ form.name.id_for_label }}" class="label">Name</label>
+                                        {{ form.name }}
                                         {% for error in form.name.errors %}
-                                            <small>{{ error }}</small>
+                                            <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
                                         {% endfor %}
                                     </div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number</label>
-                                {{ form.phone_number }}
-                                {% if form.phone_number.errors %}
-                                    <div class="text-danger">
+                                    <div>
+                                        <label for="{{ form.phone_number.id_for_label }}" class="label">Phone number</label>
+                                        {{ form.phone_number }}
                                         {% for error in form.phone_number.errors %}
-                                            <small>{{ error }}</small>
+                                            <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
                                         {% endfor %}
                                     </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="{{ form.gender.id_for_label }}" class="form-label">Gender</label>
-                                {{ form.gender }}
-                                {% if form.gender.errors %}
-                                    <div class="text-danger">
+                                    <div>
+                                        <label for="{{ form.gender.id_for_label }}" class="label">Gender</label>
+                                        {{ form.gender }}
                                         {% for error in form.gender.errors %}
-                                            <small>{{ error }}</small>
+                                            <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
                                         {% endfor %}
                                     </div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="{{ form.age_group.id_for_label }}" class="form-label">Age Group</label>
-                                {{ form.age_group }}
-                                {% if form.age_group.errors %}
-                                    <div class="text-danger">
+                                    <div>
+                                        <label for="{{ form.age_group.id_for_label }}" class="label">Age group</label>
+                                        {{ form.age_group }}
                                         {% for error in form.age_group.errors %}
-                                            <small>{{ error }}</small>
+                                            <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
                                         {% endfor %}
                                     </div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="{{ form.message_type.id_for_label }}" class="form-label">Message Type</label>
-                                {{ form.message_type }}
-                                {% if form.message_type.errors %}
-                                    <div class="text-danger">
+                                </div>
+                            </fieldset>
+
+                            <fieldset class="border-t border-slate-100 pt-8">
+                                <legend class="sr-only">Your message</legend>
+                                <p class="flex items-center gap-2.5 text-sm font-bold text-slate-900" aria-hidden="true">
+                                    <span class="grid size-7 place-items-center rounded-lg bg-emerald-50 text-xs text-emerald-600"><i class="fas fa-message"></i></span>
+                                    Your message
+                                </p>
+                                <div class="mt-4 grid gap-5 sm:grid-cols-2">
+                                    <div>
+                                        <label for="{{ form.message_type.id_for_label }}" class="label">Message type</label>
+                                        {{ form.message_type }}
                                         {% for error in form.message_type.errors %}
-                                            <small>{{ error }}</small>
+                                            <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
                                         {% endfor %}
                                     </div>
-                                {% endif %}
+                                    <div>
+                                        <label for="{{ form.subject.id_for_label }}" class="label">Subject</label>
+                                        {{ form.subject }}
+                                        {% for error in form.subject.errors %}
+                                            <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <label for="{{ form.message.id_for_label }}" class="label">Message</label>
+                                        {{ form.message }}
+                                        {% for error in form.message.errors %}
+                                            <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <div class="flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
+                                <p class="flex items-center gap-2 text-xs text-slate-500">
+                                    <i class="fas fa-circle-info text-slate-400"></i> All fields are required.
+                                </p>
+                                <button type="submit" class="btn btn-primary" data-loading-text="Sending…">
+                                    <i class="fas fa-paper-plane"></i> Send message
+                                </button>
                             </div>
+                        </form>
+                    </div>
+
+                    <!-- Chat instantly -->
+                    <div class="mt-6" data-tab-panel="chat">
+                        <p class="text-sm text-slate-600">Our customer support team is available to help you with any questions or concerns. Pick whichever way suits you.</p>
+
+                        <a href="https://wa.me/263771938039" target="_blank" rel="noopener" class="group relative mt-5 flex items-center gap-4 overflow-hidden rounded-2xl bg-[#25D366] p-5 text-white shadow-lg shadow-[#25D366]/30 transition duration-300 hover:-translate-y-0.5 hover:bg-[#1ebe5b] sm:p-6">
+                            <span aria-hidden="true" class="absolute -top-10 -right-10 size-40 rounded-full bg-white/15 blur-2xl"></span>
+                            <span class="relative grid size-14 shrink-0 place-items-center rounded-2xl bg-white/20 text-3xl ring-1 ring-white/30">
+                                <i class="fab fa-whatsapp"></i>
+                            </span>
+                            <span class="relative min-w-0">
+                                <span class="block text-lg font-extrabold">Chat on WhatsApp</span>
+                                <span class="block text-sm text-white/85">0771 938 039</span>
+                            </span>
+                            <span class="relative ml-auto grid size-10 shrink-0 place-items-center rounded-full bg-white/20 transition group-hover:translate-x-1">
+                                <i class="fas fa-arrow-right"></i>
+                            </span>
+                        </a>
+
+                        <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                            <a href="{{ sms_url }}" class="group flex items-center gap-3 rounded-2xl p-4 ring-1 ring-slate-200 transition ring-inset hover:-translate-y-0.5 hover:bg-sky-50/60 hover:ring-sky-200">
+                                <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-sky-50 text-lg text-sky-600"><i class="fas fa-comment-sms"></i></span>
+                                <span>
+                                    <span class="block text-sm font-bold text-slate-900">Send an SMS</span>
+                                    <span class="block text-xs text-slate-500">0771 938 039</span>
+                                </span>
+                            </a>
+                            <a href="https://www.facebook.com/zimbabwesupermarket" target="_blank" rel="noopener" class="group flex items-center gap-3 rounded-2xl p-4 ring-1 ring-slate-200 transition ring-inset hover:-translate-y-0.5 hover:bg-blue-50/60 hover:ring-blue-200">
+                                <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-blue-50 text-lg text-blue-600"><i class="fab fa-facebook-f"></i></span>
+                                <span>
+                                    <span class="block text-sm font-bold text-slate-900">Facebook</span>
+                                    <span class="block text-xs text-slate-500">Message us on Facebook</span>
+                                </span>
+                            </a>
+                            <a href="tel:+263771938039" class="group flex items-center gap-3 rounded-2xl p-4 ring-1 ring-slate-200 transition ring-inset hover:-translate-y-0.5 hover:bg-emerald-50/60 hover:ring-emerald-200">
+                                <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-emerald-50 text-lg text-emerald-600"><i class="fas fa-phone"></i></span>
+                                <span>
+                                    <span class="block text-sm font-bold text-slate-900">Call us</span>
+                                    <span class="block text-xs text-slate-500">+263 771 938 039</span>
+                                </span>
+                            </a>
+                            <a href="tel:+263788574080" class="group flex items-center gap-3 rounded-2xl p-4 ring-1 ring-slate-200 transition ring-inset hover:-translate-y-0.5 hover:bg-emerald-50/60 hover:ring-emerald-200">
+                                <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-emerald-50 text-lg text-emerald-600"><i class="fas fa-phone"></i></span>
+                                <span>
+                                    <span class="block text-sm font-bold text-slate-900">Call us</span>
+                                    <span class="block text-xs text-slate-500">+263 788 574 080</span>
+                                </span>
+                            </a>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.subject.id_for_label }}" class="form-label">Subject</label>
-                            {{ form.subject }}
-                            {% if form.subject.errors %}
-                                <div class="text-danger">
-                                    {% for error in form.subject.errors %}
-                                        <small>{{ error }}</small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.message.id_for_label }}" class="form-label">Message</label>
-                            {{ form.message }}
-                            {% if form.message.errors %}
-                                <div class="text-danger">
-                                    {% for error in form.message.errors %}
-                                        <small>{{ error }}</small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                        
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-paper-plane me-2"></i>Send Message
-                        </button>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <div class="col-lg-4">
-            <div class="card">
+
+        <!-- Contact information -->
+        <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
+            <div class="card animate-fade-up [animation-delay:120ms]">
                 <div class="card-header">
-                    <h5 class="mb-0">Contact Information</h5>
+                    <h2 class="card-title"><i class="fas fa-address-card text-emerald-600"></i> Contact information</h2>
                 </div>
-                <div class="card-body">
-                    <div class="mb-4">
-                        <h6><i class="fas fa-map-marker-alt text-success me-2"></i>Address</h6>
-                        <p class="mb-0">5637 Westroad<br>Chiredzi, Zimbabwe</p>
+                <div class="card-body space-y-5">
+                    <div class="flex gap-3">
+                        <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600"><i class="fas fa-location-dot"></i></span>
+                        <div>
+                            <p class="text-xs font-bold tracking-wide text-slate-400 uppercase">Address</p>
+                            <p class="mt-0.5 text-sm font-medium text-slate-900">5637 Westroad<br>Chiredzi, Zimbabwe</p>
+                        </div>
                     </div>
-                    
-                    <div class="mb-4">
-                        <h6><i class="fas fa-phone text-success me-2"></i>Phone</h6>
-                        <p class="mb-0">+263 771938039<br>+263 788574080</p>
+                    <div class="flex gap-3">
+                        <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600"><i class="fas fa-phone"></i></span>
+                        <div>
+                            <p class="text-xs font-bold tracking-wide text-slate-400 uppercase">Phone</p>
+                            <p class="mt-0.5 text-sm font-medium">
+                                <a href="tel:+263771938039" class="text-slate-900 transition hover:text-emerald-700">+263 771 938 039</a><br>
+                                <a href="tel:+263788574080" class="text-slate-900 transition hover:text-emerald-700">+263 788 574 080</a>
+                            </p>
+                        </div>
                     </div>
-                    
-                    <div class="mb-4">
-                        <h6><i class="fas fa-envelope text-success me-2"></i>Email</h6>
-                        <p class="mb-0">jimuronald7@gmail.com<br>chenjeraikosmas29@gmail.com<br>cherryshmugwisi0@gmail.com</p>
+                    <div class="flex gap-3">
+                        <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600"><i class="fas fa-envelope"></i></span>
+                        <div class="min-w-0">
+                            <p class="text-xs font-bold tracking-wide text-slate-400 uppercase">Email</p>
+                            <p class="mt-0.5 text-sm font-medium break-all">
+                                <a href="mailto:jimuronald7@gmail.com" class="text-slate-900 transition hover:text-emerald-700">jimuronald7@gmail.com</a><br>
+                                <a href="mailto:chenjeraikosmas29@gmail.com" class="text-slate-900 transition hover:text-emerald-700">chenjeraikosmas29@gmail.com</a><br>
+                                <a href="mailto:cherryshmugwisi0@gmail.com" class="text-slate-900 transition hover:text-emerald-700">cherryshmugwisi0@gmail.com</a>
+                            </p>
+                        </div>
                     </div>
-                    
-                    <div class="mb-4">
-                        <h6><i class="fas fa-clock text-success me-2"></i>Business Hours</h6>
-                        <p class="mb-0">
-                            Monday - Friday: 8:00 AM - 6:00 PM<br>
-                            Saturday: 8:00 AM - 4:00 PM<br>
-                            Sunday: 9:00 AM - 2:00 PM
+                    <div class="border-t border-slate-100 pt-4">
+                        <p class="flex items-center gap-2 text-xs font-bold tracking-wide text-slate-400 uppercase">
+                            <i class="fas fa-clock text-emerald-600"></i> Business hours
                         </p>
+                        <dl class="mt-1">
+                            <div class="kv"><dt>Monday – Friday</dt><dd>8:00 AM – 6:00 PM</dd></div>
+                            <div class="kv"><dt>Saturday</dt><dd>8:00 AM – 4:00 PM</dd></div>
+                            <div class="kv"><dt>Sunday</dt><dd>9:00 AM – 2:00 PM</dd></div>
+                        </dl>
                     </div>
                 </div>
             </div>
-            
-            <div class="card mt-3">
-                <div class="card-body">
-                    <h6 class="card-title">
-                        <i class="fas fa-headset me-2"></i>Customer Support
-                    </h6>
-                    <p class="card-text small">
-                        Our customer support team is available to help you with any questions or concerns. 
-                        We typically respond within 24 hours.
-                    </p>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <a href="https://wa.me/263771938039" target="_blank" class="btn btn-outline-success btn-sm">
-                            <i class="fab fa-whatsapp me-1"></i>WhatsApp (0771938039)
-                        </a>
-                        <a href="sms:+263771938039" class="btn btn-outline-info btn-sm">
-                            <i class="fas fa-sms me-1"></i>SMS (0771938039)
-                        </a>
-                        <a href="https://www.facebook.com/zimbabwesupermarket" target="_blank" class="btn btn-outline-primary btn-sm">
-                            <i class="fab fa-facebook me-1"></i>Facebook
-                        </a>
-                        {% if user.is_staff %}
-                        <a href="{% url 'founder_dashboard' %}" class="btn btn-outline-warning btn-sm">
-                            <i class="fas fa-cog me-1"></i>Admin Panel
-                        </a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
+
+            {% if user.is_staff %}
+                <a href="{% url 'founder_dashboard' %}" class="card card-hover group flex items-center gap-3 p-4 animate-fade-up [animation-delay:200ms]">
+                    <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-amber-50 text-lg text-amber-600"><i class="fas fa-gear"></i></span>
+                    <span class="min-w-0">
+                        <span class="block text-sm font-bold text-slate-900">Admin panel</span>
+                        <span class="block text-xs text-slate-500">Read and manage customer messages</span>
+                    </span>
+                    <span class="ml-auto text-slate-400 transition group-hover:translate-x-1 group-hover:text-emerald-600"><i class="fas fa-chevron-right"></i></span>
+                </a>
+            {% endif %}
+        </aside>
     </div>
 </div>
 {% endblock %}

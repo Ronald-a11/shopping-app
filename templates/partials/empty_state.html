@@ -1,0 +1,21 @@
+{% comment %}
+Friendly empty state.
+
+    {% include 'partials/empty_state.html' with icon="fa-cart-shopping" title="Your cart is empty" text="…" cta_url=shop_url cta_label="Start shopping" cta_icon="fa-bag-shopping" %}
+{% endcomment %}
+<div class="card flex flex-col items-center px-6 py-14 text-center animate-fade-up">
+    <span class="relative grid size-20 place-items-center rounded-full bg-emerald-50 text-3xl text-emerald-500">
+        <span class="absolute inset-0 animate-ping rounded-full bg-emerald-100 opacity-50 [animation-duration:2.5s]"></span>
+        <i class="fas {{ icon|default:'fa-box-open' }} relative animate-float"></i>
+    </span>
+    <h3 class="mt-6 text-lg font-bold text-slate-900">{{ title }}</h3>
+    {% if text %}
+        <p class="mt-2 max-w-sm text-sm text-slate-500">{{ text }}</p>
+    {% endif %}
+    {% if cta_url %}
+        <a href="{{ cta_url }}" class="btn btn-primary mt-6">
+            {% if cta_icon %}<i class="fas {{ cta_icon }}"></i>{% endif %}
+            {{ cta_label }}
+        </a>
+    {% endif %}
+</div>

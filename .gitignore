@@ -1,3 +1,6 @@
+# Tailwind build tooling (the compiled static/css/app.css is committed)
+node_modules/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

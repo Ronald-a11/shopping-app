@@ -1,138 +1,179 @@
 {% extends 'base.html' %}
-{% load static %}
 
-{% block title %}Checkout - Zimbabwe Supermarket{% endblock %}
+{% block title %}Checkout{% endblock %}
+
+{% block page_header %}
+    {% url 'cart' as cart_url %}
+    {% include 'partials/page_header.html' with title="Checkout" subtitle="Tell us where to deliver. You'll pick a delivery date and time in the next step." icon="fa-lock" parent_label="Cart" parent_url=cart_url %}
+{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <h2 class="mb-4">Checkout</h2>
-    
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Delivery Information</h5>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label for="{{ form.delivery_address.id_for_label }}" class="form-label">Delivery Address</label>
-                                {{ form.delivery_address }}
-                                {% if form.delivery_address.errors %}
-                                    <div class="text-danger">
-                                        {% for error in form.delivery_address.errors %}
-                                            <small>{{ error }}</small>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.delivery_city.id_for_label }}" class="form-label">City/Town</label>
-                                {{ form.delivery_city }}
-                                {% if form.delivery_city.errors %}
-                                    <div class="text-danger">
-                                        {% for error in form.delivery_city.errors %}
-                                            <small>{{ error }}</small>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.delivery_phone.id_for_label }}" class="form-label">Phone Number</label>
-                                {{ form.delivery_phone }}
-                                {% if form.delivery_phone.errors %}
-                                    <div class="text-danger">
-                                        {% for error in form.delivery_phone.errors %}
-                                            <small>{{ error }}</small>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="mt-4">
-                            <button type="submit" class="btn btn-success btn-lg">
-                                <i class="fas fa-credit-card me-2"></i>Place Order
-                            </button>
-                        </div>
-                    </form>
-                </div>
+<div class="container-page py-10">
+    <div class="card mb-8 px-5 py-4 animate-fade-in">
+        {% include 'partials/checkout_steps.html' with step=2 %}
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-3 lg:items-start">
+        <!-- Delivery details form -->
+        <section class="card lg:col-span-2 animate-fade-up" aria-labelledby="delivery-details-title">
+            <div class="card-header">
+                <h2 id="delivery-details-title" class="card-title">
+                    <i class="fas fa-location-dot text-emerald-600"></i> Delivery details
+                </h2>
+                <span class="text-xs text-slate-500">All fields required</span>
             </div>
-        </div>
-        
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Order Summary</h5>
-                </div>
-                <div class="card-body">
-                    {% for item in cart_items %}
-                    <div class="d-flex justify-content-between align-items-center mb-2">
+
+            <form method="post" class="card-body space-y-5">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-circle-exclamation mt-0.5"></i>
                         <div>
-                            <small class="fw-bold">{{ item.product.name }}</small>
-                            <br>
-                            <small class="text-muted">{{ item.quantity }} x ${{ item.product.price }}</small>
+                            {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
                         </div>
-                        <span class="fw-bold">${{ item.get_total }}</span>
                     </div>
+                {% endif %}
+
+                <div>
+                    <label for="{{ form.delivery_address.id_for_label }}" class="label">Delivery address</label>
+                    {{ form.delivery_address }}
+                    {% for error in form.delivery_address.errors %}
+                        <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
                     {% endfor %}
-                    
-                    <hr>
-                    
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Subtotal:</span>
-                        <span>${{ cart.get_total }}</span>
+                    <p class="field-help">House number, street and suburb, plus any landmark that helps the driver.</p>
+                </div>
+
+                <div>
+                    <label for="{{ form.delivery_city.id_for_label }}" class="label">City / town</label>
+                    {{ form.delivery_city }}
+                    {% for error in form.delivery_city.errors %}
+                        <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
+                    {% endfor %}
+                    <div class="mt-3 flex flex-wrap gap-2" aria-label="Quick pick a city">
+                        <button type="button" class="chip" data-fill="Harare" data-fill-target="{{ form.delivery_city.id_for_label }}">Harare</button>
+                        <button type="button" class="chip" data-fill="Bulawayo" data-fill-target="{{ form.delivery_city.id_for_label }}">Bulawayo</button>
+                        <button type="button" class="chip" data-fill="Gweru" data-fill-target="{{ form.delivery_city.id_for_label }}">Gweru</button>
+                        <button type="button" class="chip" data-fill="Mutare" data-fill-target="{{ form.delivery_city.id_for_label }}">Mutare</button>
+                        <button type="button" class="chip" data-fill="Kwekwe" data-fill-target="{{ form.delivery_city.id_for_label }}">Kwekwe</button>
+                        <button type="button" class="chip" data-fill="Kadoma" data-fill-target="{{ form.delivery_city.id_for_label }}">Kadoma</button>
+                        <button type="button" class="chip" data-fill="Chinhoyi" data-fill-target="{{ form.delivery_city.id_for_label }}">Chinhoyi</button>
+                        <button type="button" class="chip" data-fill="Masvingo" data-fill-target="{{ form.delivery_city.id_for_label }}">Masvingo</button>
+                        <button type="button" class="chip" data-fill="Bindura" data-fill-target="{{ form.delivery_city.id_for_label }}">Bindura</button>
+                        <button type="button" class="chip" data-fill="Marondera" data-fill-target="{{ form.delivery_city.id_for_label }}">Marondera</button>
                     </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Delivery:</span>
-                        <span class="text-success">Free</span>
+                    <p class="field-help">Delivery is $5 in Harare &amp; Bulawayo, $10 in the other towns above and $15 elsewhere.</p>
+                </div>
+
+                <div>
+                    <label for="{{ form.delivery_phone.id_for_label }}" class="label">Phone number</label>
+                    {{ form.delivery_phone }}
+                    {% for error in form.delivery_phone.errors %}
+                        <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
+                    {% endfor %}
+                    <p class="field-help">A Zimbabwe number, e.g. 0771 234 567 or +263 771 234 567.</p>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-calendar-days mt-0.5"></i>
+                    <p>Your order is placed first. In the next step you choose the delivery date and time slot, and the delivery fee for your city is added then.</p>
+                </div>
+
+                <div class="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
+                    <a href="{% url 'cart' %}" class="btn btn-ghost">
+                        <i class="fas fa-arrow-left"></i> Back to cart
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg" data-loading-text="Placing your order…">
+                        <i class="fas fa-circle-check"></i> Place order
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Summary -->
+        <aside class="lg:sticky lg:top-24 lg:col-start-3 lg:row-span-2 lg:row-start-1" aria-labelledby="checkout-summary-title">
+            {% with total=cart.get_total %}
+            <div class="card animate-fade-up [animation-delay:100ms]">
+                <div class="card-header">
+                    <h2 id="checkout-summary-title" class="card-title">
+                        <i class="fas fa-receipt text-emerald-600"></i> Order summary
+                    </h2>
+                    <a href="{% url 'cart' %}" class="link text-xs">Edit</a>
+                </div>
+                <ul class="max-h-80 divide-y divide-slate-100 overflow-y-auto px-5 sm:px-6">
+                    {% for item in cart_items %}
+                        <li class="flex items-center gap-3 py-3">
+                            <div class="relative shrink-0">
+                                <div class="img-frame size-14 rounded-xl {% if not item.product.image %}is-error{% endif %}">
+                                    {% if item.product.image %}
+                                        <img src="{{ item.product.image }}" alt="" loading="lazy" class="size-full object-cover">
+                                    {% endif %}
+                                    <span class="img-fallback"><i class="fas fa-basket-shopping"></i></span>
+                                </div>
+                                <span class="absolute -top-1.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-slate-800 px-1 text-[10px] font-bold text-white ring-2 ring-white" aria-label="Quantity {{ item.quantity }}">{{ item.quantity }}</span>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p class="truncate text-sm font-semibold text-slate-900">{{ item.product.name }}</p>
+                                <p class="text-xs text-slate-500">{{ item.quantity }} × ${{ item.product.price }}</p>
+                            </div>
+                            <p class="text-sm font-bold text-slate-900">${{ item.get_total }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="border-t border-slate-100 px-5 pt-2 pb-5 sm:px-6">
+                    <dl>
+                        <div class="kv">
+                            <dt>Subtotal</dt>
+                            <dd>${{ total }}</dd>
+                        </div>
+                        <div class="kv">
+                            <dt>Delivery</dt>
+                            <dd class="font-medium text-slate-500">Booked next</dd>
+                        </div>
+                    </dl>
+                    <div class="mt-2 flex items-baseline justify-between gap-4 border-t border-slate-200 pt-4">
+                        <span class="font-bold text-slate-900">Total</span>
+                        <span class="text-2xl font-extrabold text-emerald-700">${{ total }}</span>
                     </div>
-                    <hr>
-                    <div class="d-flex justify-content-between h5">
-                        <span>Total:</span>
-                        <span class="text-success">${{ cart.get_total }}</span>
-                    </div>
+                    <p class="mt-1 text-right text-xs text-slate-500">Excludes delivery</p>
                 </div>
             </div>
-            
-            <!-- Payment Methods -->
-            <div class="card mt-3">
-                <div class="card-body">
-                    <h6 class="card-title">
-                        <i class="fas fa-credit-card me-2"></i>Payment Methods
-                    </h6>
-                    <div class="d-flex flex-wrap gap-2">
-                        <span class="badge bg-primary">Cash on Delivery</span>
-                        <span class="badge bg-success">Mobile Money</span>
-                        <span class="badge bg-info">Bank Transfer</span>
-                    </div>
-                    <small class="text-muted mt-2 d-block">
-                        We accept various payment methods including mobile money and cash on delivery.
-                    </small>
+            {% endwith %}
+        </aside>
+
+        <!-- Payment & trust -->
+        <div class="grid gap-6 sm:grid-cols-2 lg:col-span-2" data-reveal-stagger="100">
+            <section class="card card-body" aria-labelledby="payment-title">
+                <h2 id="payment-title" class="card-title">
+                    <i class="fas fa-wallet text-emerald-600"></i> Payment methods
+                </h2>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <span class="badge badge-green py-1"><i class="fas fa-money-bill-wave"></i> Cash on delivery</span>
+                    <span class="badge badge-blue py-1"><i class="fas fa-mobile-screen-button"></i> Mobile money</span>
+                    <span class="badge badge-indigo py-1"><i class="fas fa-building-columns"></i> Bank transfer</span>
                 </div>
-            </div>
-            
-            <!-- Security -->
-            <div class="card mt-3">
-                <div class="card-body">
-                    <h6 class="card-title">
-                        <i class="fas fa-shield-alt me-2"></i>Secure Checkout
-                    </h6>
-                    <ul class="list-unstyled small">
-                        <li><i class="fas fa-check text-success me-2"></i>SSL Encrypted</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Secure Payment</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Privacy Protected</li>
-                    </ul>
-                </div>
-            </div>
+                <p class="mt-3 text-xs text-slate-500">We accept mobile money, bank transfer and cash on delivery.</p>
+            </section>
+
+            <section class="card card-body" aria-labelledby="trust-title">
+                <h2 id="trust-title" class="card-title">
+                    <i class="fas fa-shield-halved text-emerald-600"></i> Shop with confidence
+                </h2>
+                <ul class="mt-4 space-y-2.5 text-sm">
+                    <li class="flex items-center gap-3">
+                        <span class="grid size-7 place-items-center rounded-full bg-emerald-50 text-xs text-emerald-600"><i class="fas fa-lock"></i></span>
+                        SSL encrypted
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="grid size-7 place-items-center rounded-full bg-emerald-50 text-xs text-emerald-600"><i class="fas fa-user-shield"></i></span>
+                        Privacy protected
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="grid size-7 place-items-center rounded-full bg-emerald-50 text-xs text-emerald-600"><i class="fas fa-hand-holding-dollar"></i></span>
+                        Pay on delivery available
+                    </li>
+                </ul>
+            </section>
         </div>
     </div>
 </div>

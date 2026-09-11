@@ -217,7 +217,7 @@ def product_detail(request, product_id):
     related_products = Product.objects.filter(
         category=product.category,
         is_available=True
-    ).exclude(id=product_id)[:4]
+    ).exclude(id=product_id).select_related('category')[:4]
 
     context = {
         'product': product,
@@ -505,7 +505,8 @@ def restore_order_to_cart(user, order):
 @login_required
 def order_history(request):
     """User's order history"""
-    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    # Prefetch items so each order card's item count doesn't run its own query.
+    orders = Order.objects.filter(user=request.user).prefetch_related('items').order_by('-created_at')
 
     context = {
         'orders': orders,

@@ -1,169 +1,174 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load shop_tags %}
 
-{% block title %}Products - JKC Supermarket Shopping Assistant{% endblock %}
+{% block title %}Shop{% endblock %}
+
+{% block page_header %}
+    {% with count=products.paginator.count|stringformat:"s" plural=products.paginator.count|pluralize %}
+        {% if search_query %}
+            {% with subtitle="Results for “"|add:search_query|add:"” · "|add:count|add:" product"|add:plural %}
+                {% include 'partials/page_header.html' with title="Shop" icon="fa-store" subtitle=subtitle %}
+            {% endwith %}
+        {% else %}
+            {% with subtitle=count|add:" product"|add:plural|add:" to browse" %}
+                {% include 'partials/page_header.html' with title="Shop" icon="fa-store" subtitle=subtitle %}
+            {% endwith %}
+        {% endif %}
+    {% endwith %}
+{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row">
-        <!-- Sidebar -->
-        <div class="col-lg-3">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Filter Products</h5>
-                </div>
-                <div class="card-body">
-                    <!-- Search -->
-                    <form method="GET" class="mb-4">
-                        <div class="mb-3">
-                            <label for="search" class="form-label">Search</label>
-                            <input type="text" class="form-control" id="search" name="search" value="{{ search_query }}" placeholder="Search products...">
-                        </div>
-                        
-                        <!-- Category Filter -->
-                        <div class="mb-3">
-                            <label for="category" class="form-label">Category</label>
-                            <select class="form-select" id="category" name="category">
-                                <option value="">All Categories</option>
-                                {% for category in categories %}
-                                    <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>
-                                        {{ category.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        
-                        <!-- Quick Filter Buttons -->
-                        <div class="mb-3">
-                            <label class="form-label">Quick Filters</label>
-                            <div class="d-grid gap-2">
-                                <button type="submit" name="filter_type" value="cheap" class="btn btn-outline-success btn-sm">Cheap Products (< $10)</button>
-                                <button type="submit" name="filter_type" value="expensive" class="btn btn-outline-success btn-sm">Expensive Products (> $20)</button>
-                                <button type="submit" name="filter_type" value="recent" class="btn btn-outline-success btn-sm">Recently Added</button>
-                                <button type="submit" name="filter_type" value="available" class="btn btn-outline-success btn-sm">In Stock</button>
-                            </div>
-                        </div>
-                        
-                        <!-- Local Products Filter -->
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="local" name="local" value="1" {% if local_only %}checked{% endif %}>
-                                <label class="form-check-label" for="local">
-                                    Local Products Only
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <!-- Sort -->
-                        <div class="mb-3">
-                            <label for="sort" class="form-label">Sort By</label>
-                            <select class="form-select" id="sort" name="sort">
-                                <option value="">Newest First</option>
-                                <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest First</option>
-                                <option value="oldest" {% if sort_by == 'oldest' %}selected{% endif %}>Oldest First</option>
-                                <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name A-Z</option>
-                                <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
-                                <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
-                            </select>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-success w-100">Apply Filters</button>
-                        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary w-100 mt-2">Clear Filters</a>
-                    </form>
-                </div>
+{% url 'product_list' as shop_url %}
+<div class="container-page py-10">
+    <!-- Category tabs -->
+    <nav class="tabs w-fit animate-fade-up" aria-label="Categories">
+        <a href="?{% query_transform category=None page=None %}" class="tab {% if not selected_category %}is-active{% endif %}">
+            <i class="fas fa-border-all text-xs"></i> All
+        </a>
+        {% for category in categories %}
+            <a href="?{% query_transform category=category.id page=None %}" class="tab {% if selected_category == category.id|stringformat:'s' %}is-active{% endif %}">{{ category.name }}</a>
+        {% endfor %}
+    </nav>
+
+    <div class="mt-8 grid items-start gap-6 lg:grid-cols-4 lg:gap-8">
+        <!-- Filters -->
+        <aside class="card lg:sticky lg:top-24">
+            {# Mobile: the summary toggles the form below it (peer-open). Desktop: form always shown. #}
+            <details class="group peer lg:hidden">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 text-base font-bold text-slate-900 [&::-webkit-details-marker]:hidden">
+                    <span class="flex items-center gap-2"><i class="fas fa-sliders text-emerald-600"></i> Filters</span>
+                    <i class="fas fa-chevron-down text-xs text-slate-400 transition-transform duration-300 group-open:rotate-180"></i>
+                </summary>
+            </details>
+            <div class="card-header hidden lg:flex">
+                <h2 class="card-title"><i class="fas fa-sliders text-emerald-600"></i> Filters</h2>
             </div>
-        </div>
-        
-        <!-- Products -->
-        <div class="col-lg-9">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Products</h2>
-                <div class="text-muted">
-                    Showing {{ products.start_index }}-{{ products.end_index }} of {{ products.paginator.count }} products
-                </div>
-            </div>
-            
-            {% if products %}
-                <div class="row">
-                    {% for product in products %}
-                    <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="card product-card h-100 shadow-sm">
-                            {% if product.image %}
-                                <img src="{{ product.image }}" class="card-img-top" alt="{{ product.name }}" style="height: 220px; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="product-image-fallback" style="height: 220px; display: none;">
-                                    <i class="fas fa-shopping-bag fa-3x text-muted"></i>
-                                </div>
-                            {% else %}
-                                <div class="product-image-fallback" style="height: 220px;">
-                                    <i class="fas fa-shopping-bag fa-3x text-muted"></i>
-                                </div>
-                            {% endif %}
-                            <div class="card-body d-flex flex-column">
-                                <h6 class="card-title">{{ product.name }}</h6>
-                                <p class="card-text text-muted small">{{ product.description|truncatewords:15 }}</p>
-                                <div class="mt-auto">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="h5 text-success mb-0">${{ product.price }}</span>
-                                        <div>
-                                            {% if product.is_local_product %}
-                                                <span class="badge bg-warning text-dark me-1">Local</span>
-                                            {% endif %}
-                                            {% if product.stock_quantity <= 5 %}
-                                                <span class="badge bg-danger">Low Stock</span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    <div class="d-flex gap-2">
-                                        <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-success btn-sm flex-fill">View Details</a>
-                                        <form method="post" action="{% url 'add_to_cart' product.id %}" class="flex-fill">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="quantity" value="1">
-                                            <button type="submit" class="btn btn-success btn-sm w-100" {% if product.stock_quantity == 0 %}disabled{% endif %}>
-                                                <i class="fas fa-cart-plus"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
+            <form method="get" class="hidden space-y-5 border-t border-slate-100 p-5 peer-open:block peer-open:animate-fade-in lg:block lg:border-t-0">
+                <div>
+                    <label for="filter-search" class="label">Search</label>
+                    <div class="relative">
+                        <i class="fas fa-magnifying-glass pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-sm text-slate-400"></i>
+                        <input type="search" id="filter-search" name="search" value="{{ search_query|default:'' }}" placeholder="Search products…" class="input pl-10">
                     </div>
+                </div>
+
+                <div>
+                    <label for="filter-category" class="label">Category</label>
+                    <select id="filter-category" name="category" class="input">
+                        <option value="">All categories</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <fieldset>
+                    <legend class="label">Quick filters</legend>
+                    {# Keeps the current quick filter when other fields change; a clicked chip comes later in the form data and wins. #}
+                    <input type="hidden" name="filter_type" value="{{ filter_type|default:'' }}">
+                    <div class="flex flex-wrap gap-2">
+                        {% if filter_type == 'cheap' %}
+                            <button type="submit" name="filter_type" value="" class="chip is-active" aria-pressed="true">Under $10 <i class="fas fa-xmark text-[10px]"></i></button>
+                        {% else %}
+                            <button type="submit" name="filter_type" value="cheap" class="chip" aria-pressed="false">Under $10</button>
+                        {% endif %}
+                        {% if filter_type == 'expensive' %}
+                            <button type="submit" name="filter_type" value="" class="chip is-active" aria-pressed="true">Over $20 <i class="fas fa-xmark text-[10px]"></i></button>
+                        {% else %}
+                            <button type="submit" name="filter_type" value="expensive" class="chip" aria-pressed="false">Over $20</button>
+                        {% endif %}
+                        {% if filter_type == 'recent' %}
+                            <button type="submit" name="filter_type" value="" class="chip is-active" aria-pressed="true">Recently added <i class="fas fa-xmark text-[10px]"></i></button>
+                        {% else %}
+                            <button type="submit" name="filter_type" value="recent" class="chip" aria-pressed="false">Recently added</button>
+                        {% endif %}
+                        {% if filter_type == 'available' %}
+                            <button type="submit" name="filter_type" value="" class="chip is-active" aria-pressed="true">In stock <i class="fas fa-xmark text-[10px]"></i></button>
+                        {% else %}
+                            <button type="submit" name="filter_type" value="available" class="chip" aria-pressed="false">In stock</button>
+                        {% endif %}
+                    </div>
+                </fieldset>
+
+                <label class="flex cursor-pointer items-center gap-2.5 text-sm font-semibold text-slate-700">
+                    <input type="checkbox" name="local" value="1" class="size-4 rounded accent-emerald-600" {% if local_only %}checked{% endif %}>
+                    <span class="flex items-center gap-1.5"><i class="fas fa-leaf text-xs text-amber-500"></i> Local products only</span>
+                </label>
+
+                <div>
+                    <label for="filter-sort" class="label">Sort by</label>
+                    <select id="filter-sort" name="sort" class="input">
+                        <option value="" {% if not sort_by or sort_by == 'newest' %}selected{% endif %}>Newest first</option>
+                        <option value="oldest" {% if sort_by == 'oldest' %}selected{% endif %}>Oldest first</option>
+                        <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name A–Z</option>
+                        <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: low to high</option>
+                        <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: high to low</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                    <button type="submit" class="btn btn-primary">Apply</button>
+                    <a href="{{ shop_url }}" class="btn btn-secondary">Clear</a>
+                </div>
+            </form>
+        </aside>
+
+        <!-- Results -->
+        <div class="lg:col-span-3">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <p class="text-sm text-slate-500">
+                    {% if products.paginator.count %}
+                        Showing <span class="font-semibold text-slate-900">{{ products.start_index }}–{{ products.end_index }}</span>
+                        of <span class="font-semibold text-slate-900">{{ products.paginator.count }}</span> product{{ products.paginator.count|pluralize }}
+                    {% else %}
+                        No matching products
+                    {% endif %}
+                </p>
+
+                {% if search_query or selected_category or local_only or filter_type %}
+                    <div class="flex flex-wrap items-center gap-2">
+                        {% if search_query %}
+                            <a href="?{% query_transform search=None page=None %}" class="chip" aria-label="Remove search “{{ search_query }}”">
+                                <i class="fas fa-magnifying-glass text-[10px]"></i> “{{ search_query|truncatechars:24 }}” <i class="fas fa-xmark text-[10px]"></i>
+                            </a>
+                        {% endif %}
+                        {% if selected_category %}
+                            {% for category in categories %}
+                                {% if selected_category == category.id|stringformat:"s" %}
+                                    <a href="?{% query_transform category=None page=None %}" class="chip" aria-label="Remove category {{ category.name }}">
+                                        {{ category.name }} <i class="fas fa-xmark text-[10px]"></i>
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        {% if local_only %}
+                            <a href="?{% query_transform local=None page=None %}" class="chip" aria-label="Remove local products filter">
+                                <i class="fas fa-leaf text-[10px]"></i> Local only <i class="fas fa-xmark text-[10px]"></i>
+                            </a>
+                        {% endif %}
+                        {% if filter_type == 'cheap' or filter_type == 'expensive' or filter_type == 'recent' or filter_type == 'available' %}
+                            <a href="?{% query_transform filter_type=None page=None %}" class="chip" aria-label="Remove quick filter">
+                                {% if filter_type == 'cheap' %}Under $10{% elif filter_type == 'expensive' %}Over $20{% elif filter_type == 'recent' %}Recently added{% else %}In stock{% endif %}
+                                <i class="fas fa-xmark text-[10px]"></i>
+                            </a>
+                        {% endif %}
+                        <a href="{{ shop_url }}" class="link text-xs">Clear all</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if products %}
+                <div class="mt-6 grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3" data-reveal-stagger="60">
+                    {% for product in products %}
+                        {% include 'partials/product_card.html' with product=product %}
                     {% endfor %}
                 </div>
-                
-                <!-- Pagination -->
-                {% if products.has_other_pages %}
-                <nav aria-label="Products pagination">
-                    <ul class="pagination justify-content-center">
-                        {% if products.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if local_only %}&local=1{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">First</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ products.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if local_only %}&local=1{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Previous</a>
-                            </li>
-                        {% endif %}
-                        
-                        <li class="page-item active">
-                            <span class="page-link">{{ products.number }} of {{ products.paginator.num_pages }}</span>
-                        </li>
-                        
-                        {% if products.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ products.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if local_only %}&local=1{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Next</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ products.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if local_only %}&local=1{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Last</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-                {% endif %}
+
+                {% include 'partials/pagination.html' with page_obj=products %}
             {% else %}
-                <div class="text-center py-5">
-                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                    <h4>No products found</h4>
-                    <p class="text-muted">Try adjusting your search criteria or browse all products.</p>
-                    <a href="{% url 'product_list' %}" class="btn btn-success">View All Products</a>
+                <div class="mt-6">
+                    {% include 'partials/empty_state.html' with icon="fa-magnifying-glass" title="No products found" text="Try adjusting your search or filters, or browse all products." cta_url=shop_url cta_label="Clear filters" cta_icon="fa-rotate-left" %}
                 </div>
             {% endif %}
         </div>

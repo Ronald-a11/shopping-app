@@ -1,170 +1,212 @@
 {% extends 'base.html' %}
-{% load static %}
 
-{% block title %}{{ product.name }} - JKC Supermarket Shopping Assistant{% endblock %}
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block page_header %}
+    {% url 'product_list' as shop_url %}
+    {% include 'partials/page_header.html' with eyebrow=product.category.name title=product.name parent_label="Shop" parent_url=shop_url icon="fa-basket-shopping" %}
+{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'product_list' %}">Products</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'product_list' %}?category={{ product.category.id }}">{{ product.category.name }}</a></li>
-            <li class="breadcrumb-item active">{{ product.name }}</li>
-        </ol>
-    </nav>
-    
-    <div class="row">
-        <div class="col-lg-6">
-            {% if product.image %}
-                <img src="{{ product.image }}" class="img-fluid rounded-3 shadow-lg" alt="{{ product.name }}" style="height: 500px; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div class="product-image-fallback" style="height: 500px; display: none;">
-                    <i class="fas fa-shopping-bag fa-5x text-muted"></i>
-                </div>
-            {% else %}
-                <div class="product-image-fallback" style="height: 500px;">
-                    <i class="fas fa-shopping-bag fa-5x text-muted"></i>
-                </div>
-            {% endif %}
-        </div>
-        
-        <div class="col-lg-6">
-            <div class="product-info">
-                <h1 class="h2 mb-3">{{ product.name }}</h1>
-                
-                <div class="mb-3">
-                    <span class="h3 text-success">${{ product.price }}</span>
-                    {% if product.is_local_product %}
-                        <span class="badge bg-warning text-dark ms-2">Local Product</span>
-                    {% endif %}
-                </div>
-                
-                <div class="mb-3">
-                    <span class="text-muted">Category: </span>
-                    <a href="{% url 'product_list' %}?category={{ product.category.id }}" class="text-decoration-none">
-                        {{ product.category.name }}
-                    </a>
-                </div>
-                
-                {% if product.supplier %}
-                <div class="mb-3">
-                    <span class="text-muted">Supplier: </span>
-                    <span class="fw-bold">{{ product.supplier }}</span>
-                </div>
+{% url 'product_list' as shop_url %}
+<div class="container-page py-10">
+    <div class="grid gap-8 lg:grid-cols-2 lg:gap-12">
+        <!-- Image -->
+        <div class="animate-fade-up">
+            <div class="img-frame group aspect-square rounded-3xl shadow-xl ring-1 shadow-slate-900/10 ring-slate-900/5 {% if not product.image %}is-error{% endif %}">
+                {% if product.image %}
+                    <img src="{{ product.image }}" alt="{{ product.name }}" data-lightbox class="size-full cursor-zoom-in object-cover transition duration-700 ease-out group-hover:scale-105">
                 {% endif %}
-                
-                <div class="mb-4">
-                    <h5>Description</h5>
-                    <p>{{ product.description }}</p>
-                </div>
-                
-                <div class="mb-4">
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="text-center p-3 bg-light rounded">
-                                <div class="h5 text-success mb-1">${{ product.price }}</div>
-                                <small class="text-muted">USD Price</small>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="text-center p-3 bg-light rounded">
-                                <div class="h5 text-success mb-1">Z${{ product.price_in_zwd|floatformat:0 }}</div>
-                                <small class="text-muted">Zimbabwe Dollars</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mb-4">
-                    <div class="d-flex align-items-center">
-                        <span class="me-3">Stock: </span>
-                        {% if product.stock_quantity > 0 %}
-                            <span class="badge bg-success">{{ product.stock_quantity }} available</span>
-                        {% else %}
-                            <span class="badge bg-danger">Out of Stock</span>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                {% if product.stock_quantity > 0 %}
-                <form method="post" action="{% url 'add_to_cart' product.id %}" class="mb-4">
-                    {% csrf_token %}
-                    <div class="row align-items-center">
-                        <div class="col-md-4">
-                            <label for="quantity" class="form-label">Quantity:</label>
-                            <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock_quantity }}">
-                        </div>
-                        <div class="col-md-8">
-                            <button type="submit" class="btn btn-success btn-lg w-100">
-                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
-                            </button>
-                        </div>
-                    </div>
-                </form>
+                <span class="img-fallback"><i class="fas fa-basket-shopping text-7xl"></i></span>
+
+                {% if product.is_local_product %}
+                    <span class="badge badge-amber absolute top-4 left-4 px-3 py-1 text-sm shadow-sm"><i class="fas fa-leaf text-xs"></i> Local</span>
+                {% endif %}
+                {% if product.image %}
+                    <span class="pointer-events-none absolute right-4 bottom-4 inline-flex items-center gap-1.5 rounded-full bg-slate-900/60 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur transition group-hover:bg-slate-900/80 group-[.is-error]:hidden">
+                        <i class="fas fa-magnifying-glass-plus"></i> Click to zoom
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Info -->
+        <div class="animate-fade-up [animation-delay:120ms]">
+            <div class="flex flex-wrap items-center gap-2">
+                {% if product.is_local_product %}
+                    <span class="badge badge-amber"><i class="fas fa-leaf text-[10px]"></i> Local product</span>
+                {% endif %}
+                {% if product.stock_quantity == 0 %}
+                    <span class="badge badge-slate"><i class="fas fa-ban text-[10px]"></i> Out of stock</span>
+                {% elif product.stock_quantity <= 5 %}
+                    <span class="badge badge-red">
+                        <span class="relative flex size-1.5">
+                            <span class="absolute inline-flex size-full animate-ping rounded-full bg-rose-500 opacity-75"></span>
+                            <span class="relative inline-flex size-1.5 rounded-full bg-rose-500"></span>
+                        </span>
+                        Low stock · only {{ product.stock_quantity }} left
+                    </span>
                 {% else %}
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    This product is currently out of stock. Please check back later.
-                </div>
+                    <span class="badge badge-green"><i class="fas fa-circle-check text-[10px]"></i> {{ product.stock_quantity }} in stock</span>
                 {% endif %}
-                
-                <div class="mt-4">
-                    <h6>Product Features:</h6>
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-check text-success me-2"></i>Quality guaranteed</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Fresh products</li>
-                        {% if product.is_local_product %}
-                        <li><i class="fas fa-check text-success me-2"></i>Locally sourced</li>
-                        {% endif %}
-                        <li><i class="fas fa-check text-success me-2"></i>Fast delivery available</li>
-                    </ul>
-                </div>
             </div>
-        </div>
-    </div>
-    
-    <!-- Related Products -->
-    {% if related_products %}
-    <div class="mt-5">
-        <h3 class="mb-4">Related Products</h3>
-        <div class="row">
-            {% for related_product in related_products %}
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card product-card h-100 shadow-sm">
-                            {% if related_product.image %}
-                                <img src="{{ related_product.image }}" class="card-img-top" alt="{{ related_product.name }}" style="height: 200px; object-fit: cover;">
-                            {% else %}
-                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                                    <i class="fas fa-image fa-3x text-muted"></i>
-                                </div>
-                            {% endif %}
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title">{{ related_product.name|truncatewords:8 }}</h6>
-                        <p class="card-text text-muted small">{{ related_product.description|truncatewords:10 }}</p>
-                        <div class="mt-auto">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="h6 text-success mb-0">${{ related_product.price }}</span>
-                                {% if related_product.is_local_product %}
-                                    <span class="badge bg-warning text-dark">Local</span>
-                                {% endif %}
-                            </div>
-                            <div class="d-flex gap-2">
-                                <a href="{% url 'product_detail' related_product.id %}" class="btn btn-outline-success btn-sm flex-fill">View</a>
-                                <form method="post" action="{% url 'add_to_cart' related_product.id %}" class="flex-fill">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn btn-success btn-sm w-100" {% if related_product.stock_quantity == 0 %}disabled{% endif %}>
-                                        <i class="fas fa-cart-plus"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
+
+            <div class="mt-5 flex flex-wrap items-end gap-x-4 gap-y-1">
+                <p class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">${{ product.price }}</p>
+                <p class="pb-1 text-sm text-slate-500"><span class="font-bold text-slate-700">Z${{ product.price_in_zwd|floatformat:0 }}</span> in Zimbabwe dollars</p>
+            </div>
+
+            <div class="mt-6 grid gap-3 sm:grid-cols-2">
+                <div class="flex items-center gap-3 rounded-2xl bg-white p-3 ring-1 ring-slate-900/5">
+                    <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600"><i class="fas fa-tag"></i></span>
+                    <div class="min-w-0">
+                        <p class="text-xs text-slate-500">Category</p>
+                        <a href="{{ shop_url }}?category={{ product.category.id }}" class="link block truncate text-sm">{{ product.category.name }}</a>
                     </div>
                 </div>
+                {% if product.supplier %}
+                    <div class="flex items-center gap-3 rounded-2xl bg-white p-3 ring-1 ring-slate-900/5">
+                        <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-50 text-amber-600"><i class="fas fa-industry"></i></span>
+                        <div class="min-w-0">
+                            <p class="text-xs text-slate-500">Supplier</p>
+                            <p class="truncate text-sm font-semibold text-slate-900">{{ product.supplier }}</p>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
-            {% endfor %}
+
+            <div class="card mt-6 p-5">
+                {% if product.stock_quantity > 0 %}
+                    <form method="post" action="{% url 'add_to_cart' product.id %}" data-add-to-cart class="flex flex-col gap-4 sm:flex-row sm:items-end">
+                        {% csrf_token %}
+                        <div>
+                            <label for="quantity" class="label">Quantity</label>
+                            <div class="qty h-13" data-qty>
+                                <button type="button" data-qty-dec aria-label="Decrease quantity"><i class="fas fa-minus text-xs"></i></button>
+                                <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock_quantity }}" inputmode="numeric">
+                                <button type="button" data-qty-inc aria-label="Increase quantity"><i class="fas fa-plus text-xs"></i></button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg grow" data-loading-text="Adding…">
+                            <i class="fas fa-cart-plus"></i> Add to cart
+                        </button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-triangle-exclamation mt-0.5"></i>
+                        <p>This product is currently out of stock. Please check back later.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <ul class="mt-6 grid grid-cols-2 gap-3 text-sm font-semibold text-slate-700">
+                <li class="flex items-center gap-2.5">
+                    <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-emerald-50 text-emerald-600"><i class="fas fa-medal text-xs"></i></span>
+                    Quality guaranteed
+                </li>
+                <li class="flex items-center gap-2.5">
+                    <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-emerald-50 text-emerald-600"><i class="fas fa-seedling text-xs"></i></span>
+                    Fresh products
+                </li>
+                {% if product.is_local_product %}
+                    <li class="flex items-center gap-2.5">
+                        <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-amber-50 text-amber-600"><i class="fas fa-leaf text-xs"></i></span>
+                        Locally sourced
+                    </li>
+                {% endif %}
+                <li class="flex items-center gap-2.5">
+                    <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-emerald-50 text-emerald-600"><i class="fas fa-truck-fast text-xs"></i></span>
+                    Fast delivery available
+                </li>
+            </ul>
         </div>
     </div>
+
+    <!-- Description / details / delivery -->
+    <div class="card reveal mt-14 p-5 sm:p-8" data-tabs>
+        <div class="tabs-line">
+            <button type="button" class="tab" data-tab="description"><i class="fas fa-align-left text-xs"></i> Description</button>
+            <button type="button" class="tab" data-tab="details"><i class="fas fa-list-ul text-xs"></i> Details</button>
+            <button type="button" class="tab" data-tab="delivery"><i class="fas fa-truck-fast text-xs"></i> Delivery</button>
+        </div>
+
+        <div data-tab-panel="description" class="pt-6">
+            <div class="max-w-3xl space-y-4 text-sm leading-relaxed text-slate-600 sm:text-base">
+                {{ product.description|linebreaks }}
+            </div>
+        </div>
+
+        <div data-tab-panel="details" class="pt-4">
+            <dl class="max-w-xl">
+                <div class="kv">
+                    <dt>Category</dt>
+                    <dd><a href="{{ shop_url }}?category={{ product.category.id }}" class="link">{{ product.category.name }}</a></dd>
+                </div>
+                {% if product.supplier %}
+                    <div class="kv"><dt>Supplier</dt><dd>{{ product.supplier }}</dd></div>
+                {% endif %}
+                <div class="kv">
+                    <dt>Stock</dt>
+                    <dd>{% if product.stock_quantity > 0 %}{{ product.stock_quantity }} available{% else %}Out of stock{% endif %}</dd>
+                </div>
+                <div class="kv"><dt>Local product</dt><dd>{% if product.is_local_product %}Yes{% else %}No{% endif %}</dd></div>
+                <div class="kv"><dt>Price (USD)</dt><dd>${{ product.price }}</dd></div>
+                <div class="kv"><dt>Price (Zimbabwe dollars)</dt><dd>Z${{ product.price_in_zwd|floatformat:0 }}</dd></div>
+            </dl>
+        </div>
+
+        <div data-tab-panel="delivery" class="pt-6">
+            <p class="text-sm text-slate-600">Delivery is booked after checkout. The fee and estimated time depend on your city:</p>
+            <div class="mt-5 grid gap-3 md:grid-cols-3">
+                <div class="rounded-2xl bg-emerald-50/60 p-4 ring-1 ring-emerald-600/10">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-2xl font-extrabold text-slate-900">$5</span>
+                        <span class="badge badge-green"><i class="fas fa-clock text-[10px]"></i> 1–2 hours</span>
+                    </div>
+                    <p class="mt-2 text-sm font-semibold text-slate-900">Harare &amp; Bulawayo</p>
+                </div>
+                <div class="rounded-2xl bg-sky-50/60 p-4 ring-1 ring-sky-600/10">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-2xl font-extrabold text-slate-900">$10</span>
+                        <span class="badge badge-blue"><i class="fas fa-clock text-[10px]"></i> 2–4 hours</span>
+                    </div>
+                    <p class="mt-2 text-sm font-semibold text-slate-900">Gweru, Mutare, Kwekwe, Kadoma, Chinhoyi, Masvingo, Bindura &amp; Marondera</p>
+                </div>
+                <div class="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-900/5">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-2xl font-extrabold text-slate-900">$15</span>
+                        <span class="badge badge-slate"><i class="fas fa-clock text-[10px]"></i> 4–6 hours</span>
+                    </div>
+                    <p class="mt-2 text-sm font-semibold text-slate-900">All other towns</p>
+                </div>
+            </div>
+            <div class="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-slate-50 p-4">
+                <p class="text-sm text-slate-600">Not sure about delivery to your area?</p>
+                <a href="https://wa.me/263771938039" target="_blank" rel="noopener" class="btn btn-whatsapp btn-sm">
+                    <i class="fab fa-whatsapp"></i> Ask on WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related products -->
+    {% if related_products %}
+        <section class="mt-16">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <p class="eyebrow">Related products</p>
+                    <h2 class="section-title mt-2">More in {{ product.category.name }}</h2>
+                </div>
+                <a href="{{ shop_url }}?category={{ product.category.id }}" class="link group inline-flex items-center gap-1.5 text-sm">
+                    View all <i class="fas fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+                </a>
+            </div>
+            <div class="mt-8 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4" data-reveal-stagger="80">
+                {% for related_product in related_products %}
+                    {% include 'partials/product_card.html' with product=related_product %}
+                {% endfor %}
+            </div>
+        </section>
     {% endif %}
 </div>
 {% endblock %}

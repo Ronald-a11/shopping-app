@@ -1,223 +1,231 @@
 {% extends 'base.html' %}
-{% load static %}
 
-{% block title %}Founder Dashboard - JKC Supermarket Shopping Assistant{% endblock %}
+{% block title %}Founder dashboard{% endblock %}
+
+{% block page_header %}
+    {% url 'admin:index' as admin_url %}
+    {% include 'partials/page_header.html' with eyebrow="Staff" title="Founder dashboard" subtitle="Customer messages, recent orders and deliveries at a glance." icon="fa-chart-line" action_url=admin_url action_label="Django admin" action_icon="fa-screwdriver-wrench" %}
+{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2><i class="fas fa-crown text-warning me-2"></i>Founder Dashboard</h2>
-                <div class="text-muted">
-                    <i class="fas fa-phone me-1"></i>+263 771938039
-                </div>
-            </div>
-        </div>
+<div class="container-page py-10">
+
+    <!-- Statistics -->
+    <div class="grid grid-cols-2 gap-4 lg:grid-cols-4" data-reveal-stagger="80">
+        <a href="?filter=all#messages" class="stat-card group block">
+            <span aria-hidden="true" class="absolute -top-8 -right-8 size-24 rounded-full bg-emerald-50 transition-transform duration-500 group-hover:scale-125"></span>
+            <span class="relative grid size-11 place-items-center rounded-xl bg-emerald-100 text-lg text-emerald-600"><i class="fas fa-envelope"></i></span>
+            <p class="relative mt-4 text-3xl font-extrabold tracking-tight text-slate-900" data-count-to="{{ total_messages }}">{{ total_messages }}</p>
+            <p class="relative text-sm font-medium text-slate-500">Total messages</p>
+        </a>
+        <a href="?filter=unread#messages" class="stat-card group block">
+            <span aria-hidden="true" class="absolute -top-8 -right-8 size-24 rounded-full bg-amber-50 transition-transform duration-500 group-hover:scale-125"></span>
+            <span class="relative grid size-11 place-items-center rounded-xl bg-amber-100 text-lg text-amber-600"><i class="fas fa-envelope-open"></i></span>
+            <p class="relative mt-4 text-3xl font-extrabold tracking-tight text-slate-900" data-count-to="{{ unread_messages }}">{{ unread_messages }}</p>
+            <p class="relative text-sm font-medium text-slate-500">Unread</p>
+        </a>
+        <a href="?filter=complaints#messages" class="stat-card group block">
+            <span aria-hidden="true" class="absolute -top-8 -right-8 size-24 rounded-full bg-rose-50 transition-transform duration-500 group-hover:scale-125"></span>
+            <span class="relative grid size-11 place-items-center rounded-xl bg-rose-100 text-lg text-rose-600"><i class="fas fa-comments"></i></span>
+            <p class="relative mt-4 text-3xl font-extrabold tracking-tight text-slate-900" data-count-to="{{ total_complaints }}">{{ total_complaints }}</p>
+            <p class="relative text-sm font-medium text-slate-500">Complaints</p>
+        </a>
+        <a href="?filter=urgent#messages" class="stat-card group block">
+            <span aria-hidden="true" class="absolute -top-8 -right-8 size-24 rounded-full bg-orange-50 transition-transform duration-500 group-hover:scale-125"></span>
+            <span class="relative grid size-11 place-items-center rounded-xl bg-orange-100 text-lg text-orange-600"><i class="fas fa-fire"></i></span>
+            <p class="relative mt-4 text-3xl font-extrabold tracking-tight text-slate-900" data-count-to="{{ urgent_count }}">{{ urgent_count }}</p>
+            <p class="relative text-sm font-medium text-slate-500">Urgent</p>
+        </a>
     </div>
-    
-    <!-- Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card bg-primary text-white">
-                <div class="card-body text-center">
-                    <i class="fas fa-envelope fa-2x mb-2"></i>
-                    <h4>{{ total_messages }}</h4>
-                    <p class="mb-0">Total Messages</p>
-                </div>
-            </div>
+
+    <!-- Main tabs -->
+    <div class="mt-10" data-tabs data-tabs-hash>
+        <div class="tabs w-fit">
+            <button type="button" class="tab" data-tab="messages"><i class="fas fa-inbox"></i> Messages <span class="tab-count">{{ total_messages }}</span></button>
+            <button type="button" class="tab" data-tab="orders"><i class="fas fa-receipt"></i> Recent orders <span class="tab-count">{{ recent_orders|length }}</span></button>
+            <button type="button" class="tab" data-tab="deliveries"><i class="fas fa-truck"></i> Recent deliveries <span class="tab-count">{{ recent_deliveries|length }}</span></button>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="card bg-warning text-white">
-                <div class="card-body text-center">
-                    <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
-                    <h4>{{ unread_messages }}</h4>
-                    <p class="mb-0">Unread Messages</p>
-                </div>
+
+        <!-- Messages -->
+        <div class="mt-6" data-tab-panel="messages">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <nav class="tabs-line" aria-label="Filter messages">
+                    <a class="tab {% if active_filter == 'all' %}is-active{% endif %}" href="?filter=all#messages" {% if active_filter == 'all' %}aria-current="page"{% endif %}>All <span class="tab-count">{{ total_messages }}</span></a>
+                    <a class="tab {% if active_filter == 'unread' %}is-active{% endif %}" href="?filter=unread#messages" {% if active_filter == 'unread' %}aria-current="page"{% endif %}>Unread <span class="tab-count">{{ unread_messages }}</span></a>
+                    <a class="tab {% if active_filter == 'complaints' %}is-active{% endif %}" href="?filter=complaints#messages" {% if active_filter == 'complaints' %}aria-current="page"{% endif %}>Complaints <span class="tab-count">{{ total_complaints }}</span></a>
+                    <a class="tab {% if active_filter == 'urgent' %}is-active{% endif %}" href="?filter=urgent#messages" {% if active_filter == 'urgent' %}aria-current="page"{% endif %}>Urgent <span class="tab-count">{{ urgent_count }}</span></a>
+                </nav>
+                {% if contact_messages %}
+                    <p class="text-xs font-medium text-slate-500">Showing {{ contact_messages.start_index }}–{{ contact_messages.end_index }} of {{ contact_messages.paginator.count }}</p>
+                {% endif %}
             </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card bg-danger text-white">
-                <div class="card-body text-center">
-                    <i class="fas fa-comments fa-2x mb-2"></i>
-                    <h4>{{ total_complaints }}</h4>
-                    <p class="mb-0">Complaints</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card bg-info text-white">
-                <div class="card-body text-center">
-                    <i class="fas fa-fire fa-2x mb-2"></i>
-                    <h4>{{ urgent_count }}</h4>
-                    <p class="mb-0">Urgent</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Quick Filters -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Quick Filters</h5>
-                </div>
-                <div class="card-body">
-                    <div class="btn-group" role="group">
-                        <a href="?filter=all" class="btn btn-outline-primary">All Messages</a>
-                        <a href="?filter=unread" class="btn btn-outline-warning">Unread</a>
-                        <a href="?filter=complaints" class="btn btn-outline-danger">Complaints</a>
-                        <a href="?filter=urgent" class="btn btn-outline-info">Urgent</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Messages Table -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Customer Messages & Complaints</h5>
-                </div>
-                <div class="card-body">
-                    {% if messages %}
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Phone</th>
-                                        <th>Type</th>
-                                        <th>Subject</th>
-                                        <th>Gender</th>
-                                        <th>Age</th>
-                                        <th>Date</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for message in messages %}
-                                    <tr class="{% if not message.is_read %}table-warning{% endif %} {% if message.is_urgent %}table-danger{% endif %}">
+
+            {% if contact_messages %}
+                <div class="card mt-5 overflow-hidden">
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Phone</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Subject</th>
+                                    <th scope="col" class="hidden 2xl:table-cell">Gender</th>
+                                    <th scope="col" class="hidden 2xl:table-cell">Age group</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col"><span class="sr-only">Actions</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for message in contact_messages %}
+                                    <tr class="{% if message.is_urgent %}bg-rose-50/40 hover:bg-rose-50/80{% elif not message.is_read %}bg-amber-50/40 hover:bg-amber-50/80{% endif %}">
                                         <td>
-                                            <strong>{{ message.name }}</strong>
-                                            {% if message.is_urgent %}
-                                                <i class="fas fa-fire text-danger ms-1"></i>
-                                            {% endif %}
+                                            <div class="flex items-center gap-2 whitespace-nowrap">
+                                                {% if not message.is_read %}
+                                                    <span class="size-2 shrink-0 rounded-full bg-amber-500" title="Unread"><span class="sr-only">Unread</span></span>
+                                                {% endif %}
+                                                <a href="{% url 'message_detail' message.id %}" class="font-semibold text-slate-900 transition hover:text-emerald-700">{{ message.name }}</a>
+                                                {% if message.is_urgent %}
+                                                    <i class="fas fa-fire text-rose-500" title="Urgent" aria-label="Urgent"></i>
+                                                {% endif %}
+                                            </div>
                                         </td>
-                                        <td>{{ message.phone_number }}</td>
+                                        <td class="whitespace-nowrap text-slate-600">{{ message.phone_number }}</td>
                                         <td>
-                                            <span class="badge bg-{% if message.message_type == 'complaint' %}danger{% elif message.message_type == 'inquiry' %}info{% else %}secondary{% endif %}">
-                                                {{ message.get_message_type_display }}
-                                            </span>
+                                            <span class="badge {% if message.message_type == 'complaint' %}badge-red{% elif message.message_type == 'inquiry' %}badge-blue{% elif message.message_type == 'suggestion' %}badge-amber{% elif message.message_type == 'feedback' %}badge-green{% else %}badge-slate{% endif %}">{{ message.get_message_type_display }}</span>
                                         </td>
-                                        <td>{{ message.subject|truncatechars:30 }}</td>
-                                        <td>{{ message.get_gender_display }}</td>
-                                        <td>{{ message.get_age_group_display }}</td>
-                                        <td>{{ message.created_at|date:"M d, Y H:i" }}</td>
+                                        <td class="max-w-[16rem]"><p class="truncate text-slate-700" title="{{ message.subject }}">{{ message.subject|truncatechars:40 }}</p></td>
+                                        <td class="hidden whitespace-nowrap text-slate-600 2xl:table-cell">{{ message.get_gender_display }}</td>
+                                        <td class="hidden whitespace-nowrap text-slate-600 2xl:table-cell">{{ message.get_age_group_display }}</td>
+                                        <td class="whitespace-nowrap text-slate-600">{{ message.created_at|date:"j M Y, H:i" }}</td>
                                         <td>
                                             {% if message.is_read %}
-                                                <span class="badge bg-success">Read</span>
+                                                <span class="badge badge-slate">Read</span>
                                             {% else %}
-                                                <span class="badge bg-warning">Unread</span>
+                                                <span class="badge badge-amber">Unread</span>
                                             {% endif %}
                                         </td>
                                         <td>
-                                            <div class="btn-group btn-group-sm">
-                                                <a href="{% url 'message_detail' message.id %}" class="btn btn-outline-primary btn-sm">
+                                            <div class="flex items-center justify-end gap-1">
+                                                <a href="{% url 'message_detail' message.id %}" class="btn btn-ghost btn-icon btn-sm" aria-label="View message from {{ message.name }}" title="View message">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <button class="btn btn-outline-{% if message.is_urgent %}danger{% else %}warning{% endif %} btn-sm" 
-                                                        onclick="toggleUrgent({{ message.id }})">
+                                                <button type="button" class="btn btn-icon btn-sm {% if message.is_urgent %}bg-rose-100 text-rose-600 hover:bg-rose-200{% else %}btn-ghost{% endif %}" data-post-url="{% url 'mark_urgent' message.id %}" aria-label="{% if message.is_urgent %}Remove urgent flag{% else %}Mark as urgent{% endif %}" title="{% if message.is_urgent %}Remove urgent flag{% else %}Mark as urgent{% endif %}">
                                                     <i class="fas fa-fire"></i>
                                                 </button>
-                                                <button class="btn btn-outline-{% if message.is_read %}secondary{% else %}success{% endif %} btn-sm" 
-                                                        onclick="toggleRead({{ message.id }})">
-                                                    <i class="fas fa-{% if message.is_read %}eye-slash{% else %}check{% endif %}"></i>
+                                                <button type="button" class="btn btn-icon btn-sm {% if message.is_read %}btn-ghost{% else %}bg-emerald-100 text-emerald-700 hover:bg-emerald-200{% endif %}" data-post-url="{% url 'mark_read' message.id %}" aria-label="{% if message.is_read %}Mark as unread{% else %}Mark as read{% endif %}" title="{% if message.is_read %}Mark as unread{% else %}Mark as read{% endif %}">
+                                                    <i class="fas {% if message.is_read %}fa-envelope{% else %}fa-check{% endif %}"></i>
                                                 </button>
                                             </div>
                                         </td>
                                     </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        <!-- Pagination -->
-                        {% if messages.has_other_pages %}
-                        <nav aria-label="Messages pagination">
-                            <ul class="pagination justify-content-center">
-                                {% if messages.has_previous %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page=1">First</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ messages.previous_page_number }}">Previous</a>
-                                    </li>
-                                {% endif %}
-                                
-                                <li class="page-item active">
-                                    <span class="page-link">{{ messages.number }} of {{ messages.paginator.num_pages }}</span>
-                                </li>
-                                
-                                {% if messages.has_next %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ messages.next_page_number }}">Next</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ messages.paginator.num_pages }}">Last</a>
-                                    </li>
-                                {% endif %}
-                            </ul>
-                        </nav>
-                        {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {% include 'partials/pagination.html' with page_obj=contact_messages %}
+            {% else %}
+                <div class="mt-5">
+                    {% if active_filter == 'all' %}
+                        {% include 'partials/empty_state.html' with icon="fa-inbox" title="No messages found" text="No customer messages or complaints at the moment." %}
                     {% else %}
-                        <div class="text-center py-5">
-                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                            <h4>No messages found</h4>
-                            <p class="text-muted">No customer messages or complaints at the moment.</p>
-                        </div>
+                        {% include 'partials/empty_state.html' with icon="fa-inbox" title="No messages match this filter" text="Nothing here right now. Try another filter." cta_url="?filter=all#messages" cta_label="Show all messages" cta_icon="fa-list" %}
                     {% endif %}
                 </div>
-            </div>
+            {% endif %}
+        </div>
+
+        <!-- Recent orders -->
+        <div class="mt-6" data-tab-panel="orders">
+            {% if recent_orders %}
+                <div class="card overflow-hidden">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Recent orders</h2>
+                            <p class="text-xs text-slate-500">The 10 most recent orders</p>
+                        </div>
+                        <a href="{% url 'admin:supermarket_order_changelist' %}" class="btn btn-ghost btn-sm">All orders <i class="fas fa-arrow-right text-[10px]"></i></a>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Order</th>
+                                    <th scope="col">Customer</th>
+                                    <th scope="col">City</th>
+                                    <th scope="col">Total</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                    <tr>
+                                        <td class="whitespace-nowrap"><a href="{% url 'admin:supermarket_order_change' order.id %}" class="link">#{{ order.order_number }}</a></td>
+                                        <td class="whitespace-nowrap font-medium text-slate-900">{{ order.user.get_full_name|default:order.user.username }}</td>
+                                        <td class="whitespace-nowrap text-slate-600">{{ order.delivery_city }}</td>
+                                        <td class="whitespace-nowrap font-semibold text-slate-900">${{ order.total_amount }}</td>
+                                        <td>{% include 'partials/status_badge.html' with status=order.status label=order.get_status_display %}</td>
+                                        <td class="whitespace-nowrap text-slate-600">{{ order.created_at|date:"j M Y, H:i" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% else %}
+                {% include 'partials/empty_state.html' with icon="fa-receipt" title="No orders yet" text="New orders will appear here as customers check out." %}
+            {% endif %}
+        </div>
+
+        <!-- Recent deliveries -->
+        <div class="mt-6" data-tab-panel="deliveries">
+            {% if recent_deliveries %}
+                <div class="card overflow-hidden">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Recent deliveries</h2>
+                            <p class="text-xs text-slate-500">The 10 most recent delivery bookings</p>
+                        </div>
+                        <a href="{% url 'admin:supermarket_deliverybooking_changelist' %}" class="btn btn-ghost btn-sm">All bookings <i class="fas fa-arrow-right text-[10px]"></i></a>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Booking</th>
+                                    <th scope="col">Customer</th>
+                                    <th scope="col">Delivery</th>
+                                    <th scope="col">City</th>
+                                    <th scope="col">Fee</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in recent_deliveries %}
+                                    <tr>
+                                        <td class="whitespace-nowrap"><a href="{% url 'admin:supermarket_deliverybooking_change' booking.id %}" class="link">#{{ booking.id }}</a></td>
+                                        <td class="whitespace-nowrap font-medium text-slate-900">{{ booking.user.get_full_name|default:booking.user.username }}</td>
+                                        <td class="whitespace-nowrap">
+                                            <p class="font-medium text-slate-900">{{ booking.delivery_date|date:"D, j M Y" }}</p>
+                                            <p class="text-xs text-slate-500">{{ booking.get_time_slot_display }}</p>
+                                        </td>
+                                        <td class="whitespace-nowrap text-slate-600">{{ booking.delivery_city }}</td>
+                                        <td class="whitespace-nowrap font-semibold text-slate-900">${{ booking.delivery_fee }}</td>
+                                        <td>{% include 'partials/status_badge.html' with status=booking.status label=booking.get_status_display %}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% else %}
+                {% include 'partials/empty_state.html' with icon="fa-truck" title="No delivery bookings yet" text="Bookings will appear here once customers schedule a delivery." %}
+            {% endif %}
         </div>
     </div>
 </div>
-
-<script>
-function toggleUrgent(messageId) {
-    fetch(`/founder/mark-urgent/${messageId}/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-            'Content-Type': 'application/json',
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload();
-        }
-    });
-}
-
-function toggleRead(messageId) {
-    fetch(`/founder/mark-read/${message_id}/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-            'Content-Type': 'application/json',
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload();
-        }
-    });
-}
-</script>
 {% endblock %}

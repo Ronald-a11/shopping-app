@@ -1,109 +1,96 @@
 {% extends 'base.html' %}
-{% load static %}
 
-{% block title %}Order History - Zimbabwe Supermarket{% endblock %}
+{% block title %}My orders{% endblock %}
+
+{% block page_header %}
+    {% url 'product_list' as shop_url %}
+    {% include 'partials/page_header.html' with title="My orders" subtitle="Track and manage everything you've ordered." icon="fa-receipt" action_url=shop_url action_label="Shop again" action_icon="fa-bag-shopping" %}
+{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <h2 class="mb-4">My Orders</h2>
-    
+<div class="container-page py-10">
     {% if orders %}
-    <div class="row">
-        {% for order in orders %}
-        <div class="col-lg-6 mb-4">
-            <div class="card h-100">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0">Order #{{ order.order_number }}</h6>
-                    <span class="badge bg-{% if order.status == 'delivered' %}success{% elif order.status == 'cancelled' %}danger{% elif order.status == 'shipped' %}info{% else %}warning{% endif %}">
-                        {{ order.get_status_display }}
+        <div class="grid gap-8 lg:grid-cols-3 lg:items-start">
+            <section class="lg:col-span-2" data-filter-group aria-label="Your orders">
+                <div class="tabs mb-6 w-fit animate-fade-in" aria-label="Filter orders by status">
+                    <button type="button" class="tab is-active" data-filter="all">All <span class="tab-count">{{ orders|length }}</span></button>
+                    <button type="button" class="tab" data-filter="pending">Pending <span class="tab-count"></span></button>
+                    <button type="button" class="tab" data-filter="processing">Processing <span class="tab-count"></span></button>
+                    <button type="button" class="tab" data-filter="shipped">Shipped <span class="tab-count"></span></button>
+                    <button type="button" class="tab" data-filter="delivered">Delivered <span class="tab-count"></span></button>
+                    <button type="button" class="tab" data-filter="cancelled">Cancelled <span class="tab-count"></span></button>
+                </div>
+
+                <div class="grid gap-5 md:grid-cols-2" data-reveal-stagger="70">
+                    {% for order in orders %}
+                        <article class="card card-hover flex flex-col" data-filter-item="{{ order.status }}">
+                            <div class="card-header">
+                                <div class="min-w-0">
+                                    <p class="text-[11px] font-bold tracking-wider text-slate-400 uppercase">Order</p>
+                                    <h2 class="truncate font-extrabold text-slate-900">#{{ order.order_number }}</h2>
+                                </div>
+                                {% include 'partials/status_badge.html' with status=order.status label=order.get_status_display %}
+                            </div>
+                            <dl class="card-body grid grow grid-cols-2 gap-x-4 gap-y-4 text-sm">
+                                <div>
+                                    <dt class="flex items-center gap-1.5 text-xs text-slate-500"><i class="fas fa-calendar-days"></i> Placed</dt>
+                                    <dd class="mt-0.5 font-semibold text-slate-900">{{ order.created_at|date:"M j, Y" }}</dd>
+                                </div>
+                                <div>
+                                    <dt class="flex items-center gap-1.5 text-xs text-slate-500"><i class="fas fa-dollar-sign"></i> Total</dt>
+                                    <dd class="mt-0.5 font-extrabold text-emerald-700">${{ order.total_amount }}</dd>
+                                </div>
+                                <div>
+                                    <dt class="flex items-center gap-1.5 text-xs text-slate-500"><i class="fas fa-basket-shopping"></i> Items</dt>
+                                    {% with count=order.items.count %}
+                                        <dd class="mt-0.5 font-semibold text-slate-900">{{ count }} product{{ count|pluralize }}</dd>
+                                    {% endwith %}
+                                </div>
+                                <div class="min-w-0">
+                                    <dt class="flex items-center gap-1.5 text-xs text-slate-500"><i class="fas fa-location-dot"></i> Deliver to</dt>
+                                    <dd class="mt-0.5 truncate font-semibold text-slate-900">{{ order.delivery_city }}{% if order.delivery_province and order.delivery_province != order.delivery_city %}, {{ order.delivery_province }}{% endif %}</dd>
+                                </div>
+                            </dl>
+                            <div class="card-footer justify-end">
+                                <a href="{% url 'order_detail' order.id %}" class="btn btn-outline btn-sm">
+                                    View details <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+
+                <div class="card flex flex-col items-center px-6 py-12 text-center" data-filter-empty hidden>
+                    <span class="grid size-14 place-items-center rounded-full bg-slate-100 text-xl text-slate-400">
+                        <i class="fas fa-filter"></i>
                     </span>
+                    <p class="mt-4 font-bold text-slate-900">No orders with this status</p>
+                    <p class="mt-1 text-sm text-slate-500">Try another tab to see the rest of your orders.</p>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p class="mb-1"><strong>Order Date:</strong> {{ order.created_at|date:"M d, Y" }}</p>
-                            <p class="mb-1"><strong>Total:</strong> ${{ order.total_amount }}</p>
-                            <p class="mb-1"><strong>Items:</strong> {{ order.items.count }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p class="mb-1"><strong>City:</strong> {{ order.delivery_city }}</p>
-                            <p class="mb-1"><strong>Province:</strong> {{ order.delivery_province }}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-3">
-                        <a href="{% url 'order_detail' order.id %}" class="btn btn-outline-success btn-sm">
-                            <i class="fas fa-eye me-2"></i>View Details
-                        </a>
-                    </div>
-                </div>
-            </div>
+            </section>
+
+            <aside class="space-y-6 lg:sticky lg:top-24">
+                {% include 'partials/support_card.html' with title="Need help with your orders?" text="Questions about an order? Contact us directly." %}
+                <a href="{% url 'delivery_bookings' %}" class="card card-hover group flex items-center gap-4 p-5">
+                    <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-emerald-50 text-lg text-emerald-600 transition group-hover:bg-emerald-600 group-hover:text-white">
+                        <i class="fas fa-truck"></i>
+                    </span>
+                    <span class="min-w-0 flex-1">
+                        <span class="block font-bold text-slate-900">My deliveries</span>
+                        <span class="block text-xs text-slate-500">See booked delivery dates and time slots.</span>
+                    </span>
+                    <i class="fas fa-chevron-right text-xs text-slate-400 transition group-hover:translate-x-1 group-hover:text-emerald-600"></i>
+                </a>
+            </aside>
         </div>
-        {% endfor %}
-    </div>
-    
-    <!-- Pagination -->
-    {% if orders.has_other_pages %}
-    <nav aria-label="Orders pagination">
-        <ul class="pagination justify-content-center">
-            {% if orders.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page=1">First</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ orders.previous_page_number }}">Previous</a>
-                </li>
-            {% endif %}
-            
-            <li class="page-item active">
-                <span class="page-link">{{ orders.number }} of {{ orders.paginator.num_pages }}</span>
-            </li>
-            
-            {% if orders.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ orders.next_page_number }}">Next</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ orders.paginator.num_pages }}">Last</a>
-                </li>
-            {% endif %}
-        </ul>
-    </nav>
-    {% endif %}
-    
     {% else %}
-    <div class="text-center py-5">
-        <i class="fas fa-shopping-bag fa-5x text-muted mb-4"></i>
-        <h3>No orders yet</h3>
-        <p class="text-muted mb-4">You haven't placed any orders yet. Start shopping to see your orders here.</p>
-        <a href="{% url 'product_list' %}" class="btn btn-success btn-lg">
-            <i class="fas fa-shopping-bag me-2"></i>Start Shopping
-        </a>
-    </div>
-    {% endif %}
-    
-    <!-- Contact Support -->
-    <div class="row mt-4">
-        <div class="col-lg-6 mx-auto">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Need Help with Your Orders?</h5>
-                </div>
-                <div class="card-body">
-                    <p class="card-text small">
-                        Questions about your orders or need support? Contact us directly.
-                    </p>
-                    <div class="d-grid gap-2">
-                        <a href="https://wa.me/263771938039" target="_blank" class="btn btn-outline-success btn-sm">
-                            <i class="fab fa-whatsapp me-2"></i>WhatsApp (0771938039)
-                        </a>
-                        <a href="sms:+263771938039" class="btn btn-outline-info btn-sm">
-                            <i class="fas fa-sms me-2"></i>SMS (0771938039)
-                        </a>
-                    </div>
-                </div>
+        {% url 'product_list' as shop_url %}
+        <div class="mx-auto max-w-xl space-y-6">
+            {% include 'partials/empty_state.html' with icon="fa-bag-shopping" title="No orders yet" text="You haven't placed any orders yet. Start shopping and your orders will show up here." cta_url=shop_url cta_label="Start shopping" cta_icon="fa-bag-shopping" %}
+            <div class="reveal">
+                {% include 'partials/support_card.html' with title="Need help with your orders?" text="Questions about an order? Contact us directly." %}
             </div>
         </div>
-    </div>
+    {% endif %}
 </div>
 {% endblock %}

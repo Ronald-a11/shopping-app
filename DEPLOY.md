@@ -87,6 +87,28 @@ grant. Grant it in Django admin under **Users → (pick user) → Staff status**
 > could read every customer's messages, orders and home addresses. Do not
 > reintroduce a check of that shape.
 
+## Styling (Tailwind CSS)
+
+Pages are styled with Tailwind CSS v4. The source is
+[`frontend/src/app.css`](frontend/src/app.css) (theme, shared component classes
+such as `btn`, `card`, `tabs`, `toast`); the compiled, minified stylesheet is
+`static/css/app.css` and **is committed**, so the Railway build needs no Node.js
+step.
+
+Tailwind only emits the utility classes it finds in `templates/`,
+`supermarket/` and `static/js/main.js`. After changing any of those, rebuild —
+otherwise newly used classes are simply missing on the live site:
+
+```bash
+cd frontend
+npm install      # first time only
+npm run build    # or `npm run watch` while developing
+```
+
+Interactive behaviour (tabs, toasts, add-to-cart without a reload, confirm
+dialogs, loaders, scroll animations) lives in `static/js/main.js` and is wired up
+with `data-` attributes; the comment at the top of that file lists them.
+
 ## Local development
 
 ```bash
@@ -112,6 +134,7 @@ Logs: `railway logs --service web`, build logs: `railway logs --build --service 
 | --- | --- |
 | HTTP 400 on every page | The domain is not in `ALLOWED_HOSTS`. Redeploy so `RAILWAY_PUBLIC_DOMAIN` is present in the container, or set `DJANGO_ALLOWED_HOSTS` explicitly. |
 | Site loads with no CSS | `collectstatic` did not run — check the start command and the build logs. |
+| A new Tailwind class has no effect | `static/css/app.css` was not rebuilt and committed. Run `npm run build` in `frontend/`. |
 | `No directory at: /app/staticfiles/` | Same cause as above. |
 | Build fails compiling a dependency | The Python version drifted. Check `.python-version` is committed — it sits under a `# pyenv` rule in `.gitignore` that previously excluded it. |
 | Data disappeared after a deploy | The app fell back to SQLite. Confirm `DATABASE_URL` is set on the `web` service. |

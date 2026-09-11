@@ -1,121 +1,148 @@
 {% extends 'base.html' %}
-{% load static %}
 
-{% block title %}About Us - Zimbabwe Supermarket{% endblock %}
+{% block title %}About us{% endblock %}
+
+{% block page_header %}
+    {% include 'partials/page_header.html' with eyebrow="Our story" title="About us" subtitle="Your trusted local supermarket, supporting Zimbabwean communities and businesses since 2024." icon="fa-circle-info" %}
+{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="bg-success text-white py-5">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4">About Zimbabwe Supermarket</h1>
-                <p class="lead">Your trusted local supermarket, supporting Zimbabwean communities and businesses since 2024.</p>
+{% url 'product_list' as shop_url %}
+{% url 'contact' as contact_url %}
+
+<!-- Intro -->
+<section class="container-page py-12 sm:py-16">
+    <div class="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+        <div class="reveal relative">
+            <div class="img-frame aspect-[4/3] rounded-3xl shadow-xl shadow-slate-900/10">
+                <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop" alt="About us" class="size-full object-cover" data-lightbox>
+                <span class="img-fallback"><i class="fas fa-store text-4xl"></i></span>
             </div>
-            <div class="col-lg-6">
-                <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop" alt="About Us" class="img-fluid rounded shadow">
+            <div class="absolute right-4 -bottom-5 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-xl ring-1 shadow-slate-900/10 ring-slate-900/5 animate-float">
+                <span class="grid size-10 place-items-center rounded-xl bg-amber-100 text-amber-600"><i class="fas fa-store"></i></span>
+                <span class="leading-tight">
+                    <span class="block text-xs font-medium text-slate-500">Serving Zimbabwe</span>
+                    <span class="block text-sm font-extrabold text-slate-900">Since 2024</span>
+                </span>
             </div>
+        </div>
+
+        <div class="reveal">
+            <p class="eyebrow">Welcome</p>
+            <h2 class="section-title mt-2">About Zimbabwe Supermarket</h2>
+            <p class="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">
+                Zimbabwe Supermarket was founded with a simple mission: to provide quality products at affordable prices
+                while supporting local farmers and businesses across Zimbabwe.
+            </p>
+            <ul class="mt-6 grid gap-3 sm:grid-cols-2" data-reveal-stagger="80">
+                <li class="flex items-center gap-3 text-sm font-semibold text-slate-700">
+                    <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600"><i class="fas fa-leaf"></i></span>
+                    Local products
+                </li>
+                <li class="flex items-center gap-3 text-sm font-semibold text-slate-700">
+                    <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600"><i class="fas fa-star"></i></span>
+                    Quality assurance
+                </li>
+                <li class="flex items-center gap-3 text-sm font-semibold text-slate-700">
+                    <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600"><i class="fas fa-truck"></i></span>
+                    Convenient delivery
+                </li>
+                <li class="flex items-center gap-3 text-sm font-semibold text-slate-700">
+                    <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600"><i class="fas fa-headset"></i></span>
+                    Customer support
+                </li>
+            </ul>
         </div>
     </div>
 </section>
 
-<!-- Our Story -->
-<section class="py-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 mx-auto text-center">
-                <h2 class="mb-4">Our Story</h2>
-                <p class="lead">
-                    Zimbabwe Supermarket was founded with a simple mission: to provide quality products at affordable prices 
-                    while supporting local farmers and businesses across Zimbabwe. We believe in the power of community and 
-                    the importance of keeping our economy strong by supporting local producers.
-                </p>
-                <p>
-                    Since our establishment, we have been committed to bringing you the freshest produce, highest quality 
-                    goods, and exceptional service. Our team works tirelessly to ensure that every product on our shelves 
-                    meets our strict quality standards while maintaining competitive prices.
-                </p>
-            </div>
+<!-- Story / values / offer -->
+<section class="border-y border-slate-200/70 bg-white py-14 sm:py-20">
+    <div class="container-page">
+        <div class="reveal mx-auto max-w-2xl text-center">
+            <p class="eyebrow">Get to know us</p>
+            <h2 class="section-title mt-2">Who we are</h2>
         </div>
-    </div>
-</section>
 
-<!-- Our Values -->
-<section class="py-5 bg-light">
-    <div class="container">
-        <h2 class="text-center mb-5">Our Values</h2>
-        <div class="row">
-            <div class="col-lg-4 mb-4">
-                <div class="text-center">
-                    <i class="fas fa-heart fa-3x text-success mb-3"></i>
-                    <h4>Community First</h4>
-                    <p>We prioritize supporting local communities and businesses, ensuring that our success benefits everyone in Zimbabwe.</p>
+        <div class="mt-8" data-tabs>
+            <div class="flex justify-center">
+                <div class="tabs w-fit">
+                    <button type="button" class="tab" data-tab="story"><i class="fas fa-book-open"></i> Our story</button>
+                    <button type="button" class="tab" data-tab="values"><i class="fas fa-heart"></i> Our values</button>
+                    <button type="button" class="tab" data-tab="offer"><i class="fas fa-basket-shopping"></i> What we offer</button>
                 </div>
             </div>
-            <div class="col-lg-4 mb-4">
-                <div class="text-center">
-                    <i class="fas fa-star fa-3x text-success mb-3"></i>
-                    <h4>Quality Assurance</h4>
-                    <p>Every product we sell undergoes rigorous quality checks to ensure you receive only the best.</p>
-                </div>
-            </div>
-            <div class="col-lg-4 mb-4">
-                <div class="text-center">
-                    <i class="fas fa-handshake fa-3x text-success mb-3"></i>
-                    <h4>Trust & Transparency</h4>
-                    <p>We believe in honest business practices and transparent pricing to build lasting relationships with our customers.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- What We Offer -->
-<section class="py-5">
-    <div class="container">
-        <h2 class="text-center mb-5">What We Offer</h2>
-        <div class="row">
-            <div class="col-lg-6 mb-4">
-                <div class="d-flex">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-shopping-basket fa-2x text-success"></i>
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-                        <h5>Wide Product Range</h5>
-                        <p>From fresh produce to household essentials, we stock everything you need for your daily life.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6 mb-4">
-                <div class="d-flex">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-truck fa-2x text-success"></i>
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-                        <h5>Convenient Delivery</h5>
-                        <p>Free delivery on orders over $50 within major cities, with same-day delivery options available.</p>
+            <div class="mt-8" data-tab-panel="story">
+                <div class="mx-auto max-w-3xl">
+                    <div class="card relative overflow-hidden p-6 sm:p-10">
+                        <span aria-hidden="true" class="absolute -top-4 right-6 text-8xl leading-none text-emerald-50"><i class="fas fa-quote-right"></i></span>
+                        <div class="relative">
+                            <h3 class="text-xl font-extrabold text-slate-900">Our story</h3>
+                            <p class="mt-4 text-base leading-relaxed text-slate-700 sm:text-lg">
+                                Zimbabwe Supermarket was founded with a simple mission: to provide quality products at affordable prices
+                                while supporting local farmers and businesses across Zimbabwe. We believe in the power of community and
+                                the importance of keeping our economy strong by supporting local producers.
+                            </p>
+                            <p class="mt-4 leading-relaxed text-slate-600">
+                                Since our establishment, we have been committed to bringing you the freshest produce, highest quality
+                                goods, and exceptional service. Our team works tirelessly to ensure that every product on our shelves
+                                meets our strict quality standards while maintaining competitive prices.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6 mb-4">
-                <div class="d-flex">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-leaf fa-2x text-success"></i>
+
+            <div class="mt-8" data-tab-panel="values">
+                <div class="grid gap-6 md:grid-cols-3">
+                    <div class="card card-hover p-6 text-center sm:p-8">
+                        <span class="mx-auto grid size-14 place-items-center rounded-2xl bg-rose-50 text-2xl text-rose-500"><i class="fas fa-heart"></i></span>
+                        <h3 class="mt-5 text-lg font-bold text-slate-900">Community First</h3>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-600">We prioritize supporting local communities and businesses, ensuring that our success benefits everyone in Zimbabwe.</p>
                     </div>
-                    <div class="flex-grow-1 ms-3">
-                        <h5>Local Products</h5>
-                        <p>We proudly support local farmers and businesses, featuring a wide selection of Zimbabwean-made products.</p>
+                    <div class="card card-hover p-6 text-center sm:p-8">
+                        <span class="mx-auto grid size-14 place-items-center rounded-2xl bg-amber-50 text-2xl text-amber-500"><i class="fas fa-star"></i></span>
+                        <h3 class="mt-5 text-lg font-bold text-slate-900">Quality Assurance</h3>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-600">Every product we sell undergoes rigorous quality checks to ensure you receive only the best.</p>
+                    </div>
+                    <div class="card card-hover p-6 text-center sm:p-8">
+                        <span class="mx-auto grid size-14 place-items-center rounded-2xl bg-emerald-50 text-2xl text-emerald-600"><i class="fas fa-handshake"></i></span>
+                        <h3 class="mt-5 text-lg font-bold text-slate-900">Trust &amp; Transparency</h3>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-600">We believe in honest business practices and transparent pricing to build lasting relationships with our customers.</p>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6 mb-4">
-                <div class="d-flex">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-headset fa-2x text-success"></i>
+
+            <div class="mt-8" data-tab-panel="offer">
+                <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
+                    <div class="card card-hover flex gap-4 p-5 sm:p-6">
+                        <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-xl text-emerald-600"><i class="fas fa-basket-shopping"></i></span>
+                        <div>
+                            <h3 class="font-bold text-slate-900">Wide Product Range</h3>
+                            <p class="mt-1 text-sm leading-relaxed text-slate-600">From fresh produce to household essentials, we stock everything you need for your daily life.</p>
+                        </div>
                     </div>
-                    <div class="flex-grow-1 ms-3">
-                        <h5>Customer Support</h5>
-                        <p>Our dedicated support team is always ready to help with any questions or concerns you may have.</p>
+                    <div class="card card-hover flex gap-4 p-5 sm:p-6">
+                        <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-sky-50 text-xl text-sky-600"><i class="fas fa-truck-fast"></i></span>
+                        <div>
+                            <h3 class="font-bold text-slate-900">Convenient Delivery</h3>
+                            <p class="mt-1 text-sm leading-relaxed text-slate-600">Delivery from $5 in Harare and Bulawayo, usually within 1–2 hours.</p>
+                        </div>
+                    </div>
+                    <div class="card card-hover flex gap-4 p-5 sm:p-6">
+                        <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-amber-50 text-xl text-amber-600"><i class="fas fa-leaf"></i></span>
+                        <div>
+                            <h3 class="font-bold text-slate-900">Local Products</h3>
+                            <p class="mt-1 text-sm leading-relaxed text-slate-600">We proudly support local farmers and businesses, featuring a wide selection of Zimbabwean-made products.</p>
+                        </div>
+                    </div>
+                    <div class="card card-hover flex gap-4 p-5 sm:p-6">
+                        <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-indigo-50 text-xl text-indigo-600"><i class="fas fa-headset"></i></span>
+                        <div>
+                            <h3 class="font-bold text-slate-900">Customer Support</h3>
+                            <p class="mt-1 text-sm leading-relaxed text-slate-600">Our dedicated support team is always ready to help with any questions or concerns you may have.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -124,85 +151,81 @@
 </section>
 
 <!-- Statistics -->
-<section class="py-5 bg-success text-white">
-    <div class="container">
-        <div class="row text-center">
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="h2 fw-bold">500+</div>
-                <div>Products</div>
+<section class="relative isolate overflow-hidden bg-linear-to-br from-emerald-600 via-emerald-700 to-emerald-900 py-14 text-white sm:py-16">
+    <div aria-hidden="true" class="page-header-pattern"></div>
+    <div aria-hidden="true" class="page-header-blob -top-24 right-10 size-72 bg-emerald-400"></div>
+    <div aria-hidden="true" class="page-header-blob -bottom-32 left-1/4 size-72 bg-teal-300 [animation-delay:-5s]"></div>
+    <div class="container-page">
+        <div class="grid grid-cols-2 gap-8 text-center lg:grid-cols-4" data-reveal-stagger="100">
+            <div>
+                <span class="mx-auto grid size-12 place-items-center rounded-2xl bg-white/10 text-lg ring-1 ring-white/20"><i class="fas fa-box-open"></i></span>
+                <p class="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl"><span data-count-to="500" data-count-suffix="+">500+</span></p>
+                <p class="mt-1 text-sm font-medium text-emerald-100">Products</p>
             </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="h2 fw-bold">1000+</div>
-                <div>Happy Customers</div>
+            <div>
+                <span class="mx-auto grid size-12 place-items-center rounded-2xl bg-white/10 text-lg ring-1 ring-white/20"><i class="fas fa-face-smile"></i></span>
+                <p class="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl"><span data-count-to="1000" data-count-suffix="+">1,000+</span></p>
+                <p class="mt-1 text-sm font-medium text-emerald-100">Happy Customers</p>
             </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="h2 fw-bold">50+</div>
-                <div>Local Suppliers</div>
+            <div>
+                <span class="mx-auto grid size-12 place-items-center rounded-2xl bg-white/10 text-lg ring-1 ring-white/20"><i class="fas fa-tractor"></i></span>
+                <p class="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl"><span data-count-to="50" data-count-suffix="+">50+</span></p>
+                <p class="mt-1 text-sm font-medium text-emerald-100">Local Suppliers</p>
             </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="h2 fw-bold">24/7</div>
-                <div>Online Shopping</div>
+            <div>
+                <span class="mx-auto grid size-12 place-items-center rounded-2xl bg-white/10 text-lg ring-1 ring-white/20"><i class="fas fa-clock"></i></span>
+                <p class="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">24/7</p>
+                <p class="mt-1 text-sm font-medium text-emerald-100">Online Shopping</p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Team -->
-<section class="py-5">
-    <div class="container">
-        <h2 class="text-center mb-5">Meet Our Team</h2>
-        <div class="row">
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <i class="fas fa-user-circle fa-4x text-success"></i>
-                        </div>
-                        <h5>Ronald Tinashe Jimu</h5>
-                        <p class="text-muted">Founder & CEO</p>
-                        <p>Visionary leader passionate about supporting local communities and bringing quality products to Zimbabwean families.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <i class="fas fa-user-circle fa-4x text-success"></i>
-                        </div>
-                        <h5>Cherrysh Mugwisi</h5>
-                        <p class="text-muted">Operations Manager</p>
-                        <p>Ensuring smooth operations and maintaining the highest standards of product quality and customer service.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <i class="fas fa-user-circle fa-4x text-success"></i>
-                        </div>
-                        <h5>Cosmas Chenjerai</h5>
-                        <p class="text-muted">Customer Relations</p>
-                        <p>Dedicated to providing exceptional customer support and building lasting relationships with our community.</p>
-                    </div>
-                </div>
-            </div>
+<section class="container-page py-14 sm:py-20">
+    <div class="reveal mx-auto max-w-2xl text-center">
+        <p class="eyebrow">The people behind the store</p>
+        <h2 class="section-title mt-2">Meet Our Team</h2>
+    </div>
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal-stagger="100">
+        <div class="card card-hover p-6 text-center sm:p-8">
+            <span class="relative mx-auto grid size-20 place-items-center rounded-full bg-linear-to-br from-emerald-400 to-emerald-700 text-2xl font-extrabold text-white shadow-lg ring-4 shadow-emerald-600/25 ring-emerald-50">RJ</span>
+            <h3 class="mt-5 text-lg font-bold text-slate-900">Ronald Tinashe Jimu</h3>
+            <p class="mt-1"><span class="badge badge-green">Founder &amp; CEO</span></p>
+            <p class="mt-4 text-sm leading-relaxed text-slate-600">Visionary leader passionate about supporting local communities and bringing quality products to Zimbabwean families.</p>
+        </div>
+        <div class="card card-hover p-6 text-center sm:p-8">
+            <span class="relative mx-auto grid size-20 place-items-center rounded-full bg-linear-to-br from-amber-300 to-amber-600 text-2xl font-extrabold text-white shadow-lg ring-4 shadow-amber-500/25 ring-amber-50">CM</span>
+            <h3 class="mt-5 text-lg font-bold text-slate-900">Cherrysh Mugwisi</h3>
+            <p class="mt-1"><span class="badge badge-amber">Operations Manager</span></p>
+            <p class="mt-4 text-sm leading-relaxed text-slate-600">Ensuring smooth operations and maintaining the highest standards of product quality and customer service.</p>
+        </div>
+        <div class="card card-hover p-6 text-center sm:p-8">
+            <span class="relative mx-auto grid size-20 place-items-center rounded-full bg-linear-to-br from-sky-400 to-indigo-600 text-2xl font-extrabold text-white shadow-lg ring-4 shadow-indigo-500/25 ring-sky-50">CC</span>
+            <h3 class="mt-5 text-lg font-bold text-slate-900">Cosmas Chenjerai</h3>
+            <p class="mt-1"><span class="badge badge-blue">Customer Relations</span></p>
+            <p class="mt-4 text-sm leading-relaxed text-slate-600">Dedicated to providing exceptional customer support and building lasting relationships with our community.</p>
         </div>
     </div>
 </section>
 
-<!-- Call to Action -->
-<section class="py-5 bg-light">
-    <div class="container text-center">
-        <h2 class="mb-4">Ready to Start Shopping?</h2>
-        <p class="lead mb-4">Join thousands of satisfied customers who trust Zimbabwe Supermarket for their daily needs.</p>
-        <a href="{% url 'product_list' %}" class="btn btn-success btn-lg me-3">
-            <i class="fas fa-shopping-bag me-2"></i>Shop Now
-        </a>
-        <a href="{% url 'contact' %}" class="btn btn-outline-success btn-lg">
-            <i class="fas fa-envelope me-2"></i>Contact Us
-        </a>
+<!-- Call to action -->
+<section class="container-page">
+    <div class="reveal card relative overflow-hidden px-6 py-12 text-center sm:px-12 sm:py-14">
+        <div aria-hidden="true" class="pointer-events-none absolute -top-24 -left-24 size-64 rounded-full bg-emerald-100/70 blur-3xl"></div>
+        <div aria-hidden="true" class="pointer-events-none absolute -right-24 -bottom-24 size-64 rounded-full bg-amber-100/70 blur-3xl"></div>
+        <div class="relative">
+            <h2 class="section-title">Ready to Start Shopping?</h2>
+            <p class="mx-auto mt-3 max-w-xl text-slate-600 sm:text-lg">Join thousands of satisfied customers who trust Zimbabwe Supermarket for their daily needs.</p>
+            <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+                <a href="{{ shop_url }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-bag-shopping"></i> Shop now
+                </a>
+                <a href="{{ contact_url }}" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-envelope"></i> Contact us
+                </a>
+            </div>
+        </div>
     </div>
 </section>
 {% endblock %}

@@ -1,161 +1,101 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load shop_tags %}
 
-{% block title %}Message Detail - JKC Supermarket Shopping Assistant{% endblock %}
+{% block title %}Message from {{ message.name }}{% endblock %}
+
+{% block page_header %}
+    {% url 'founder_dashboard' as dashboard_url %}
+    {% include 'partials/page_header.html' with eyebrow="Customer message" title=message.subject crumb="Message" icon="fa-envelope-open-text" parent_label="Founder dashboard" parent_url=dashboard_url %}
+{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row">
-        <div class="col-12">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'founder_dashboard' %}">Founder Dashboard</a></li>
-                    <li class="breadcrumb-item active">Message Detail</li>
-                </ol>
-            </nav>
-        </div>
-    </div>
-    
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Message Details</h5>
-                    <div>
-                        {% if message.is_urgent %}
-                            <span class="badge bg-danger me-2">Urgent</span>
-                        {% endif %}
-                        {% if message.is_read %}
-                            <span class="badge bg-success">Read</span>
-                        {% else %}
-                            <span class="badge bg-warning">Unread</span>
-                        {% endif %}
+<div class="container-page py-10">
+    <div class="grid gap-6 lg:grid-cols-3 lg:items-start">
+
+        <article class="card overflow-hidden animate-fade-up lg:col-span-2">
+            <header class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 px-5 py-5 sm:px-6">
+                <div class="flex min-w-0 items-center gap-4">
+                    {% with words=message.name.split %}
+                        <span class="grid size-12 shrink-0 place-items-center rounded-full bg-linear-to-br from-emerald-100 to-emerald-200 text-base font-extrabold text-emerald-800 animate-pop" aria-hidden="true">
+                            {{ words.0|first|upper }}{% if words|length > 1 %}{{ words|last|first|upper }}{% endif %}
+                        </span>
+                    {% endwith %}
+                    <div class="min-w-0">
+                        <p class="truncate text-base font-bold text-slate-900">{{ message.name }}</p>
+                        <p class="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                            <a href="tel:{{ message.phone_number }}" class="inline-flex items-center gap-1.5 transition hover:text-emerald-700"><i class="fas fa-phone text-[10px]"></i> {{ message.phone_number }}</a>
+                            <span class="inline-flex items-center gap-1.5"><i class="fas fa-clock text-[10px]"></i> {{ message.created_at|date:"j F Y \a\t H:i" }}</span>
+                        </p>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Name:</strong> {{ message.name }}
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Phone:</strong> {{ message.phone_number }}
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <strong>Gender:</strong> {{ message.get_gender_display }}
-                        </div>
-                        <div class="col-md-4">
-                            <strong>Age Group:</strong> {{ message.get_age_group_display }}
-                        </div>
-                        <div class="col-md-4">
-                            <strong>Message Type:</strong> 
-                            <span class="badge bg-{% if message.message_type == 'complaint' %}danger{% elif message.message_type == 'inquiry' %}info{% else %}secondary{% endif %}">
-                                {{ message.get_message_type_display }}
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <strong>Subject:</strong> {{ message.subject }}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <strong>Message:</strong>
-                        <div class="border p-3 mt-2 bg-light">
-                            {{ message.message|linebreaks }}
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <strong>Received:</strong> {{ message.created_at|date:"F d, Y \a\t H:i" }}
-                    </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="badge {% if message.message_type == 'complaint' %}badge-red{% elif message.message_type == 'inquiry' %}badge-blue{% elif message.message_type == 'suggestion' %}badge-amber{% elif message.message_type == 'feedback' %}badge-green{% else %}badge-slate{% endif %}">{{ message.get_message_type_display }}</span>
+                    {% if message.is_urgent %}
+                        <span class="badge badge-red"><i class="fas fa-fire text-[10px]"></i> Urgent</span>
+                    {% endif %}
+                    {% if message.is_read %}
+                        <span class="badge badge-slate">Read</span>
+                    {% else %}
+                        <span class="badge badge-amber">Unread</span>
+                    {% endif %}
                 </div>
+            </header>
+
+            <div class="card-body space-y-6">
+                <div>
+                    <p class="text-xs font-bold tracking-wider text-slate-400 uppercase">Subject</p>
+                    <h2 class="mt-1 text-lg font-bold text-slate-900">{{ message.subject }}</h2>
+                </div>
+
+                <blockquote class="relative rounded-2xl border-l-4 border-emerald-500 bg-slate-50 px-5 py-4 pl-12 text-sm leading-relaxed text-slate-700 sm:text-base">
+                    <i class="fas fa-quote-left absolute top-4 left-4 text-lg text-emerald-300" aria-hidden="true"></i>
+                    <div class="space-y-3 break-words">{{ message.message|linebreaks }}</div>
+                </blockquote>
+
+                <dl class="grid gap-3 sm:grid-cols-3">
+                    <div class="rounded-xl bg-white p-4 ring-1 ring-slate-200 ring-inset">
+                        <dt class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-user text-slate-400"></i> Gender</dt>
+                        <dd class="mt-1 font-semibold text-slate-900">{{ message.get_gender_display }}</dd>
+                    </div>
+                    <div class="rounded-xl bg-white p-4 ring-1 ring-slate-200 ring-inset">
+                        <dt class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-cake-candles text-slate-400"></i> Age group</dt>
+                        <dd class="mt-1 font-semibold text-slate-900">{{ message.get_age_group_display }}</dd>
+                    </div>
+                    <div class="rounded-xl bg-white p-4 ring-1 ring-slate-200 ring-inset">
+                        <dt class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-tag text-slate-400"></i> Message type</dt>
+                        <dd class="mt-1 font-semibold text-slate-900">{{ message.get_message_type_display }}</dd>
+                    </div>
+                </dl>
             </div>
-        </div>
-        
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-header">
-                    <h6 class="mb-0">Actions</h6>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-{% if message.is_urgent %}danger{% else %}warning{% endif %}" 
-                                onclick="toggleUrgent({{ message.id }})">
-                            <i class="fas fa-fire me-2"></i>
-                            {% if message.is_urgent %}Remove Urgent{% else %}Mark as Urgent{% endif %}
-                        </button>
-                        
-                        <button class="btn btn-{% if message.is_read %}secondary{% else %}success{% endif %}" 
-                                onclick="toggleRead({{ message.id }})">
-                            <i class="fas fa-{% if message.is_read %}eye-slash{% else %}check{% endif %} me-2"></i>
-                            {% if message.is_read %}Mark as Unread{% else %}Mark as Read{% endif %}
-                        </button>
-                        
-                        <a href="tel:{{ message.phone_number }}" class="btn btn-primary">
-                            <i class="fas fa-phone me-2"></i>Call Customer
-                        </a>
-                        
-                        <a href="https://wa.me/{{ message.phone_number|slice:'1:' }}" class="btn btn-success" target="_blank">
-                            <i class="fab fa-whatsapp me-2"></i>WhatsApp
-                        </a>
-                        
-                        <a href="{% url 'founder_dashboard' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                        </a>
-                    </div>
-                </div>
+        </article>
+
+        <aside class="card animate-fade-up [animation-delay:120ms] lg:sticky lg:top-24">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fas fa-bolt text-emerald-600"></i> Actions</h2>
             </div>
-            
-            <div class="card mt-3">
-                <div class="card-header">
-                    <h6 class="mb-0">Customer Info</h6>
-                </div>
-                <div class="card-body">
-                    <p><strong>Name:</strong> {{ message.name }}</p>
-                    <p><strong>Phone:</strong> {{ message.phone_number }}</p>
-                    <p><strong>Gender:</strong> {{ message.get_gender_display }}</p>
-                    <p><strong>Age Group:</strong> {{ message.get_age_group_display }}</p>
-                    <p><strong>Message Type:</strong> {{ message.get_message_type_display }}</p>
-                </div>
+            <div class="card-body grid gap-2">
+                <button type="button" class="btn w-full {% if message.is_urgent %}btn-secondary{% else %}btn-danger-outline{% endif %}" data-post-url="{% url 'mark_urgent' message.id %}" data-loading-text="Updating…">
+                    <i class="fas fa-fire"></i>
+                    {% if message.is_urgent %}Remove urgent flag{% else %}Mark as urgent{% endif %}
+                </button>
+                <button type="button" class="btn btn-secondary w-full" data-post-url="{% url 'mark_read' message.id %}"{% if message.is_read %} data-post-redirect="{% url 'founder_dashboard' %}"{% endif %} data-loading-text="Updating…">
+                    <i class="fas {% if message.is_read %}fa-envelope{% else %}fa-check{% endif %}"></i>
+                    {% if message.is_read %}Mark as unread{% else %}Mark as read{% endif %}
+                </button>
+
+                <div class="my-2 border-t border-slate-100"></div>
+
+                <a href="tel:{{ message.phone_number }}" class="btn btn-primary w-full">
+                    <i class="fas fa-phone"></i> Call customer
+                </a>
+                <a href="https://wa.me/{{ message.phone_number|whatsapp_number }}" target="_blank" rel="noopener" class="btn btn-whatsapp w-full">
+                    <i class="fab fa-whatsapp text-base"></i> WhatsApp
+                </a>
+                <a href="{% url 'founder_dashboard' %}" class="btn btn-ghost w-full">
+                    <i class="fas fa-arrow-left"></i> Back to dashboard
+                </a>
             </div>
-        </div>
+        </aside>
     </div>
 </div>
-
-<script>
-function toggleUrgent(messageId) {
-    fetch(`/founder/mark-urgent/${messageId}/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-            'Content-Type': 'application/json',
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload();
-        }
-    });
-}
-
-function toggleRead(messageId) {
-    fetch(`/founder/mark-read/${messageId}/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-            'Content-Type': 'application/json',
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload();
-        }
-    });
-}
-</script>
 {% endblock %}

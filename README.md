@@ -34,8 +34,8 @@ A comprehensive e-commerce platform designed specifically for Zimbabwe, featurin
 
 - **Backend**: Django 4.2.7 (Python)
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **UI Framework**: Bootstrap 5.3.0
-- **Icons**: Font Awesome 6.0.0
+- **UI Framework**: Tailwind CSS 4 (compiled with the Tailwind CLI, see `DEPLOY.md`)
+- **Icons**: Font Awesome 6.5
 - **Database**: SQLite (development) / PostgreSQL (production)
 - **Image Handling**: Pillow for image processing
 
@@ -178,9 +178,9 @@ zimbabwe-supermarket/
    - Product images
 
 ### Styling Customization
-- Modify `static/css/style.css` for custom styling
-- Update color scheme in CSS variables
-- Add custom animations and effects
+- Edit `frontend/src/app.css` (theme, component classes, animations) or use Tailwind utility classes in templates
+- Rebuild the stylesheet with `npm run build` in `frontend/`
+- Page behaviours (tabs, toasts, loaders) are configured with `data-` attributes documented at the top of `static/js/main.js`
 
 ## Deployment
 
