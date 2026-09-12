@@ -1,7 +1,13 @@
 # Deployment
 
 The app is deployed on **Railway** at
-https://web-production-7cb68.up.railway.app
+<https://web-production-a251c.up.railway.app>
+
+> The original Railway project was deleted at some point, so the previous
+> address (`web-production-7cb68`) now returns "Application not found" and its
+> database is gone. The project was recreated from scratch on 2026-09-12 under
+> the same name, `shopping-app`, with a fresh Postgres database seeded by
+> `populate_data`; accounts and orders from the old deployment did not survive.
 
 GitHub Pages cannot host this project. Pages serves static files only, and this
 is a Django app with a database, authentication and a cart. The empty
@@ -31,6 +37,11 @@ SQLite for local development.
 | `DJANGO_SECURE_SSL_REDIRECT` | `1` | Redirects HTTP to HTTPS. Set to `0` if you ever hit a redirect loop. |
 | `PYTHON_VERSION` | `3.11` | Belt-and-braces alongside `.python-version`. |
 | `RAILWAY_PUBLIC_DOMAIN` | *(injected by Railway)* | `settings.py` appends it to `ALLOWED_HOSTS`, so a new domain works without editing anything. |
+
+The service domain targets **port 8080**, and the Procfile's gunicorn binds
+`$PORT`, which Railway sets to that value. Attach the domain *before* the first
+deploy: `RAILWAY_PUBLIC_DOMAIN` only exists once a domain does, and without it
+`ALLOWED_HOSTS` excludes the site, which answers every request with HTTP 400.
 
 `DJANGO_DEBUG` is deliberately unset: `settings.py` treats anything other than
 `1` as debug-off, which is what production wants.
