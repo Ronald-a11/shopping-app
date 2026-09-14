@@ -51,6 +51,7 @@
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <nav class="tabs-line" aria-label="Filter messages">
                     <a class="tab {% if active_filter == 'all' %}is-active{% endif %}" href="?filter=all#messages" {% if active_filter == 'all' %}aria-current="page"{% endif %}>All <span class="tab-count">{{ total_messages }}</span></a>
+                    <a class="tab {% if active_filter == 'open' %}is-active{% endif %}" href="?filter=open#messages" {% if active_filter == 'open' %}aria-current="page"{% endif %}>Awaiting reply <span class="tab-count">{{ open_count }}</span></a>
                     <a class="tab {% if active_filter == 'unread' %}is-active{% endif %}" href="?filter=unread#messages" {% if active_filter == 'unread' %}aria-current="page"{% endif %}>Unread <span class="tab-count">{{ unread_messages }}</span></a>
                     <a class="tab {% if active_filter == 'complaints' %}is-active{% endif %}" href="?filter=complaints#messages" {% if active_filter == 'complaints' %}aria-current="page"{% endif %}>Complaints <span class="tab-count">{{ total_complaints }}</span></a>
                     <a class="tab {% if active_filter == 'urgent' %}is-active{% endif %}" href="?filter=urgent#messages" {% if active_filter == 'urgent' %}aria-current="page"{% endif %}>Urgent <span class="tab-count">{{ urgent_count }}</span></a>
@@ -100,16 +101,17 @@
                                         <td class="hidden whitespace-nowrap text-slate-600 2xl:table-cell">{{ message.get_age_group_display }}</td>
                                         <td class="whitespace-nowrap text-slate-600">{{ message.created_at|date:"j M Y, H:i" }}</td>
                                         <td>
-                                            {% if message.is_read %}
-                                                <span class="badge badge-slate">Read</span>
-                                            {% else %}
-                                                <span class="badge badge-amber">Unread</span>
-                                            {% endif %}
+                                            <div class="flex flex-col items-start gap-1">
+                                                <span class="badge {% if message.status == 'resolved' %}badge-green{% elif message.status == 'replied' %}badge-blue{% else %}badge-amber{% endif %}">{{ message.get_status_display }}</span>
+                                                {% if message.reply_count %}
+                                                    <span class="inline-flex items-center gap-1 text-[11px] whitespace-nowrap text-slate-400"><i class="fas fa-comments"></i> {{ message.reply_count }} repl{{ message.reply_count|pluralize:"y,ies" }}</span>
+                                                {% endif %}
+                                            </div>
                                         </td>
                                         <td>
                                             <div class="flex items-center justify-end gap-1">
-                                                <a href="{% url 'message_detail' message.id %}" class="btn btn-ghost btn-icon btn-sm" aria-label="View message from {{ message.name }}" title="View message">
-                                                    <i class="fas fa-eye"></i>
+                                                <a href="{% url 'message_detail' message.id %}#reply-form" class="btn btn-icon btn-sm {% if message.status == 'open' %}bg-emerald-600 text-white hover:bg-emerald-700{% else %}btn-ghost{% endif %}" aria-label="Open and reply to {{ message.name }}" title="Open and reply">
+                                                    <i class="fas fa-reply"></i>
                                                 </a>
                                                 <button type="button" class="btn btn-icon btn-sm {% if message.is_urgent %}bg-rose-100 text-rose-600 hover:bg-rose-200{% else %}btn-ghost{% endif %}" data-post-url="{% url 'mark_urgent' message.id %}" aria-label="{% if message.is_urgent %}Remove urgent flag{% else %}Mark as urgent{% endif %}" title="{% if message.is_urgent %}Remove urgent flag{% else %}Mark as urgent{% endif %}">
                                                     <i class="fas fa-fire"></i>

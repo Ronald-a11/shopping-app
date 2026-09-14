@@ -8,14 +8,16 @@ from django.db.models import Q, Sum, F
 from django.core.paginator import Paginator
 from django.utils.crypto import get_random_string
 from django.utils import timezone
+from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 from datetime import timedelta
 import logging
 import urllib.parse
-from .models import Product, Category, Cart, CartItem, Order, OrderItem, ContactMessage, UserProfile, DeliveryBooking
+from .models import (Product, Category, Cart, CartItem, Order, OrderItem, ContactMessage, MessageReply,
+                     UserProfile, DeliveryBooking)
 from .forms import (ContactForm, OrderForm, CustomUserCreationForm, UserProfileForm,
-                    DeliveryBookingForm, DeliveryCancellationForm)
+                    DeliveryBookingForm, DeliveryCancellationForm, MessageReplyForm)
 
 logger = logging.getLogger(__name__)
 
@@ -514,16 +516,35 @@ def order_history(request):
     return render(request, 'supermarket/order_history.html', context)
 
 
+def _contact_initial(user):
+    """Pre-fill the contact form with what we already know about a logged-in customer."""
+    if not user.is_authenticated:
+        return {}
+    profile = UserProfile.objects.filter(user=user).first()
+    return {
+        'name': user.get_full_name() or user.username,
+        'phone_number': profile.phone_number if profile else '',
+    }
+
+
 def contact(request):
     """Contact page"""
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
-            form.save()
+            contact_message = form.save(commit=False)
+            if request.user.is_authenticated:
+                # Linking the account lets the customer read our reply under My messages.
+                contact_message.user = request.user
+            contact_message.save()
+
+            if request.user.is_authenticated:
+                messages.success(request, "Your message has been sent. Our reply will appear here under My messages.")
+                return redirect('my_messages')
             messages.success(request, 'Your message has been sent successfully! You can also send us a direct SMS at +263 771938039')
             return redirect('contact')
     else:
-        form = ContactForm()
+        form = ContactForm(initial=_contact_initial(request.user))
 
     context = {
         'form': form,
@@ -532,6 +553,56 @@ def contact(request):
         ),
     }
     return render(request, 'supermarket/contact.html', context)
+
+
+@login_required
+def my_messages(request):
+    """The customer's contact messages, each with our replies and theirs."""
+    conversations = (
+        ContactMessage.objects.filter(user=request.user)
+        .prefetch_related('replies__author')
+        .order_by('-created_at')
+    )
+
+    # Opening this page counts as reading every staff reply on it. Remember
+    # which ones were new first, so the template can still highlight them.
+    unread = MessageReply.objects.filter(
+        message__user=request.user, from_staff=True, read_by_customer=False
+    )
+    new_reply_ids = set(unread.values_list('id', flat=True))
+    unread.update(read_by_customer=True)
+
+    context = {
+        'conversations': conversations,
+        'new_reply_ids': new_reply_ids,
+        'reply_form': MessageReplyForm(),
+    }
+    return render(request, 'supermarket/my_messages.html', context)
+
+
+@login_required
+@require_POST
+def customer_reply(request, message_id):
+    """Let a customer answer back in the conversation about their own message."""
+    contact_message = get_object_or_404(ContactMessage, id=message_id, user=request.user)
+    form = MessageReplyForm(request.POST)
+
+    if form.is_valid():
+        reply = form.save(commit=False)
+        reply.message = contact_message
+        reply.author = request.user
+        reply.from_staff = False
+        reply.save()
+
+        # Put the conversation back in front of the staff.
+        contact_message.status = 'open'
+        contact_message.is_read = False
+        contact_message.save(update_fields=['status', 'is_read'])
+        messages.success(request, 'Your reply has been sent.')
+    else:
+        messages.error(request, form.errors['body'][0])
+
+    return redirect(f"{reverse('my_messages')}#message-{contact_message.id}")
 
 
 @login_required

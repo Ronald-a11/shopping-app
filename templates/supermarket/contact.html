@@ -33,6 +33,18 @@
                         <form method="post" class="space-y-8">
                             {% csrf_token %}
 
+                            {% if user.is_authenticated %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-comments mt-0.5"></i>
+                                    <p>You're logged in, so our reply will show up under <a href="{% url 'my_messages' %}" class="link">My messages</a>, where you can also answer back.</p>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-circle-info mt-0.5"></i>
+                                    <p><a href="{% url 'login' %}?next={% url 'contact' %}" class="link">Log in</a> before sending if you'd like to read our reply here on the website. Otherwise we'll get back to you on the phone number you give us.</p>
+                                </div>
+                            {% endif %}
+
                             {% if form.non_field_errors %}
                                 <div class="alert alert-danger" role="alert">
                                     <i class="fas fa-circle-exclamation mt-0.5"></i>

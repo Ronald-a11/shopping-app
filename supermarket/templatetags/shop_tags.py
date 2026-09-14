@@ -1,3 +1,5 @@
+from urllib.parse import quote
+
 from django import template
 
 register = template.Library()
@@ -26,6 +28,21 @@ def whatsapp_number(phone):
     if digits.startswith('0'):
         digits = '263' + digits[1:]
     return digits
+
+
+@register.simple_tag
+def whatsapp_url(phone, text=''):
+    """wa.me link to the number, optionally with the message pre-filled."""
+    url = f"https://wa.me/{whatsapp_number(phone)}"
+    return f"{url}?text={quote(text, safe='')}" if text else url
+
+
+@register.simple_tag
+def sms_url(phone, text=''):
+    """sms: link to the number, optionally with the message pre-filled."""
+    number = whatsapp_number(phone)
+    url = f"sms:+{number}" if number else 'sms:'
+    return f"{url}?body={quote(text, safe='')}" if text else url
 
 
 @register.simple_tag

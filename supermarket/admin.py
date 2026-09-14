@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Category, Product, Cart, CartItem, Order, OrderItem, ContactMessage, UserProfile, DeliveryBooking
+from .models import (Category, Product, Cart, CartItem, Order, OrderItem, ContactMessage, MessageReply,
+                     UserProfile, DeliveryBooking)
 
 
 @admin.register(Category)
@@ -57,10 +58,18 @@ class OrderItemAdmin(admin.ModelAdmin):
     get_total.short_description = 'Total'
 
 
+class MessageReplyInline(admin.StackedInline):
+    model = MessageReply
+    extra = 0
+    fields = ['from_staff', 'author', 'body', 'read_by_customer', 'created_at']
+    readonly_fields = ['created_at']
+
+
 @admin.register(ContactMessage)
 class ContactMessageAdmin(admin.ModelAdmin):
-    list_display = ['name', 'phone_number', 'gender', 'age_group', 'message_type', 'subject', 'is_read', 'is_urgent', 'created_at']
-    list_filter = ['is_read', 'is_urgent', 'message_type', 'gender', 'age_group', 'created_at']
+    list_display = ['name', 'phone_number', 'gender', 'age_group', 'message_type', 'subject', 'status', 'is_read', 'is_urgent', 'created_at']
+    list_filter = ['status', 'is_read', 'is_urgent', 'message_type', 'gender', 'age_group', 'created_at']
+    inlines = [MessageReplyInline]
     search_fields = ['name', 'phone_number', 'subject', 'message']
     list_editable = ['is_read', 'is_urgent']
     readonly_fields = ['created_at']
@@ -68,13 +77,13 @@ class ContactMessageAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Contact Information', {
-            'fields': ('name', 'phone_number', 'gender', 'age_group')
+            'fields': ('name', 'phone_number', 'gender', 'age_group', 'user')
         }),
         ('Message Details', {
             'fields': ('message_type', 'subject', 'message')
         }),
         ('Status', {
-            'fields': ('is_read', 'is_urgent', 'created_at')
+            'fields': ('status', 'is_read', 'is_urgent', 'created_at')
         }),
     )
 

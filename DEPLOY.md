@@ -85,6 +85,18 @@ railway ssh --service web "python manage.py createsuperuser --noinput --username
 `populate_data` uses `get_or_create`, so re-running it will not duplicate
 categories or products.
 
+Products and categories without a photo get a placeholder illustration from
+`static/images/products/` — the product's own if one exists, otherwise its
+category's, otherwise a generic basket:
+
+```bash
+railway ssh --service web "python manage.py add_product_images"
+```
+
+It only fills blank images, so a real photo URL set in Django admin is never
+overwritten. `--force` replaces every image; `--dry-run` shows what would
+change without saving.
+
 ## Admin access
 
 Django admin is at `/admin/`, and the founder dashboard at `/founder/`.

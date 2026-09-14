@@ -241,9 +241,53 @@ class ContactMessage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
     is_urgent = models.BooleanField(default=False)
+
+    STATUS_CHOICES = [
+        ('open', 'Awaiting reply'),
+        ('replied', 'Replied'),
+        ('resolved', 'Resolved'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open')
+    # Set when the sender was logged in, so our replies can be shown in their account.
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name='contact_messages'
+    )
     
     class Meta:
         ordering = ['-created_at']
     
     def __str__(self):
         return f"Message from {self.name}: {self.subject}"
+
+
+class MessageReply(models.Model):
+    """One entry in the conversation about a contact message.
+
+    Staff replies appear under the customer's My messages page when the message
+    was sent from an account, and the customer can answer back from there.
+    Messages sent without an account have no inbox to deliver to, so staff pass
+    those replies on by WhatsApp or SMS instead.
+    """
+    message = models.ForeignKey(ContactMessage, on_delete=models.CASCADE, related_name='replies')
+    author = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name='message_replies'
+    )
+    from_staff = models.BooleanField(default=True)
+    body = models.TextField()
+    read_by_customer = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+        verbose_name_plural = 'Message replies'
+
+    def __str__(self):
+        sender = 'Staff' if self.from_staff else 'Customer'
+        return f"{sender} reply to {self.message.subject}"
+
+    def share_text(self):
+        """The reply worded for sending by WhatsApp or SMS."""
+        first_name = self.message.name.split()[0] if self.message.name.strip() else ''
+        greeting = f"Hi {first_name}" if first_name else "Hi"
+        return (f'{greeting}, this is JKC Supermarket replying to your message '
+                f'"{self.message.subject}":\n\n{self.body}')

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}My messages{% endblock %}
+
+{% block page_header %}
+    {% url 'contact' as contact_url %}
+    {% include 'partials/page_header.html' with title="My messages" subtitle="Messages you've sent us, together with our replies." icon="fa-comments" action_url=contact_url action_label="New message" action_icon="fa-pen" %}
+{% endblock %}
+
+{% block content %}
+<div class="container-page py-10">
+    {% if conversations %}
+        <div class="mx-auto max-w-3xl space-y-6" data-reveal-stagger="80">
+            {% for conversation in conversations %}
+                <article id="message-{{ conversation.id }}" class="card scroll-mt-28 overflow-hidden">
+                    <header class="card-header flex-wrap">
+                        <div class="min-w-0">
+                            <h2 class="text-base font-bold break-words text-slate-900">{{ conversation.subject }}</h2>
+                            <p class="text-xs text-slate-500">Sent {{ conversation.created_at|date:"j M Y, H:i" }}</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="badge {% if conversation.message_type == 'complaint' %}badge-red{% elif conversation.message_type == 'inquiry' %}badge-blue{% elif conversation.message_type == 'suggestion' %}badge-amber{% elif conversation.message_type == 'feedback' %}badge-green{% else %}badge-slate{% endif %}">{{ conversation.get_message_type_display }}</span>
+                            <span class="badge {% if conversation.status == 'resolved' %}badge-green{% elif conversation.status == 'replied' %}badge-blue{% else %}badge-amber{% endif %}">
+                                <i class="fas {% if conversation.status == 'resolved' %}fa-circle-check{% elif conversation.status == 'replied' %}fa-reply{% else %}fa-hourglass-half{% endif %} text-[10px]"></i>
+                                {{ conversation.get_status_display }}
+                            </span>
+                        </div>
+                    </header>
+
+                    <div class="card-body">
+                        <ol class="space-y-5">
+                            <li class="flex justify-end">
+                                <div class="max-w-[88%] sm:max-w-[75%]">
+                                    <div class="rounded-2xl rounded-br-md bg-emerald-600 px-4 py-3 text-sm leading-relaxed text-white shadow-sm">
+                                        <p class="break-words">{{ conversation.message|linebreaksbr }}</p>
+                                    </div>
+                                    <p class="mt-1.5 text-right text-[11px] text-slate-500">You · {{ conversation.created_at|date:"j M, H:i" }}</p>
+                                </div>
+                            </li>
+
+                            {% for reply in conversation.replies.all %}
+                                {% if reply.from_staff %}
+                                    <li class="flex items-end gap-2.5">
+                                        <span class="grid size-8 shrink-0 place-items-center rounded-full bg-linear-to-br from-emerald-500 to-emerald-700 text-xs text-white shadow-sm" aria-hidden="true">
+                                            <i class="fas fa-basket-shopping"></i>
+                                        </span>
+                                        <div class="max-w-[85%] sm:max-w-[75%]">
+                                            <div class="rounded-2xl rounded-bl-md bg-slate-100 px-4 py-3 text-sm leading-relaxed text-slate-800 {% if reply.id in new_reply_ids %}ring-2 ring-emerald-400 animate-pop{% endif %}">
+                                                <p class="break-words">{{ reply.body|linebreaksbr }}</p>
+                                            </div>
+                                            <p class="mt-1.5 flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
+                                                <span class="font-semibold text-slate-600">JKC Supermarket</span>
+                                                <span>{{ reply.created_at|date:"j M, H:i" }}</span>
+                                                {% if reply.id in new_reply_ids %}<span class="badge badge-green">New</span>{% endif %}
+                                            </p>
+                                        </div>
+                                    </li>
+                                {% else %}
+                                    <li class="flex justify-end">
+                                        <div class="max-w-[88%] sm:max-w-[75%]">
+                                            <div class="rounded-2xl rounded-br-md bg-emerald-600 px-4 py-3 text-sm leading-relaxed text-white shadow-sm">
+                                                <p class="break-words">{{ reply.body|linebreaksbr }}</p>
+                                            </div>
+                                            <p class="mt-1.5 text-right text-[11px] text-slate-500">You · {{ reply.created_at|date:"j M, H:i" }}</p>
+                                        </div>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ol>
+
+                        {% if conversation.status == 'open' %}
+                            <p class="mt-5 flex items-center gap-2 text-xs text-slate-500"><i class="fas fa-clock text-slate-400"></i> Waiting for our reply. We typically respond within 24 hours.</p>
+                        {% elif conversation.status == 'resolved' %}
+                            <p class="mt-5 flex items-center gap-2 text-xs font-medium text-emerald-700"><i class="fas fa-circle-check"></i> We've marked this as resolved. Reply below if you still need help.</p>
+                        {% endif %}
+                    </div>
+
+                    <form method="post" action="{% url 'customer_reply' conversation.id %}" class="card-footer flex-nowrap items-end gap-3">
+                        {% csrf_token %}
+                        <label for="reply-body-{{ conversation.id }}" class="sr-only">Reply about {{ conversation.subject }}</label>
+                        <textarea name="body" id="reply-body-{{ conversation.id }}" rows="1" required placeholder="Write a reply…" class="input min-h-11 resize-none"></textarea>
+                        <button type="submit" class="btn btn-primary btn-icon shrink-0" aria-label="Send reply" title="Send reply" data-loading-text="">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        {% url 'contact' as contact_url %}
+        <div class="mx-auto max-w-xl">
+            {% include 'partials/empty_state.html' with icon="fa-comments" title="No messages yet" text="Questions, complaints or suggestions you send us from the Contact page while logged in will appear here with our replies." cta_url=contact_url cta_label="Contact us" cta_icon="fa-envelope" %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

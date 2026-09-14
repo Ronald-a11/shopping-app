@@ -12,68 +12,185 @@
 <div class="container-page py-10">
     <div class="grid gap-6 lg:grid-cols-3 lg:items-start">
 
-        <article class="card overflow-hidden animate-fade-up lg:col-span-2">
-            <header class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 px-5 py-5 sm:px-6">
-                <div class="flex min-w-0 items-center gap-4">
-                    {% with words=message.name.split %}
-                        <span class="grid size-12 shrink-0 place-items-center rounded-full bg-linear-to-br from-emerald-100 to-emerald-200 text-base font-extrabold text-emerald-800 animate-pop" aria-hidden="true">
-                            {{ words.0|first|upper }}{% if words|length > 1 %}{{ words|last|first|upper }}{% endif %}
+        <div class="space-y-6 lg:col-span-2">
+            <!-- The customer's message -->
+            <article class="card overflow-hidden animate-fade-up">
+                <header class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 px-5 py-5 sm:px-6">
+                    <div class="flex min-w-0 items-center gap-4">
+                        {% with words=message.name.split %}
+                            <span class="grid size-12 shrink-0 place-items-center rounded-full bg-linear-to-br from-emerald-100 to-emerald-200 text-base font-extrabold text-emerald-800 animate-pop" aria-hidden="true">
+                                {{ words.0|first|upper }}{% if words|length > 1 %}{{ words|last|first|upper }}{% endif %}
+                            </span>
+                        {% endwith %}
+                        <div class="min-w-0">
+                            <p class="truncate text-base font-bold text-slate-900">{{ message.name }}</p>
+                            <p class="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                                {% if message.phone_number %}
+                                    <a href="tel:{{ message.phone_number }}" class="inline-flex items-center gap-1.5 transition hover:text-emerald-700"><i class="fas fa-phone text-[10px]"></i> {{ message.phone_number }}</a>
+                                {% endif %}
+                                <span class="inline-flex items-center gap-1.5"><i class="fas fa-clock text-[10px]"></i> {{ message.created_at|date:"j F Y \a\t H:i" }}</span>
+                                {% if message.user %}
+                                    <span class="inline-flex items-center gap-1.5"><i class="fas fa-user-check text-[10px]"></i> {{ message.user.username }}</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="badge {% if message.status == 'resolved' %}badge-green{% elif message.status == 'replied' %}badge-blue{% else %}badge-amber{% endif %}">
+                            <i class="fas {% if message.status == 'resolved' %}fa-circle-check{% elif message.status == 'replied' %}fa-reply{% else %}fa-hourglass-half{% endif %} text-[10px]"></i>
+                            {{ message.get_status_display }}
                         </span>
-                    {% endwith %}
-                    <div class="min-w-0">
-                        <p class="truncate text-base font-bold text-slate-900">{{ message.name }}</p>
-                        <p class="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
-                            <a href="tel:{{ message.phone_number }}" class="inline-flex items-center gap-1.5 transition hover:text-emerald-700"><i class="fas fa-phone text-[10px]"></i> {{ message.phone_number }}</a>
-                            <span class="inline-flex items-center gap-1.5"><i class="fas fa-clock text-[10px]"></i> {{ message.created_at|date:"j F Y \a\t H:i" }}</span>
-                        </p>
+                        <span class="badge {% if message.message_type == 'complaint' %}badge-red{% elif message.message_type == 'inquiry' %}badge-blue{% elif message.message_type == 'suggestion' %}badge-amber{% elif message.message_type == 'feedback' %}badge-green{% else %}badge-slate{% endif %}">{{ message.get_message_type_display }}</span>
+                        {% if message.is_urgent %}
+                            <span class="badge badge-red"><i class="fas fa-fire text-[10px]"></i> Urgent</span>
+                        {% endif %}
                     </div>
+                </header>
+
+                <div class="card-body space-y-6">
+                    <div>
+                        <p class="text-xs font-bold tracking-wider text-slate-400 uppercase">Subject</p>
+                        <h2 class="mt-1 text-lg font-bold text-slate-900">{{ message.subject }}</h2>
+                    </div>
+
+                    <blockquote class="relative rounded-2xl border-l-4 border-emerald-500 bg-slate-50 px-5 py-4 pl-12 text-sm leading-relaxed text-slate-700 sm:text-base">
+                        <i class="fas fa-quote-left absolute top-4 left-4 text-lg text-emerald-300" aria-hidden="true"></i>
+                        <div class="space-y-3 break-words">{{ message.message|linebreaks }}</div>
+                    </blockquote>
+
+                    <dl class="grid gap-3 sm:grid-cols-3">
+                        <div class="rounded-xl bg-white p-4 ring-1 ring-slate-200 ring-inset">
+                            <dt class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-user text-slate-400"></i> Gender</dt>
+                            <dd class="mt-1 font-semibold text-slate-900">{{ message.get_gender_display }}</dd>
+                        </div>
+                        <div class="rounded-xl bg-white p-4 ring-1 ring-slate-200 ring-inset">
+                            <dt class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-cake-candles text-slate-400"></i> Age group</dt>
+                            <dd class="mt-1 font-semibold text-slate-900">{{ message.get_age_group_display }}</dd>
+                        </div>
+                        <div class="rounded-xl bg-white p-4 ring-1 ring-slate-200 ring-inset">
+                            <dt class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-tag text-slate-400"></i> Message type</dt>
+                            <dd class="mt-1 font-semibold text-slate-900">{{ message.get_message_type_display }}</dd>
+                        </div>
+                    </dl>
                 </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <span class="badge {% if message.message_type == 'complaint' %}badge-red{% elif message.message_type == 'inquiry' %}badge-blue{% elif message.message_type == 'suggestion' %}badge-amber{% elif message.message_type == 'feedback' %}badge-green{% else %}badge-slate{% endif %}">{{ message.get_message_type_display }}</span>
-                    {% if message.is_urgent %}
-                        <span class="badge badge-red"><i class="fas fa-fire text-[10px]"></i> Urgent</span>
-                    {% endif %}
-                    {% if message.is_read %}
-                        <span class="badge badge-slate">Read</span>
+            </article>
+
+            <!-- Conversation -->
+            <section class="card animate-fade-up [animation-delay:80ms]" aria-labelledby="conversation-title">
+                <div class="card-header">
+                    <h2 id="conversation-title" class="card-title"><i class="fas fa-comments text-emerald-600"></i> Conversation</h2>
+                    <span class="badge badge-slate">{{ replies|length }} repl{{ replies|length|pluralize:"y,ies" }}</span>
+                </div>
+                <div class="card-body space-y-5">
+                    {% if message.user %}
+                        <div class="alert alert-success">
+                            <i class="fas fa-user-check mt-0.5"></i>
+                            <p>Sent from the account <strong>{{ message.user.username }}</strong>, so your replies appear on their <em>My messages</em> page and they can answer back.</p>
+                        </div>
                     {% else %}
-                        <span class="badge badge-amber">Unread</span>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-mobile-screen-button mt-0.5"></i>
+                            <p>
+                                This customer wrote without an account, so they can't read replies on the website.
+                                {% if message.phone_number %}Save your reply, then send it with the WhatsApp or SMS button that appears under it.{% else %}No phone number was given, so replies can only be kept here as a record.{% endif %}
+                            </p>
+                        </div>
+                    {% endif %}
+
+                    {% if replies %}
+                        <ol class="space-y-5">
+                            {% for reply in replies %}
+                                <li id="reply-{{ reply.id }}" class="flex scroll-mt-28 {% if reply.from_staff %}justify-end{% endif %}">
+                                    <div class="max-w-[88%] sm:max-w-[75%]">
+                                        <div class="rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm {% if reply.from_staff %}rounded-br-md bg-emerald-600 text-white{% else %}rounded-bl-md bg-slate-100 text-slate-800{% endif %}">
+                                            <p class="break-words">{{ reply.body|linebreaksbr }}</p>
+                                        </div>
+                                        <p class="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-slate-500 {% if reply.from_staff %}justify-end{% endif %}">
+                                            <span class="font-semibold text-slate-600">
+                                                {% if reply.from_staff %}{{ reply.author.get_full_name|default:reply.author.username|default:"Staff" }}{% else %}{{ message.name }}{% endif %}
+                                            </span>
+                                            <span>{{ reply.created_at|date:"j M Y, H:i" }}</span>
+                                            {% if reply.from_staff and message.user %}
+                                                {% if reply.read_by_customer %}
+                                                    <span class="inline-flex items-center gap-1 text-emerald-600"><i class="fas fa-check-double"></i> Seen</span>
+                                                {% else %}
+                                                    <span class="inline-flex items-center gap-1"><i class="fas fa-check"></i> Not seen yet</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </p>
+                                        {% if reply.from_staff and not message.user and message.phone_number %}
+                                            {% whatsapp_url message.phone_number reply.share_text as wa_link %}
+                                            {% sms_url message.phone_number reply.share_text as sms_link %}
+                                            <div class="mt-2 flex flex-wrap justify-end gap-2">
+                                                <a href="{{ wa_link }}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-sm"><i class="fab fa-whatsapp"></i> Send on WhatsApp</a>
+                                                <a href="{{ sms_link }}" class="btn btn-secondary btn-sm"><i class="fas fa-comment-sms"></i> Send by SMS</a>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    {% else %}
+                        <p class="flex items-center gap-2 text-sm text-slate-500"><i class="fas fa-inbox text-slate-400"></i> No replies yet. Write the first one below.</p>
                     {% endif %}
                 </div>
-            </header>
+            </section>
 
-            <div class="card-body space-y-6">
-                <div>
-                    <p class="text-xs font-bold tracking-wider text-slate-400 uppercase">Subject</p>
-                    <h2 class="mt-1 text-lg font-bold text-slate-900">{{ message.subject }}</h2>
+            <!-- Reply -->
+            <section id="reply-form" class="card scroll-mt-28 animate-fade-up [animation-delay:140ms]" aria-labelledby="reply-title">
+                <div class="card-header">
+                    <h2 id="reply-title" class="card-title"><i class="fas fa-reply text-emerald-600"></i> Reply to {{ message.name }}</h2>
                 </div>
+                <form method="post" action="{% url 'reply_to_message' message.id %}" class="card-body space-y-5">
+                    {% csrf_token %}
 
-                <blockquote class="relative rounded-2xl border-l-4 border-emerald-500 bg-slate-50 px-5 py-4 pl-12 text-sm leading-relaxed text-slate-700 sm:text-base">
-                    <i class="fas fa-quote-left absolute top-4 left-4 text-lg text-emerald-300" aria-hidden="true"></i>
-                    <div class="space-y-3 break-words">{{ message.message|linebreaks }}</div>
-                </blockquote>
+                    <div>
+                        <p class="label">Quick replies</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" class="chip" data-fill="Thank you for getting in touch. We're looking into this and will get back to you shortly." data-fill-target="{{ reply_form.body.id_for_label }}"><i class="fas fa-magnifying-glass"></i> Looking into it</button>
+                            <button type="button" class="chip" data-fill="We're sorry for the inconvenience. We've noted your complaint and will contact you to put it right." data-fill-target="{{ reply_form.body.id_for_label }}"><i class="fas fa-heart-crack"></i> Apology</button>
+                            <button type="button" class="chip" data-fill="Thank you for your feedback, we really appreciate it." data-fill-target="{{ reply_form.body.id_for_label }}"><i class="fas fa-face-smile"></i> Thanks for the feedback</button>
+                        </div>
+                        <p class="field-help">A quick reply fills the box below; edit it before sending.</p>
+                    </div>
 
-                <dl class="grid gap-3 sm:grid-cols-3">
-                    <div class="rounded-xl bg-white p-4 ring-1 ring-slate-200 ring-inset">
-                        <dt class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-user text-slate-400"></i> Gender</dt>
-                        <dd class="mt-1 font-semibold text-slate-900">{{ message.get_gender_display }}</dd>
+                    <div>
+                        <label for="{{ reply_form.body.id_for_label }}" class="label">Your reply</label>
+                        {{ reply_form.body }}
+                        {% for error in reply_form.body.errors %}
+                            <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ error }}</p>
+                        {% endfor %}
                     </div>
-                    <div class="rounded-xl bg-white p-4 ring-1 ring-slate-200 ring-inset">
-                        <dt class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-cake-candles text-slate-400"></i> Age group</dt>
-                        <dd class="mt-1 font-semibold text-slate-900">{{ message.get_age_group_display }}</dd>
+
+                    <label for="{{ reply_form.mark_resolved.id_for_label }}" class="flex cursor-pointer items-start gap-3 rounded-xl p-3 ring-1 ring-slate-200 transition ring-inset hover:bg-slate-50">
+                        <input type="checkbox" name="{{ reply_form.mark_resolved.html_name }}" id="{{ reply_form.mark_resolved.id_for_label }}" class="mt-0.5 size-4 accent-emerald-600" {% if reply_form.mark_resolved.value %}checked{% endif %}>
+                        <span>
+                            <span class="block text-sm font-semibold text-slate-900">Mark as resolved</span>
+                            <span class="block text-xs text-slate-500">Tick this when the complaint or question has been dealt with.</span>
+                        </span>
+                    </label>
+
+                    <div class="flex justify-end border-t border-slate-100 pt-5">
+                        <button type="submit" class="btn btn-primary" data-loading-text="Sending…">
+                            <i class="fas fa-paper-plane"></i> Send reply
+                        </button>
                     </div>
-                    <div class="rounded-xl bg-white p-4 ring-1 ring-slate-200 ring-inset">
-                        <dt class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-tag text-slate-400"></i> Message type</dt>
-                        <dd class="mt-1 font-semibold text-slate-900">{{ message.get_message_type_display }}</dd>
-                    </div>
-                </dl>
-            </div>
-        </article>
+                </form>
+            </section>
+        </div>
 
         <aside class="card animate-fade-up [animation-delay:120ms] lg:sticky lg:top-24">
             <div class="card-header">
                 <h2 class="card-title"><i class="fas fa-bolt text-emerald-600"></i> Actions</h2>
             </div>
             <div class="card-body grid gap-2">
+                <a href="#reply-form" class="btn btn-primary w-full">
+                    <i class="fas fa-reply"></i> Write a reply
+                </a>
+                <button type="button" class="btn w-full {% if message.status == 'resolved' %}btn-secondary{% else %}btn-outline{% endif %}" data-post-url="{% url 'toggle_resolved' message.id %}" data-loading-text="Updating…">
+                    <i class="fas {% if message.status == 'resolved' %}fa-rotate-left{% else %}fa-circle-check{% endif %}"></i>
+                    {% if message.status == 'resolved' %}Reopen conversation{% else %}Mark as resolved{% endif %}
+                </button>
                 <button type="button" class="btn w-full {% if message.is_urgent %}btn-secondary{% else %}btn-danger-outline{% endif %}" data-post-url="{% url 'mark_urgent' message.id %}" data-loading-text="Updating…">
                     <i class="fas fa-fire"></i>
                     {% if message.is_urgent %}Remove urgent flag{% else %}Mark as urgent{% endif %}
@@ -83,14 +200,16 @@
                     {% if message.is_read %}Mark as unread{% else %}Mark as read{% endif %}
                 </button>
 
-                <div class="my-2 border-t border-slate-100"></div>
+                {% if message.phone_number %}
+                    <div class="my-2 border-t border-slate-100"></div>
 
-                <a href="tel:{{ message.phone_number }}" class="btn btn-primary w-full">
-                    <i class="fas fa-phone"></i> Call customer
-                </a>
-                <a href="https://wa.me/{{ message.phone_number|whatsapp_number }}" target="_blank" rel="noopener" class="btn btn-whatsapp w-full">
-                    <i class="fab fa-whatsapp text-base"></i> WhatsApp
-                </a>
+                    <a href="tel:{{ message.phone_number }}" class="btn btn-secondary w-full">
+                        <i class="fas fa-phone"></i> Call customer
+                    </a>
+                    <a href="{% whatsapp_url message.phone_number %}" target="_blank" rel="noopener" class="btn btn-whatsapp w-full">
+                        <i class="fab fa-whatsapp text-base"></i> Open WhatsApp chat
+                    </a>
+                {% endif %}
                 <a href="{% url 'founder_dashboard' %}" class="btn btn-ghost w-full">
                     <i class="fas fa-arrow-left"></i> Back to dashboard
                 </a>

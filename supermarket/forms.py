@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils import timezone
-from .models import ContactMessage, Order, UserProfile, DeliveryBooking
+from .models import ContactMessage, MessageReply, Order, UserProfile, DeliveryBooking
 
 
 class ContactForm(forms.ModelForm):
@@ -194,3 +194,29 @@ class DeliveryCancellationForm(forms.Form):
             'placeholder': 'Additional notes (optional)'
         })
     )
+
+
+class MessageReplyForm(forms.ModelForm):
+    """A reply in the conversation about a contact message."""
+
+    class Meta:
+        model = MessageReply
+        fields = ['body']
+        labels = {'body': 'Your reply'}
+        widgets = {
+            'body': forms.Textarea(attrs={
+                'class': 'input',
+                'rows': 4,
+                'placeholder': 'Write your reply…'
+            }),
+        }
+
+    def clean_body(self):
+        body = self.cleaned_data['body'].strip()
+        if not body:
+            raise forms.ValidationError('Please write a reply before sending.')
+        return body
+
+
+class StaffReplyForm(MessageReplyForm):
+    mark_resolved = forms.BooleanField(required=False, label='Mark as resolved')

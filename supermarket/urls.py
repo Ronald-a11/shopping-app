@@ -33,10 +33,16 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('gallery/', views.gallery, name='gallery'),
     path('cart-count/', views.cart_count, name='cart_count'),
+
+    # Customer conversations about their contact messages
+    path('messages/', views.my_messages, name='my_messages'),
+    path('messages/<int:message_id>/reply/', views.customer_reply, name='customer_reply'),
     
     # Founder Dashboard URLs
     path('founder/', admin_views.founder_dashboard, name='founder_dashboard'),
     path('founder/message/<int:message_id>/', admin_views.message_detail, name='message_detail'),
     path('founder/mark-urgent/<int:message_id>/', admin_views.mark_urgent, name='mark_urgent'),
     path('founder/mark-read/<int:message_id>/', admin_views.mark_read, name='mark_read'),
+    path('founder/message/<int:message_id>/reply/', admin_views.reply_to_message, name='reply_to_message'),
+    path('founder/message/<int:message_id>/resolve/', admin_views.toggle_resolved, name='toggle_resolved'),
 ]

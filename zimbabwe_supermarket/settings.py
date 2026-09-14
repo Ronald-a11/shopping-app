@@ -74,6 +74,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'supermarket.context_processors.cart_count',
+                'supermarket.context_processors.message_notifications',
             ],
         },
     },

@@ -107,8 +107,11 @@
 
                 {% if user.is_authenticated %}
                     <div class="dropdown relative" data-dropdown>
-                        <button type="button" class="flex items-center gap-2 rounded-full p-1 transition hover:bg-slate-100 sm:pr-2.5" data-dropdown-toggle aria-expanded="false" aria-haspopup="true" aria-label="Account menu">
+                        <button type="button" class="relative flex items-center gap-2 rounded-full p-1 transition hover:bg-slate-100 sm:pr-2.5" data-dropdown-toggle aria-expanded="false" aria-haspopup="true" aria-label="Account menu{% if unread_replies %} ({{ unread_replies }} new repl{{ unread_replies|pluralize:'y,ies' }}){% endif %}">
                             <span class="grid size-8 place-items-center rounded-full bg-linear-to-br from-emerald-100 to-emerald-200 text-sm font-extrabold text-emerald-800">{{ user.first_name|default:user.username|first|upper }}</span>
+                            {% if unread_replies %}
+                                <span class="absolute top-0.5 left-7 size-2.5 animate-pulse rounded-full bg-rose-500 ring-2 ring-white" aria-hidden="true"></span>
+                            {% endif %}
                             <i class="fas fa-chevron-down hidden text-[10px] text-slate-400 sm:inline"></i>
                         </button>
                         <div class="dropdown-menu" role="menu">
@@ -119,6 +122,10 @@
                             <a href="{% url 'profile' %}" class="dropdown-item" role="menuitem"><i class="fas fa-user"></i> My profile</a>
                             <a href="{% url 'order_history' %}" class="dropdown-item" role="menuitem"><i class="fas fa-receipt"></i> My orders</a>
                             <a href="{% url 'delivery_bookings' %}" class="dropdown-item" role="menuitem"><i class="fas fa-truck"></i> My deliveries</a>
+                            <a href="{% url 'my_messages' %}" class="dropdown-item" role="menuitem">
+                                <i class="fas fa-comments"></i> My messages
+                                {% if unread_replies %}<span class="ml-auto rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-bold text-white">{{ unread_replies }} new</span>{% endif %}
+                            </a>
                             <a href="{% url 'delivery_booking' %}" class="dropdown-item" role="menuitem"><i class="fas fa-calendar-plus"></i> Book a delivery</a>
                             {% if user.is_staff %}
                                 <div class="my-1 border-t border-slate-100"></div>
@@ -160,6 +167,10 @@
                         <a href="{% url 'contact' %}" class="mobile-link {% if url_name == 'contact' %}is-active{% endif %}"><i class="fas fa-envelope"></i> Contact</a>
                         {% if user.is_authenticated %}
                             <a href="{% url 'delivery_bookings' %}" class="mobile-link {% if url_name == 'delivery_bookings' %}is-active{% endif %}"><i class="fas fa-truck"></i> My deliveries</a>
+                            <a href="{% url 'my_messages' %}" class="mobile-link {% if url_name == 'my_messages' %}is-active{% endif %}">
+                                <i class="fas fa-comments"></i> My messages
+                                {% if unread_replies %}<span class="ml-auto rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-bold text-white">{{ unread_replies }} new</span>{% endif %}
+                            </a>
                         {% endif %}
                     </nav>
                     {% if not user.is_authenticated %}
@@ -222,6 +233,7 @@
                     {% if user.is_authenticated %}
                         <li><a href="{% url 'order_history' %}" class="transition hover:text-emerald-400">My orders</a></li>
                         <li><a href="{% url 'delivery_bookings' %}" class="transition hover:text-emerald-400">My deliveries</a></li>
+                        <li><a href="{% url 'my_messages' %}" class="transition hover:text-emerald-400">My messages</a></li>
                         <li><a href="{% url 'profile' %}" class="transition hover:text-emerald-400">Profile</a></li>
                     {% else %}
                         <li><a href="{% url 'login' %}" class="transition hover:text-emerald-400">Log in</a></li>
