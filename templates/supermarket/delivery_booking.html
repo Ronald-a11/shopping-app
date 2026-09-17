@@ -44,7 +44,7 @@
                 <!-- 1. When -->
                 <section class="card-body space-y-5">
                     <h2 class="flex items-center gap-3 text-base font-bold text-slate-900">
-                        <span class="grid size-7 shrink-0 place-items-center rounded-full bg-emerald-600 text-xs font-extrabold text-white">1</span>
+                        <span class="grid size-7 shrink-0 place-items-center rounded-full bg-brand-600 text-xs font-extrabold text-white">1</span>
                         When
                     </h2>
 
@@ -63,13 +63,13 @@
                                 {% if value %}
                                     <div class="relative">
                                         <input type="radio" name="{{ form.time_slot.html_name }}" value="{{ value }}" id="{{ form.time_slot.auto_id }}_{{ forloop.counter0 }}" class="peer sr-only" required {% if form.time_slot.value == value %}checked{% endif %}>
-                                        <label for="{{ form.time_slot.auto_id }}_{{ forloop.counter0 }}" class="flex h-full cursor-pointer flex-col gap-3 rounded-2xl bg-white p-4 ring-1 ring-slate-200 transition duration-200 ring-inset hover:-translate-y-0.5 hover:shadow-md peer-checked:bg-emerald-50 peer-checked:ring-2 peer-checked:ring-emerald-600 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-500">
+                                        <label for="{{ form.time_slot.auto_id }}_{{ forloop.counter0 }}" class="flex h-full cursor-pointer flex-col gap-3 rounded-2xl bg-white p-4 ring-1 ring-slate-200 transition duration-200 ring-inset hover:-translate-y-0.5 hover:shadow-md peer-checked:bg-brand-50 peer-checked:ring-2 peer-checked:ring-brand-600 peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500">
                                             <span class="grid size-10 place-items-center rounded-xl text-lg {% if value == 'morning' %}bg-amber-50 text-amber-500{% elif value == 'afternoon' %}bg-orange-50 text-orange-500{% else %}bg-indigo-50 text-indigo-500{% endif %}">
                                                 <i class="fas {% if value == 'morning' %}fa-sun{% elif value == 'afternoon' %}fa-cloud-sun{% else %}fa-moon{% endif %}"></i>
                                             </span>
                                             <span class="text-sm font-semibold text-slate-800">{{ label }}</span>
                                         </label>
-                                        <span aria-hidden="true" class="pointer-events-none absolute top-3 right-3 grid size-5 scale-0 place-items-center rounded-full bg-emerald-600 text-[10px] text-white transition duration-300 peer-checked:scale-100">
+                                        <span aria-hidden="true" class="pointer-events-none absolute top-3 right-3 grid size-5 scale-0 place-items-center rounded-full bg-brand-600 text-[10px] text-white transition duration-300 peer-checked:scale-100">
                                             <i class="fas fa-check"></i>
                                         </span>
                                     </div>
@@ -85,7 +85,7 @@
                 <!-- 2. Where -->
                 <section class="card-body space-y-5 border-t border-slate-100">
                     <h2 class="flex items-center gap-3 text-base font-bold text-slate-900">
-                        <span class="grid size-7 shrink-0 place-items-center rounded-full bg-emerald-600 text-xs font-extrabold text-white">2</span>
+                        <span class="grid size-7 shrink-0 place-items-center rounded-full bg-brand-600 text-xs font-extrabold text-white">2</span>
                         Where
                     </h2>
 
@@ -136,7 +136,7 @@
                 <!-- 3. Anything else? -->
                 <section class="card-body space-y-5 border-t border-slate-100">
                     <h2 class="flex items-center gap-3 text-base font-bold text-slate-900">
-                        <span class="grid size-7 shrink-0 place-items-center rounded-full bg-emerald-600 text-xs font-extrabold text-white">3</span>
+                        <span class="grid size-7 shrink-0 place-items-center rounded-full bg-brand-600 text-xs font-extrabold text-white">3</span>
                         Anything else?
                     </h2>
 
@@ -161,15 +161,15 @@
         <aside class="space-y-6 lg:sticky lg:top-24">
             <div class="card overflow-hidden animate-fade-up [animation-delay:200ms]">
                 <div class="card-header">
-                    <h2 class="card-title"><i class="fas fa-tags text-emerald-600"></i> Delivery rates</h2>
+                    <h2 class="card-title"><i class="fas fa-tags text-brand-600"></i> Delivery rates</h2>
                 </div>
                 <ul class="divide-y divide-slate-100">
                     <li class="flex gap-4 px-5 py-4 sm:px-6">
-                        <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600"><i class="fas fa-bolt"></i></span>
+                        <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600"><i class="fas fa-bolt"></i></span>
                         <div class="min-w-0 flex-1">
                             <div class="flex items-baseline justify-between gap-2">
                                 <p class="font-bold text-slate-900">Standard</p>
-                                <p class="text-lg font-extrabold text-emerald-700">$5</p>
+                                <p class="text-lg font-extrabold text-brand-700">$5</p>
                             </div>
                             <p class="text-xs text-slate-500">Harare &amp; Bulawayo</p>
                             <p class="mt-1 flex items-center gap-1.5 text-xs font-semibold text-slate-600"><i class="fas fa-clock text-[10px] text-slate-400"></i> 1–2 hours</p>
@@ -199,8 +199,8 @@
                     </li>
                 </ul>
                 <div class="card-footer flex-col items-start gap-2 py-4 text-xs text-slate-600">
-                    <p class="flex items-center gap-2"><i class="fas fa-calendar-days w-4 text-center text-emerald-600"></i> Deliveries run Monday to Saturday</p>
-                    <p class="flex items-center gap-2"><i class="fab fa-whatsapp w-4 text-center text-base text-emerald-600"></i> WhatsApp notifications go to +263 771 938 039 for every delivery</p>
+                    <p class="flex items-center gap-2"><i class="fas fa-calendar-days w-4 text-center text-brand-600"></i> Deliveries run Monday to Saturday</p>
+                    <p class="flex items-center gap-2"><i class="fab fa-whatsapp w-4 text-center text-base text-brand-600"></i> WhatsApp notifications go to +263 771 938 039 for every delivery</p>
                 </div>
             </div>
 

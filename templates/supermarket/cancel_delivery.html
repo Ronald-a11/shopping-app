@@ -17,13 +17,13 @@
         <!-- Booking summary (first on mobile, right-hand column on desktop) -->
         <aside class="card overflow-hidden animate-fade-up lg:sticky lg:top-24 lg:order-last lg:col-span-2">
             <div class="card-header">
-                <h2 class="card-title"><i class="fas fa-truck text-emerald-600"></i> Delivery details</h2>
+                <h2 class="card-title"><i class="fas fa-truck text-brand-600"></i> Delivery details</h2>
                 {% include 'partials/status_badge.html' with status=booking.status label=booking.get_status_display %}
             </div>
             <div class="card-body">
                 <div class="flex items-center gap-4">
                     <div class="flex w-16 shrink-0 flex-col overflow-hidden rounded-xl text-center ring-1 ring-slate-200">
-                        <span class="bg-emerald-600 py-1 text-[11px] font-bold tracking-wider text-white uppercase">{{ booking.delivery_date|date:"M" }}</span>
+                        <span class="bg-brand-600 py-1 text-[11px] font-bold tracking-wider text-white uppercase">{{ booking.delivery_date|date:"M" }}</span>
                         <span class="bg-white py-1.5 text-2xl leading-none font-extrabold text-slate-900">{{ booking.delivery_date|date:"j" }}</span>
                     </div>
                     <div class="min-w-0">

@@ -36,12 +36,12 @@
             {# Mobile: the summary toggles the form below it (peer-open). Desktop: form always shown. #}
             <details class="group peer lg:hidden">
                 <summary class="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 text-base font-bold text-slate-900 [&::-webkit-details-marker]:hidden">
-                    <span class="flex items-center gap-2"><i class="fas fa-sliders text-emerald-600"></i> Filters</span>
+                    <span class="flex items-center gap-2"><i class="fas fa-sliders text-brand-600"></i> Filters</span>
                     <i class="fas fa-chevron-down text-xs text-slate-400 transition-transform duration-300 group-open:rotate-180"></i>
                 </summary>
             </details>
             <div class="card-header hidden lg:flex">
-                <h2 class="card-title"><i class="fas fa-sliders text-emerald-600"></i> Filters</h2>
+                <h2 class="card-title"><i class="fas fa-sliders text-brand-600"></i> Filters</h2>
             </div>
 
             <form method="get" class="hidden space-y-5 border-t border-slate-100 p-5 peer-open:block peer-open:animate-fade-in lg:block lg:border-t-0">
@@ -92,7 +92,7 @@
                 </fieldset>
 
                 <label class="flex cursor-pointer items-center gap-2.5 text-sm font-semibold text-slate-700">
-                    <input type="checkbox" name="local" value="1" class="size-4 rounded accent-emerald-600" {% if local_only %}checked{% endif %}>
+                    <input type="checkbox" name="local" value="1" class="size-4 rounded accent-brand-600" {% if local_only %}checked{% endif %}>
                     <span class="flex items-center gap-1.5"><i class="fas fa-leaf text-xs text-amber-500"></i> Local products only</span>
                 </label>
 

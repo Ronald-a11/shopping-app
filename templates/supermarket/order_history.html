@@ -38,7 +38,7 @@
                                 </div>
                                 <div>
                                     <dt class="flex items-center gap-1.5 text-xs text-slate-500"><i class="fas fa-dollar-sign"></i> Total</dt>
-                                    <dd class="mt-0.5 font-extrabold text-emerald-700">${{ order.total_amount }}</dd>
+                                    <dd class="mt-0.5 font-extrabold text-brand-700">${{ order.total_amount }}</dd>
                                 </div>
                                 <div>
                                     <dt class="flex items-center gap-1.5 text-xs text-slate-500"><i class="fas fa-basket-shopping"></i> Items</dt>
@@ -72,14 +72,14 @@
             <aside class="space-y-6 lg:sticky lg:top-24">
                 {% include 'partials/support_card.html' with title="Need help with your orders?" text="Questions about an order? Contact us directly." %}
                 <a href="{% url 'delivery_bookings' %}" class="card card-hover group flex items-center gap-4 p-5">
-                    <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-emerald-50 text-lg text-emerald-600 transition group-hover:bg-emerald-600 group-hover:text-white">
+                    <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-50 text-lg text-brand-600 transition group-hover:bg-brand-600 group-hover:text-white">
                         <i class="fas fa-truck"></i>
                     </span>
                     <span class="min-w-0 flex-1">
                         <span class="block font-bold text-slate-900">My deliveries</span>
                         <span class="block text-xs text-slate-500">See booked delivery dates and time slots.</span>
                     </span>
-                    <i class="fas fa-chevron-right text-xs text-slate-400 transition group-hover:translate-x-1 group-hover:text-emerald-600"></i>
+                    <i class="fas fa-chevron-right text-xs text-slate-400 transition group-hover:translate-x-1 group-hover:text-brand-600"></i>
                 </a>
             </aside>
         </div>

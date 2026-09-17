@@ -13,8 +13,8 @@
     <!-- Statistics -->
     <div class="grid grid-cols-2 gap-4 lg:grid-cols-4" data-reveal-stagger="80">
         <a href="?filter=all#messages" class="stat-card group block">
-            <span aria-hidden="true" class="absolute -top-8 -right-8 size-24 rounded-full bg-emerald-50 transition-transform duration-500 group-hover:scale-125"></span>
-            <span class="relative grid size-11 place-items-center rounded-xl bg-emerald-100 text-lg text-emerald-600"><i class="fas fa-envelope"></i></span>
+            <span aria-hidden="true" class="absolute -top-8 -right-8 size-24 rounded-full bg-brand-50 transition-transform duration-500 group-hover:scale-125"></span>
+            <span class="relative grid size-11 place-items-center rounded-xl bg-brand-100 text-lg text-brand-600"><i class="fas fa-envelope"></i></span>
             <p class="relative mt-4 text-3xl font-extrabold tracking-tight text-slate-900" data-count-to="{{ total_messages }}">{{ total_messages }}</p>
             <p class="relative text-sm font-medium text-slate-500">Total messages</p>
         </a>
@@ -86,7 +86,7 @@
                                                 {% if not message.is_read %}
                                                     <span class="size-2 shrink-0 rounded-full bg-amber-500" title="Unread"><span class="sr-only">Unread</span></span>
                                                 {% endif %}
-                                                <a href="{% url 'message_detail' message.id %}" class="font-semibold text-slate-900 transition hover:text-emerald-700">{{ message.name }}</a>
+                                                <a href="{% url 'message_detail' message.id %}" class="font-semibold text-slate-900 transition hover:text-brand-700">{{ message.name }}</a>
                                                 {% if message.is_urgent %}
                                                     <i class="fas fa-fire text-rose-500" title="Urgent" aria-label="Urgent"></i>
                                                 {% endif %}
@@ -110,13 +110,13 @@
                                         </td>
                                         <td>
                                             <div class="flex items-center justify-end gap-1">
-                                                <a href="{% url 'message_detail' message.id %}#reply-form" class="btn btn-icon btn-sm {% if message.status == 'open' %}bg-emerald-600 text-white hover:bg-emerald-700{% else %}btn-ghost{% endif %}" aria-label="Open and reply to {{ message.name }}" title="Open and reply">
+                                                <a href="{% url 'message_detail' message.id %}#reply-form" class="btn btn-icon btn-sm {% if message.status == 'open' %}bg-brand-600 text-white hover:bg-brand-700{% else %}btn-ghost{% endif %}" aria-label="Open and reply to {{ message.name }}" title="Open and reply">
                                                     <i class="fas fa-reply"></i>
                                                 </a>
                                                 <button type="button" class="btn btn-icon btn-sm {% if message.is_urgent %}bg-rose-100 text-rose-600 hover:bg-rose-200{% else %}btn-ghost{% endif %}" data-post-url="{% url 'mark_urgent' message.id %}" aria-label="{% if message.is_urgent %}Remove urgent flag{% else %}Mark as urgent{% endif %}" title="{% if message.is_urgent %}Remove urgent flag{% else %}Mark as urgent{% endif %}">
                                                     <i class="fas fa-fire"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-icon btn-sm {% if message.is_read %}btn-ghost{% else %}bg-emerald-100 text-emerald-700 hover:bg-emerald-200{% endif %}" data-post-url="{% url 'mark_read' message.id %}" aria-label="{% if message.is_read %}Mark as unread{% else %}Mark as read{% endif %}" title="{% if message.is_read %}Mark as unread{% else %}Mark as read{% endif %}">
+                                                <button type="button" class="btn btn-icon btn-sm {% if message.is_read %}btn-ghost{% else %}bg-brand-100 text-brand-700 hover:bg-brand-200{% endif %}" data-post-url="{% url 'mark_read' message.id %}" aria-label="{% if message.is_read %}Mark as unread{% else %}Mark as read{% endif %}" title="{% if message.is_read %}Mark as unread{% else %}Mark as read{% endif %}">
                                                     <i class="fas {% if message.is_read %}fa-envelope{% else %}fa-check{% endif %}"></i>
                                                 </button>
                                             </div>

@@ -4,8 +4,8 @@ Friendly empty state.
     {% include 'partials/empty_state.html' with icon="fa-cart-shopping" title="Your cart is empty" text="…" cta_url=shop_url cta_label="Start shopping" cta_icon="fa-bag-shopping" %}
 {% endcomment %}
 <div class="card flex flex-col items-center px-6 py-14 text-center animate-fade-up">
-    <span class="relative grid size-20 place-items-center rounded-full bg-emerald-50 text-3xl text-emerald-500">
-        <span class="absolute inset-0 animate-ping rounded-full bg-emerald-100 opacity-50 [animation-duration:2.5s]"></span>
+    <span class="relative grid size-20 place-items-center rounded-full bg-brand-50 text-3xl text-brand-500">
+        <span class="absolute inset-0 animate-ping rounded-full bg-brand-100 opacity-50 [animation-duration:2.5s]"></span>
         <i class="fas {{ icon|default:'fa-box-open' }} relative animate-float"></i>
     </span>
     <h3 class="mt-6 text-lg font-bold text-slate-900">{{ title }}</h3>

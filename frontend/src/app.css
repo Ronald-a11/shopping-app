@@ -17,6 +17,25 @@
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
+  /* Brand: dark blue, on cream surfaces, with slate greys. */
+  --color-brand-50: #eef3fa;
+  --color-brand-100: #d9e3f2;
+  --color-brand-200: #b7c9e6;
+  --color-brand-300: #8ba7d3;
+  --color-brand-400: #5c80bc;
+  --color-brand-500: #3a60a1;
+  --color-brand-600: #264a86;
+  --color-brand-700: #1d3a6c;
+  --color-brand-800: #172e55;
+  --color-brand-900: #112241;
+  --color-brand-950: #0a162b;
+
+  --color-cream-50: #fffdf8;
+  --color-cream-100: #fbf6ec;
+  --color-cream-200: #f4ebd9;
+  --color-cream-300: #eadbbf;
+  --color-cream-400: #d9c39a;
+
   --animate-fade-up: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-fade-in: fade-in 0.4s ease-out both;
   --animate-pop: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
@@ -81,7 +100,7 @@
   }
 
   body {
-    @apply bg-slate-50 font-sans text-slate-700 antialiased;
+    @apply bg-cream-100 font-sans text-slate-700 antialiased;
   }
 
   button:not(:disabled),
@@ -97,7 +116,7 @@
   }
 
   ::selection {
-    @apply bg-emerald-200 text-emerald-950;
+    @apply bg-brand-200 text-brand-950;
   }
 }
 
@@ -113,7 +132,7 @@
   }
 
   .eyebrow {
-    @apply text-xs font-bold tracking-widest text-emerald-600 uppercase;
+    @apply text-xs font-bold tracking-widest text-brand-600 uppercase;
   }
 
   .section-title {
@@ -121,28 +140,28 @@
   }
 
   .link {
-    @apply font-semibold text-emerald-700 underline-offset-4 transition hover:text-emerald-800 hover:underline;
+    @apply font-semibold text-brand-700 underline-offset-4 transition hover:text-brand-800 hover:underline;
   }
 
   /* Buttons ------------------------------------------------------------ */
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold whitespace-nowrap transition duration-200 select-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold whitespace-nowrap transition duration-200 select-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50;
   }
   .btn-primary {
-    @apply bg-emerald-600 text-white shadow-md shadow-emerald-600/20 hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/25;
+    @apply bg-brand-600 text-white shadow-md shadow-brand-600/20 hover:-translate-y-0.5 hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-600/25;
   }
   .btn-secondary {
     @apply bg-white text-slate-700 shadow-sm ring-1 ring-slate-200 ring-inset hover:bg-slate-50 hover:text-slate-900 hover:ring-slate-300;
   }
   .btn-outline {
-    @apply text-emerald-700 ring-1 ring-emerald-600/30 ring-inset hover:bg-emerald-50 hover:ring-emerald-600/50;
+    @apply text-brand-700 ring-1 ring-brand-600/30 ring-inset hover:bg-brand-50 hover:ring-brand-600/50;
   }
   .btn-ghost {
     @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900;
   }
   .btn-light {
-    @apply bg-white text-emerald-700 shadow-lg shadow-emerald-950/10 hover:-translate-y-0.5 hover:bg-emerald-50;
+    @apply bg-white text-brand-700 shadow-lg shadow-brand-950/10 hover:-translate-y-0.5 hover:bg-brand-50;
   }
   .btn-danger {
     @apply bg-rose-600 text-white shadow-md shadow-rose-600/20 hover:-translate-y-0.5 hover:bg-rose-700;
@@ -167,7 +186,7 @@
   }
 
   .icon-btn {
-    @apply relative grid size-10 place-items-center rounded-xl text-slate-600 transition hover:bg-slate-100 hover:text-emerald-700 active:scale-95;
+    @apply relative grid size-10 place-items-center rounded-xl text-slate-600 transition hover:bg-slate-100 hover:text-brand-700 active:scale-95;
   }
 
   /* Cards -------------------------------------------------------------- */
@@ -188,7 +207,7 @@
     @apply p-5 sm:p-6;
   }
   .card-footer {
-    @apply flex flex-wrap items-center gap-2 border-t border-slate-100 bg-slate-50/60 px-5 py-3 sm:px-6;
+    @apply flex flex-wrap items-center gap-2 border-t border-slate-100 bg-cream-50 px-5 py-3 sm:px-6;
   }
 
   .stat-card {
@@ -215,7 +234,7 @@
     @apply mb-1.5 block text-sm font-semibold text-slate-700;
   }
   .input {
-    @apply block w-full rounded-xl border-0 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm ring-1 ring-slate-300 transition duration-200 ring-inset placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500 focus:outline-none;
+    @apply block w-full rounded-xl border-0 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm ring-1 ring-slate-300 transition duration-200 ring-inset placeholder:text-slate-400 focus:ring-2 focus:ring-brand-500 focus:outline-none;
   }
   select.input {
     @apply appearance-none pr-10;
@@ -237,7 +256,7 @@
     @apply mt-1.5 text-xs text-slate-500;
   }
   .input-addon-btn {
-    @apply absolute inset-y-0 right-0 grid w-11 place-items-center rounded-r-xl text-slate-400 transition hover:text-emerald-600;
+    @apply absolute inset-y-0 right-0 grid w-11 place-items-center rounded-r-xl text-slate-400 transition hover:text-brand-600;
   }
 
   /* Quantity stepper: <div class="qty" data-qty><button data-qty-dec>…<input>…<button data-qty-inc> */
@@ -245,7 +264,7 @@
     @apply inline-flex items-center overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-300 ring-inset;
   }
   .qty button {
-    @apply grid size-10 place-items-center text-slate-500 transition hover:bg-slate-100 hover:text-emerald-700 active:scale-90 disabled:opacity-40;
+    @apply grid size-10 place-items-center text-slate-500 transition hover:bg-slate-100 hover:text-brand-700 active:scale-90 disabled:opacity-40;
   }
   .qty input {
     @apply w-12 border-0 bg-transparent p-0 text-center text-sm font-bold text-slate-900 focus:ring-0 focus:outline-none;
@@ -268,10 +287,10 @@
   }
 
   .chip {
-    @apply inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 ring-1 ring-slate-200 transition ring-inset hover:-translate-y-0.5 hover:bg-emerald-50 hover:text-emerald-700 hover:ring-emerald-200 active:scale-95;
+    @apply inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 ring-1 ring-slate-200 transition ring-inset hover:-translate-y-0.5 hover:bg-brand-50 hover:text-brand-700 hover:ring-brand-200 active:scale-95;
   }
   .chip.is-active {
-    @apply bg-emerald-600 text-white ring-emerald-600;
+    @apply bg-brand-600 text-white ring-brand-600;
   }
 
   /* Badges ------------------------------------------------------------- */
@@ -307,7 +326,7 @@
     @apply w-full text-left text-sm;
   }
   .table thead th {
-    @apply bg-slate-50 px-4 py-3 text-xs font-bold tracking-wide whitespace-nowrap text-slate-500 uppercase first:pl-5 last:pr-5 sm:first:pl-6 sm:last:pr-6;
+    @apply bg-cream-50 px-4 py-3 text-xs font-bold tracking-wide whitespace-nowrap text-slate-500 uppercase first:pl-5 last:pr-5 sm:first:pl-6 sm:last:pr-6;
   }
   .table tbody td {
     @apply border-t border-slate-100 px-4 py-3.5 align-middle first:pl-5 last:pr-5 sm:first:pl-6 sm:last:pr-6;
@@ -329,18 +348,18 @@
    * main.js adds a sliding .tab-indicator behind the active tab.
    */
   .tabs {
-    @apply relative flex w-fit max-w-full gap-1 overflow-x-auto rounded-2xl bg-slate-100 p-1;
+    @apply relative flex w-fit max-w-full gap-1 overflow-x-auto rounded-2xl bg-cream-200 p-1;
     scrollbar-width: none;
   }
   .tabs::-webkit-scrollbar {
     display: none;
   }
   .tab {
-    @apply relative z-10 inline-flex shrink-0 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold whitespace-nowrap text-slate-500 transition-colors duration-200 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none;
+    @apply relative z-10 inline-flex shrink-0 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold whitespace-nowrap text-slate-500 transition-colors duration-200 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none;
   }
   .tab[aria-selected="true"],
   .tab.is-active {
-    @apply text-emerald-700;
+    @apply text-brand-700;
   }
   .tabs:not(.has-indicator) .tab[aria-selected="true"],
   .tabs:not(.has-indicator) .tab.is-active {
@@ -355,7 +374,7 @@
   }
   .tab[aria-selected="true"] .tab-count,
   .tab.is-active .tab-count {
-    @apply bg-emerald-100 text-emerald-700;
+    @apply bg-brand-100 text-brand-700;
   }
 
   /* Underlined tab style for content sections (e.g. product details). */
@@ -370,42 +389,42 @@
     @apply rounded-none px-0.5 pb-3 pt-1;
   }
   .tabs-line .tab-indicator {
-    @apply top-auto bottom-0 h-0.5 rounded-full bg-emerald-600 shadow-none ring-0;
+    @apply top-auto bottom-0 h-0.5 rounded-full bg-brand-600 shadow-none ring-0;
   }
 
   /* Header ------------------------------------------------------------- */
 
   .site-header {
-    @apply sticky top-0 z-50 border-b border-transparent bg-white/80 backdrop-blur-xl transition-[box-shadow,border-color,background-color] duration-300;
+    @apply sticky top-0 z-50 border-b border-transparent bg-cream-50/85 backdrop-blur-xl transition-[box-shadow,border-color,background-color] duration-300;
   }
   .site-header.is-scrolled {
-    @apply border-slate-200/70 bg-white/90 shadow-lg shadow-slate-900/5;
+    @apply border-slate-200/70 bg-cream-50/95 shadow-lg shadow-slate-900/5;
   }
   .nav-link {
-    @apply relative rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 transition-colors hover:text-emerald-700;
+    @apply relative rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 transition-colors hover:text-brand-700;
   }
   .nav-link::after {
     content: "";
-    @apply absolute inset-x-3 bottom-0.5 h-0.5 origin-left scale-x-0 rounded-full bg-emerald-500 transition-transform duration-300;
+    @apply absolute inset-x-3 bottom-0.5 h-0.5 origin-left scale-x-0 rounded-full bg-brand-500 transition-transform duration-300;
   }
   .nav-link:hover::after,
   .nav-link.is-active::after {
     @apply scale-x-100;
   }
   .nav-link.is-active {
-    @apply text-emerald-700;
+    @apply text-brand-700;
   }
   .mobile-link {
-    @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-emerald-700;
+    @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-brand-700;
   }
   .mobile-link i {
     @apply w-5 text-center text-slate-400;
   }
   .mobile-link.is-active {
-    @apply bg-emerald-50 text-emerald-700;
+    @apply bg-brand-50 text-brand-700;
   }
   .mobile-link.is-active i {
-    @apply text-emerald-600;
+    @apply text-brand-600;
   }
   .mobile-menu {
     @apply grid lg:hidden;
@@ -436,19 +455,19 @@
     @apply visible scale-100 opacity-100;
   }
   .dropdown-item {
-    @apply flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-emerald-50 hover:text-emerald-700;
+    @apply flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-brand-50 hover:text-brand-700;
   }
   .dropdown-item i {
     @apply w-4 text-center text-slate-400;
   }
   .dropdown-item:hover i {
-    @apply text-emerald-600;
+    @apply text-brand-600;
   }
 
   /* Page header (see templates/partials/page_header.html) -------------- */
 
   .page-header {
-    @apply relative isolate overflow-hidden bg-emerald-800;
+    @apply relative isolate overflow-hidden bg-brand-900;
   }
   .page-header-pattern {
     @apply absolute inset-0 -z-10 opacity-60;
@@ -460,7 +479,7 @@
     @apply absolute -z-10 rounded-full opacity-40 blur-3xl animate-blob;
   }
   .breadcrumb {
-    @apply flex flex-wrap items-center gap-2 text-xs font-medium text-emerald-100/80;
+    @apply flex flex-wrap items-center gap-2 text-xs font-medium text-brand-100/80;
   }
   .breadcrumb a {
     @apply inline-flex items-center gap-1.5 transition hover:text-white;
@@ -482,11 +501,11 @@
     @apply absolute top-0 -left-10 isolate grid size-7 place-items-center rounded-full bg-white text-[11px] text-slate-400 ring-2 ring-slate-200 transition;
   }
   .timeline-step.is-done .timeline-dot {
-    @apply bg-emerald-500 text-white ring-emerald-500;
+    @apply bg-brand-500 text-white ring-brand-500;
   }
   .timeline-step.is-current .timeline-dot::after {
     content: "";
-    @apply absolute inset-0 -z-10 animate-ping rounded-full bg-emerald-400;
+    @apply absolute inset-0 -z-10 animate-ping rounded-full bg-brand-400;
   }
   .timeline-step.is-cancelled .timeline-dot {
     @apply bg-rose-500 text-white ring-rose-500;
@@ -495,10 +514,10 @@
   /* Pagination --------------------------------------------------------- */
 
   .page-btn {
-    @apply grid h-10 min-w-10 place-items-center rounded-xl bg-white px-3 text-sm font-semibold text-slate-600 shadow-sm ring-1 ring-slate-200 transition ring-inset hover:-translate-y-0.5 hover:text-emerald-700 hover:ring-emerald-300;
+    @apply grid h-10 min-w-10 place-items-center rounded-xl bg-white px-3 text-sm font-semibold text-slate-600 shadow-sm ring-1 ring-slate-200 transition ring-inset hover:-translate-y-0.5 hover:text-brand-700 hover:ring-brand-300;
   }
   .page-btn.is-active {
-    @apply bg-emerald-600 text-white ring-emerald-600 hover:text-white;
+    @apply bg-brand-600 text-white ring-brand-600 hover:text-white;
   }
   .page-btn.is-disabled {
     @apply pointer-events-none opacity-40;
@@ -547,7 +566,7 @@
   }
 
   #page-progress {
-    @apply pointer-events-none fixed inset-x-0 top-0 z-[100] h-[3px] origin-left scale-x-0 bg-linear-to-r from-emerald-400 via-emerald-500 to-amber-400 opacity-0;
+    @apply pointer-events-none fixed inset-x-0 top-0 z-[100] h-[3px] origin-left scale-x-0 bg-linear-to-r from-brand-400 via-brand-500 to-amber-400 opacity-0;
   }
   #page-progress.is-loading {
     opacity: 1;
@@ -574,7 +593,7 @@
     visibility: hidden;
   }
   .preloader-dot {
-    @apply size-2.5 rounded-full bg-emerald-500;
+    @apply size-2.5 rounded-full bg-brand-500;
     animation: preloader-bounce 1s infinite ease-in-out;
   }
   .preloader-dot:nth-child(2) { animation-delay: 0.15s; }
@@ -634,11 +653,11 @@
   }
 
   .fly-dot {
-    @apply pointer-events-none fixed top-0 left-0 z-[100] grid size-8 place-items-center rounded-full bg-emerald-600 text-xs text-white shadow-lg shadow-emerald-600/40;
+    @apply pointer-events-none fixed top-0 left-0 z-[100] grid size-8 place-items-center rounded-full bg-brand-600 text-xs text-white shadow-lg shadow-brand-600/40;
   }
 
   .back-to-top {
-    @apply pointer-events-none fixed right-4 bottom-4 z-40 grid size-12 translate-y-4 place-items-center rounded-full bg-emerald-600 text-white opacity-0 shadow-lg shadow-emerald-600/30 transition duration-300 hover:bg-emerald-700 sm:right-6 sm:bottom-6;
+    @apply pointer-events-none fixed right-4 bottom-4 z-40 grid size-12 translate-y-4 place-items-center rounded-full bg-brand-600 text-white opacity-0 shadow-lg shadow-brand-600/30 transition duration-300 hover:bg-brand-700 sm:right-6 sm:bottom-6;
   }
   .back-to-top.is-visible {
     @apply pointer-events-auto translate-y-0 opacity-100;

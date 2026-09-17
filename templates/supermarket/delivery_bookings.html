@@ -26,7 +26,7 @@
                             <article class="card card-hover flex h-full flex-col" data-filter-item="{% if booking.status == 'delivered' %}delivered{% elif booking.status == 'cancelled' %}cancelled{% else %}upcoming{% endif %}">
                                 <div class="card-body flex flex-1 gap-4">
                                     <div class="flex w-16 shrink-0 flex-col self-start overflow-hidden rounded-xl text-center ring-1 ring-slate-200">
-                                        <span class="py-1 text-[11px] font-bold tracking-wider text-white uppercase {% if booking.status == 'cancelled' %}bg-slate-400{% elif booking.status == 'delivered' %}bg-emerald-700{% else %}bg-emerald-600{% endif %}">{{ booking.delivery_date|date:"M" }}</span>
+                                        <span class="py-1 text-[11px] font-bold tracking-wider text-white uppercase {% if booking.status == 'cancelled' %}bg-slate-400{% elif booking.status == 'delivered' %}bg-brand-700{% else %}bg-brand-600{% endif %}">{{ booking.delivery_date|date:"M" }}</span>
                                         <span class="bg-white py-1.5 text-2xl leading-none font-extrabold {% if booking.status == 'cancelled' %}text-slate-400 line-through{% else %}text-slate-900{% endif %}">{{ booking.delivery_date|date:"j" }}</span>
                                         <span class="bg-white pb-1.5 text-[10px] font-semibold text-slate-400">{{ booking.delivery_date|date:"D" }}</span>
                                     </div>

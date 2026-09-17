@@ -40,13 +40,13 @@
     {% else %}
         <section class="card card-body animate-fade-up" aria-label="Delivery progress">
             <div class="flex flex-wrap items-center justify-between gap-3">
-                <h2 class="card-title"><i class="fas fa-route text-emerald-600"></i> Delivery progress</h2>
+                <h2 class="card-title"><i class="fas fa-route text-brand-600"></i> Delivery progress</h2>
                 {% include 'partials/status_badge.html' with status=booking.status label=booking.get_status_display %}
             </div>
 
             <div class="relative mt-8">
                 <div aria-hidden="true" class="absolute top-[18px] right-[12.5%] left-[12.5%] h-1 overflow-hidden rounded-full bg-slate-200">
-                    <div class="relative h-full overflow-hidden rounded-full bg-linear-to-r from-emerald-500 to-emerald-600 transition-[width] delay-300 duration-1000 ease-out starting:w-0 {% if booking.status == 'delivered' %}w-full{% elif booking.status == 'in_transit' %}w-2/3{% elif booking.status == 'confirmed' %}w-1/3{% else %}w-0{% endif %}">
+                    <div class="relative h-full overflow-hidden rounded-full bg-linear-to-r from-brand-500 to-brand-600 transition-[width] delay-300 duration-1000 ease-out starting:w-0 {% if booking.status == 'delivered' %}w-full{% elif booking.status == 'in_transit' %}w-2/3{% elif booking.status == 'confirmed' %}w-1/3{% else %}w-0{% endif %}">
                         {% if booking.status != 'delivered' %}
                             <span class="absolute inset-0 animate-shimmer bg-linear-to-r from-transparent via-white/60 to-transparent"></span>
                         {% endif %}
@@ -56,48 +56,48 @@
                 <ol class="relative grid grid-cols-4">
                     <li class="flex flex-col items-center gap-2 text-center" {% if booking.status == 'pending' %}aria-current="step"{% endif %}>
                         {% if booking.status == 'pending' %}
-                            <span class="relative grid size-10 place-items-center rounded-full bg-white text-emerald-700 ring-2 ring-emerald-600">
-                                <span class="absolute inset-0 animate-ping rounded-full ring-2 ring-emerald-400 opacity-50"></span>
+                            <span class="relative grid size-10 place-items-center rounded-full bg-white text-brand-700 ring-2 ring-brand-600">
+                                <span class="absolute inset-0 animate-ping rounded-full ring-2 ring-brand-400 opacity-50"></span>
                                 <i class="fas fa-hourglass-half text-sm"></i>
                             </span>
                         {% else %}
-                            <span class="grid size-10 place-items-center rounded-full bg-emerald-600 text-white shadow-md shadow-emerald-600/30 animate-pop"><i class="fas fa-hourglass-half text-sm"></i></span>
+                            <span class="grid size-10 place-items-center rounded-full bg-brand-600 text-white shadow-md shadow-brand-600/30 animate-pop"><i class="fas fa-hourglass-half text-sm"></i></span>
                         {% endif %}
-                        <span class="text-xs font-semibold text-emerald-700 sm:text-sm">Pending</span>
+                        <span class="text-xs font-semibold text-brand-700 sm:text-sm">Pending</span>
                     </li>
                     <li class="flex flex-col items-center gap-2 text-center" {% if booking.status == 'confirmed' %}aria-current="step"{% endif %}>
                         {% if booking.status == 'confirmed' %}
-                            <span class="relative grid size-10 place-items-center rounded-full bg-white text-emerald-700 ring-2 ring-emerald-600">
-                                <span class="absolute inset-0 animate-ping rounded-full ring-2 ring-emerald-400 opacity-50"></span>
+                            <span class="relative grid size-10 place-items-center rounded-full bg-white text-brand-700 ring-2 ring-brand-600">
+                                <span class="absolute inset-0 animate-ping rounded-full ring-2 ring-brand-400 opacity-50"></span>
                                 <i class="fas fa-circle-check text-sm"></i>
                             </span>
                         {% elif booking.status == 'in_transit' or booking.status == 'delivered' %}
-                            <span class="grid size-10 place-items-center rounded-full bg-emerald-600 text-white shadow-md shadow-emerald-600/30 animate-pop [animation-delay:250ms]"><i class="fas fa-circle-check text-sm"></i></span>
+                            <span class="grid size-10 place-items-center rounded-full bg-brand-600 text-white shadow-md shadow-brand-600/30 animate-pop [animation-delay:250ms]"><i class="fas fa-circle-check text-sm"></i></span>
                         {% else %}
                             <span class="grid size-10 place-items-center rounded-full bg-white text-slate-400 ring-2 ring-slate-200"><i class="fas fa-circle-check text-sm"></i></span>
                         {% endif %}
-                        <span class="text-xs font-semibold sm:text-sm {% if booking.status == 'pending' %}text-slate-400{% else %}text-emerald-700{% endif %}">Confirmed</span>
+                        <span class="text-xs font-semibold sm:text-sm {% if booking.status == 'pending' %}text-slate-400{% else %}text-brand-700{% endif %}">Confirmed</span>
                     </li>
                     <li class="flex flex-col items-center gap-2 text-center" {% if booking.status == 'in_transit' %}aria-current="step"{% endif %}>
                         {% if booking.status == 'in_transit' %}
-                            <span class="relative grid size-10 place-items-center rounded-full bg-white text-emerald-700 ring-2 ring-emerald-600">
-                                <span class="absolute inset-0 animate-ping rounded-full ring-2 ring-emerald-400 opacity-50"></span>
+                            <span class="relative grid size-10 place-items-center rounded-full bg-white text-brand-700 ring-2 ring-brand-600">
+                                <span class="absolute inset-0 animate-ping rounded-full ring-2 ring-brand-400 opacity-50"></span>
                                 <i class="fas fa-truck-fast text-sm"></i>
                             </span>
                         {% elif booking.status == 'delivered' %}
-                            <span class="grid size-10 place-items-center rounded-full bg-emerald-600 text-white shadow-md shadow-emerald-600/30 animate-pop [animation-delay:500ms]"><i class="fas fa-truck-fast text-sm"></i></span>
+                            <span class="grid size-10 place-items-center rounded-full bg-brand-600 text-white shadow-md shadow-brand-600/30 animate-pop [animation-delay:500ms]"><i class="fas fa-truck-fast text-sm"></i></span>
                         {% else %}
                             <span class="grid size-10 place-items-center rounded-full bg-white text-slate-400 ring-2 ring-slate-200"><i class="fas fa-truck-fast text-sm"></i></span>
                         {% endif %}
-                        <span class="text-xs font-semibold sm:text-sm {% if booking.status == 'in_transit' or booking.status == 'delivered' %}text-emerald-700{% else %}text-slate-400{% endif %}">In transit</span>
+                        <span class="text-xs font-semibold sm:text-sm {% if booking.status == 'in_transit' or booking.status == 'delivered' %}text-brand-700{% else %}text-slate-400{% endif %}">In transit</span>
                     </li>
                     <li class="flex flex-col items-center gap-2 text-center" {% if booking.status == 'delivered' %}aria-current="step"{% endif %}>
                         {% if booking.status == 'delivered' %}
-                            <span class="grid size-10 place-items-center rounded-full bg-emerald-600 text-white shadow-md shadow-emerald-600/30 animate-pop [animation-delay:750ms]"><i class="fas fa-house-circle-check text-sm"></i></span>
+                            <span class="grid size-10 place-items-center rounded-full bg-brand-600 text-white shadow-md shadow-brand-600/30 animate-pop [animation-delay:750ms]"><i class="fas fa-house-circle-check text-sm"></i></span>
                         {% else %}
                             <span class="grid size-10 place-items-center rounded-full bg-white text-slate-400 ring-2 ring-slate-200"><i class="fas fa-house-circle-check text-sm"></i></span>
                         {% endif %}
-                        <span class="text-xs font-semibold sm:text-sm {% if booking.status == 'delivered' %}text-emerald-700{% else %}text-slate-400{% endif %}">Delivered</span>
+                        <span class="text-xs font-semibold sm:text-sm {% if booking.status == 'delivered' %}text-brand-700{% else %}text-slate-400{% endif %}">Delivered</span>
                     </li>
                 </ol>
             </div>
@@ -109,7 +109,7 @@
             <div class="grid gap-6 md:grid-cols-2">
                 <section class="card">
                     <div class="card-header">
-                        <h2 class="card-title"><i class="fas fa-calendar-days text-emerald-600"></i> Delivery info</h2>
+                        <h2 class="card-title"><i class="fas fa-calendar-days text-brand-600"></i> Delivery info</h2>
                     </div>
                     <dl class="px-5 py-2 sm:px-6">
                         <div class="kv"><dt>Date</dt><dd>{{ booking.delivery_date|date:"D, j M Y" }}</dd></div>
@@ -122,7 +122,7 @@
 
                 <section class="card">
                     <div class="card-header">
-                        <h2 class="card-title"><i class="fas fa-location-dot text-emerald-600"></i> Contact &amp; address</h2>
+                        <h2 class="card-title"><i class="fas fa-location-dot text-brand-600"></i> Contact &amp; address</h2>
                     </div>
                     <dl class="px-5 py-2 sm:px-6">
                         <div class="kv"><dt>Phone</dt><dd><a href="tel:{{ booking.delivery_phone }}" class="link">{{ booking.delivery_phone }}</a></dd></div>
@@ -148,7 +148,7 @@
         <aside class="space-y-6 lg:sticky lg:top-24">
             <section class="card animate-fade-up [animation-delay:150ms]">
                 <div class="card-header">
-                    <h2 class="card-title"><i class="fas fa-circle-info text-emerald-600"></i> Booking details</h2>
+                    <h2 class="card-title"><i class="fas fa-circle-info text-brand-600"></i> Booking details</h2>
                 </div>
                 <dl class="px-5 py-2 sm:px-6">
                     <div class="kv"><dt>Created</dt><dd>{{ booking.created_at|date:"j M Y, g:i A" }}</dd></div>

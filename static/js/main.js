@@ -173,7 +173,7 @@
       backdrop.innerHTML =
         '<div class="modal-panel" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-message">' +
           '<div class="flex items-start gap-4">' +
-            '<span class="grid size-12 shrink-0 place-items-center rounded-full ' + (danger ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600') + ' animate-wiggle">' +
+            '<span class="grid size-12 shrink-0 place-items-center rounded-full ' + (danger ? 'bg-rose-100 text-rose-600' : 'bg-brand-100 text-brand-600') + ' animate-wiggle">' +
               '<i class="fas ' + (danger ? 'fa-triangle-exclamation' : 'fa-circle-question') + ' text-lg"></i>' +
             '</span>' +
             '<div class="min-w-0">' +
@@ -476,10 +476,10 @@
     const original = btn.innerHTML;
     const hasText = btn.textContent.trim().length > 0;
     btn.innerHTML = '<i class="fas fa-check animate-pop"></i>' + (hasText ? '<span>Added</span>' : '');
-    btn.classList.add('!bg-emerald-500');
+    btn.classList.add('!bg-brand-500');
     setTimeout(() => {
       btn.innerHTML = original;
-      btn.classList.remove('!bg-emerald-500');
+      btn.classList.remove('!bg-brand-500');
     }, 1400);
   }
 

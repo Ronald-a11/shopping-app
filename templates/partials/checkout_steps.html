@@ -4,25 +4,25 @@ Progress through the purchase: 1 = cart, 2 = checkout, 3 = delivery booking.
     {% include 'partials/checkout_steps.html' with step=2 %}
 {% endcomment %}
 <ol class="flex flex-wrap items-center gap-2 text-xs font-semibold sm:gap-3 sm:text-sm" aria-label="Checkout progress">
-    <li class="flex items-center gap-2 text-emerald-700" {% if step == 1 %}aria-current="step"{% endif %}>
+    <li class="flex items-center gap-2 text-brand-700" {% if step == 1 %}aria-current="step"{% endif %}>
         {% if step > 1 %}
-            <span class="grid size-7 place-items-center rounded-full bg-emerald-600 text-white animate-pop"><i class="fas fa-check text-[10px]"></i></span>
+            <span class="grid size-7 place-items-center rounded-full bg-brand-600 text-white animate-pop"><i class="fas fa-check text-[10px]"></i></span>
         {% else %}
-            <span class="relative grid size-7 place-items-center rounded-full bg-white text-emerald-700 ring-2 ring-emerald-600">
-                <span class="absolute inset-0 animate-ping rounded-full ring-2 ring-emerald-400 opacity-50"></span>1
+            <span class="relative grid size-7 place-items-center rounded-full bg-white text-brand-700 ring-2 ring-brand-600">
+                <span class="absolute inset-0 animate-ping rounded-full ring-2 ring-brand-400 opacity-50"></span>1
             </span>
         {% endif %}
         Cart
     </li>
     <li aria-hidden="true" class="h-0.5 w-6 overflow-hidden rounded-full bg-slate-200 sm:w-12">
-        <span class="block h-full bg-emerald-500 {% if step > 1 %}w-full{% else %}w-0{% endif %}"></span>
+        <span class="block h-full bg-brand-500 {% if step > 1 %}w-full{% else %}w-0{% endif %}"></span>
     </li>
-    <li class="flex items-center gap-2 {% if step >= 2 %}text-emerald-700{% else %}text-slate-400{% endif %}" {% if step == 2 %}aria-current="step"{% endif %}>
+    <li class="flex items-center gap-2 {% if step >= 2 %}text-brand-700{% else %}text-slate-400{% endif %}" {% if step == 2 %}aria-current="step"{% endif %}>
         {% if step > 2 %}
-            <span class="grid size-7 place-items-center rounded-full bg-emerald-600 text-white animate-pop"><i class="fas fa-check text-[10px]"></i></span>
+            <span class="grid size-7 place-items-center rounded-full bg-brand-600 text-white animate-pop"><i class="fas fa-check text-[10px]"></i></span>
         {% elif step == 2 %}
-            <span class="relative grid size-7 place-items-center rounded-full bg-white text-emerald-700 ring-2 ring-emerald-600">
-                <span class="absolute inset-0 animate-ping rounded-full ring-2 ring-emerald-400 opacity-50"></span>2
+            <span class="relative grid size-7 place-items-center rounded-full bg-white text-brand-700 ring-2 ring-brand-600">
+                <span class="absolute inset-0 animate-ping rounded-full ring-2 ring-brand-400 opacity-50"></span>2
             </span>
         {% else %}
             <span class="grid size-7 place-items-center rounded-full bg-slate-100 text-slate-500">2</span>
@@ -30,12 +30,12 @@ Progress through the purchase: 1 = cart, 2 = checkout, 3 = delivery booking.
         Checkout
     </li>
     <li aria-hidden="true" class="h-0.5 w-6 overflow-hidden rounded-full bg-slate-200 sm:w-12">
-        <span class="block h-full bg-emerald-500 {% if step > 2 %}w-full{% else %}w-0{% endif %}"></span>
+        <span class="block h-full bg-brand-500 {% if step > 2 %}w-full{% else %}w-0{% endif %}"></span>
     </li>
-    <li class="flex items-center gap-2 {% if step >= 3 %}text-emerald-700{% else %}text-slate-400{% endif %}" {% if step == 3 %}aria-current="step"{% endif %}>
+    <li class="flex items-center gap-2 {% if step >= 3 %}text-brand-700{% else %}text-slate-400{% endif %}" {% if step == 3 %}aria-current="step"{% endif %}>
         {% if step == 3 %}
-            <span class="relative grid size-7 place-items-center rounded-full bg-white text-emerald-700 ring-2 ring-emerald-600">
-                <span class="absolute inset-0 animate-ping rounded-full ring-2 ring-emerald-400 opacity-50"></span>3
+            <span class="relative grid size-7 place-items-center rounded-full bg-white text-brand-700 ring-2 ring-brand-600">
+                <span class="absolute inset-0 animate-ping rounded-full ring-2 ring-brand-400 opacity-50"></span>3
             </span>
         {% else %}
             <span class="grid size-7 place-items-center rounded-full bg-slate-100 text-slate-500">3</span>

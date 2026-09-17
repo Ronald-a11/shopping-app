@@ -13,12 +13,12 @@
         <!-- Account summary -->
         <aside class="lg:sticky lg:top-24 lg:self-start">
             <div class="card overflow-hidden animate-fade-up">
-                <div class="relative isolate h-24 overflow-hidden bg-linear-to-br from-emerald-500 to-emerald-800">
+                <div class="relative isolate h-24 overflow-hidden bg-linear-to-br from-brand-500 to-brand-800">
                     <div aria-hidden="true" class="page-header-pattern"></div>
-                    <div aria-hidden="true" class="page-header-blob -top-16 -right-10 size-40 bg-teal-300"></div>
+                    <div aria-hidden="true" class="page-header-blob -top-16 -right-10 size-40 bg-cream-300"></div>
                 </div>
                 <div class="relative -mt-12 px-6 pb-6 text-center">
-                    <span class="mx-auto grid size-24 place-items-center rounded-full bg-linear-to-br from-emerald-100 to-emerald-200 text-3xl font-extrabold text-emerald-800 shadow-lg ring-4 ring-white animate-pop">
+                    <span class="mx-auto grid size-24 place-items-center rounded-full bg-linear-to-br from-brand-100 to-brand-200 text-3xl font-extrabold text-brand-800 shadow-lg ring-4 ring-white animate-pop">
                         {% if user.first_name %}{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}{% else %}{{ user.username|first|upper }}{% endif %}
                     </span>
                     <h2 class="mt-4 text-lg font-extrabold text-slate-900">{{ user.get_full_name|default:user.username }}</h2>
@@ -29,20 +29,20 @@
                     <p class="mt-4"><span class="badge badge-green"><i class="fas fa-calendar-days"></i> Member since {{ user.date_joined|date:'F Y' }}</span></p>
                 </div>
                 <nav class="grid gap-1 border-t border-slate-100 p-3" aria-label="Account shortcuts">
-                    <a href="{% url 'order_history' %}" class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-emerald-50 hover:text-emerald-700">
-                        <span class="grid size-8 place-items-center rounded-lg bg-slate-100 text-slate-500 transition group-hover:bg-emerald-100 group-hover:text-emerald-600"><i class="fas fa-receipt"></i></span>
+                    <a href="{% url 'order_history' %}" class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-brand-50 hover:text-brand-700">
+                        <span class="grid size-8 place-items-center rounded-lg bg-slate-100 text-slate-500 transition group-hover:bg-brand-100 group-hover:text-brand-600"><i class="fas fa-receipt"></i></span>
                         My orders
-                        <span class="ml-auto text-xs text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-emerald-500"><i class="fas fa-chevron-right"></i></span>
+                        <span class="ml-auto text-xs text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-brand-500"><i class="fas fa-chevron-right"></i></span>
                     </a>
-                    <a href="{% url 'delivery_bookings' %}" class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-emerald-50 hover:text-emerald-700">
-                        <span class="grid size-8 place-items-center rounded-lg bg-slate-100 text-slate-500 transition group-hover:bg-emerald-100 group-hover:text-emerald-600"><i class="fas fa-truck"></i></span>
+                    <a href="{% url 'delivery_bookings' %}" class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-brand-50 hover:text-brand-700">
+                        <span class="grid size-8 place-items-center rounded-lg bg-slate-100 text-slate-500 transition group-hover:bg-brand-100 group-hover:text-brand-600"><i class="fas fa-truck"></i></span>
                         My deliveries
-                        <span class="ml-auto text-xs text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-emerald-500"><i class="fas fa-chevron-right"></i></span>
+                        <span class="ml-auto text-xs text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-brand-500"><i class="fas fa-chevron-right"></i></span>
                     </a>
-                    <a href="{% url 'delivery_booking' %}" class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-emerald-50 hover:text-emerald-700">
-                        <span class="grid size-8 place-items-center rounded-lg bg-slate-100 text-slate-500 transition group-hover:bg-emerald-100 group-hover:text-emerald-600"><i class="fas fa-calendar-plus"></i></span>
+                    <a href="{% url 'delivery_booking' %}" class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-brand-50 hover:text-brand-700">
+                        <span class="grid size-8 place-items-center rounded-lg bg-slate-100 text-slate-500 transition group-hover:bg-brand-100 group-hover:text-brand-600"><i class="fas fa-calendar-plus"></i></span>
                         Book a delivery
-                        <span class="ml-auto text-xs text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-emerald-500"><i class="fas fa-chevron-right"></i></span>
+                        <span class="ml-auto text-xs text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-brand-500"><i class="fas fa-chevron-right"></i></span>
                     </a>
                 </nav>
             </div>
@@ -54,7 +54,7 @@
                 {% csrf_token %}
 
                 <div class="card-header flex-wrap">
-                    <h2 class="card-title"><i class="fas fa-pen-to-square text-emerald-600"></i> Edit profile</h2>
+                    <h2 class="card-title"><i class="fas fa-pen-to-square text-brand-600"></i> Edit profile</h2>
                     <div class="tabs w-fit">
                         <button type="button" class="tab" data-tab="personal">
                             <i class="fas fa-id-card"></i> Personal details

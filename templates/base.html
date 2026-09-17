@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#065f46">
+    <meta name="theme-color" content="#112241">
     <meta name="csrf-token" content="{{ csrf_token }}">
     <title>{% block title %}Home{% endblock %} · JKC Supermarket</title>
 
@@ -34,8 +34,8 @@
     <!-- Splash loader (first page view of a session only) -->
     <div id="preloader" aria-hidden="true">
         <div class="flex flex-col items-center gap-5">
-            <div class="relative grid size-16 place-items-center rounded-2xl bg-linear-to-br from-emerald-500 to-emerald-700 text-2xl text-white shadow-xl shadow-emerald-600/30 animate-pop">
-                <span class="absolute inset-0 -z-10 animate-ping rounded-2xl bg-emerald-400 opacity-40"></span>
+            <div class="relative grid size-16 place-items-center rounded-2xl bg-linear-to-br from-brand-500 to-brand-700 text-2xl text-white shadow-xl shadow-brand-600/30 animate-pop">
+                <span class="absolute inset-0 -z-10 animate-ping rounded-2xl bg-brand-400 opacity-40"></span>
                 <i class="fas fa-basket-shopping"></i>
             </div>
             <p class="text-sm font-extrabold tracking-wide text-slate-900">JKC Supermarket</p>
@@ -50,7 +50,7 @@
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[120] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:shadow-lg">Skip to content</a>
 
     <!-- Announcement bar -->
-    <div class="hidden bg-emerald-950 text-emerald-50 sm:block">
+    <div class="hidden bg-brand-950 text-brand-50 sm:block">
         <div class="container-page flex h-9 items-center justify-between text-xs font-medium">
             <p class="flex items-center gap-2">
                 <i class="fas fa-truck-fast text-amber-300"></i>
@@ -69,7 +69,7 @@
     <header class="site-header">
         <div class="container-page flex h-16 items-center gap-3 lg:h-[72px]">
             <a href="{% url 'home' %}" class="group flex shrink-0 items-center gap-2.5" aria-label="JKC Supermarket home">
-                <span class="grid size-10 place-items-center rounded-xl bg-linear-to-br from-emerald-500 to-emerald-700 text-white shadow-md shadow-emerald-600/25 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105">
+                <span class="grid size-10 place-items-center rounded-xl bg-linear-to-br from-brand-500 to-brand-700 text-white shadow-md shadow-brand-600/25 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105">
                     <i class="fas fa-basket-shopping"></i>
                 </span>
                 <span class="leading-tight">
@@ -90,17 +90,17 @@
                 <label class="relative block">
                     <span class="sr-only">Search products</span>
                     <i class="fas fa-magnifying-glass pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-sm text-slate-400"></i>
-                    <input type="search" name="search" value="{{ request.GET.search }}" placeholder="Search products…" class="input rounded-full bg-slate-100 pl-10 ring-transparent focus:bg-white focus:ring-emerald-500">
+                    <input type="search" name="search" value="{{ request.GET.search }}" placeholder="Search products…" class="input rounded-full bg-slate-100 pl-10 ring-transparent focus:bg-white focus:ring-brand-500">
                 </label>
             </form>
 
             <div class="ml-auto flex items-center gap-1 md:ml-2">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'delivery_bookings' %}" class="icon-btn hidden sm:grid {% if url_name == 'delivery_bookings' %}bg-emerald-50 text-emerald-700{% endif %}" title="My deliveries" aria-label="My deliveries">
+                    <a href="{% url 'delivery_bookings' %}" class="icon-btn hidden sm:grid {% if url_name == 'delivery_bookings' %}bg-brand-50 text-brand-700{% endif %}" title="My deliveries" aria-label="My deliveries">
                         <i class="fas fa-truck"></i>
                     </a>
                 {% endif %}
-                <a href="{% url 'cart' %}" class="icon-btn {% if url_name == 'cart' %}bg-emerald-50 text-emerald-700{% endif %}" data-cart-icon aria-label="Cart">
+                <a href="{% url 'cart' %}" class="icon-btn {% if url_name == 'cart' %}bg-brand-50 text-brand-700{% endif %}" data-cart-icon aria-label="Cart">
                     <i class="fas fa-cart-shopping"></i>
                     <span class="cart-badge" data-cart-count {% if not cart_count %}hidden{% endif %}>{{ cart_count|default:0 }}</span>
                 </a>
@@ -108,7 +108,7 @@
                 {% if user.is_authenticated %}
                     <div class="dropdown relative" data-dropdown>
                         <button type="button" class="relative flex items-center gap-2 rounded-full p-1 transition hover:bg-slate-100 sm:pr-2.5" data-dropdown-toggle aria-expanded="false" aria-haspopup="true" aria-label="Account menu{% if unread_replies %} ({{ unread_replies }} new repl{{ unread_replies|pluralize:'y,ies' }}){% endif %}">
-                            <span class="grid size-8 place-items-center rounded-full bg-linear-to-br from-emerald-100 to-emerald-200 text-sm font-extrabold text-emerald-800">{{ user.first_name|default:user.username|first|upper }}</span>
+                            <span class="grid size-8 place-items-center rounded-full bg-linear-to-br from-brand-100 to-brand-200 text-sm font-extrabold text-brand-800">{{ user.first_name|default:user.username|first|upper }}</span>
                             {% if unread_replies %}
                                 <span class="absolute top-0.5 left-7 size-2.5 animate-pulse rounded-full bg-rose-500 ring-2 ring-white" aria-hidden="true"></span>
                             {% endif %}
@@ -205,12 +205,12 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="relative mt-20 overflow-hidden bg-slate-950 text-slate-400">
-        <div aria-hidden="true" class="pointer-events-none absolute -top-24 left-1/2 h-48 w-[40rem] max-w-full -translate-x-1/2 rounded-full bg-emerald-500/15 blur-3xl"></div>
+    <footer class="relative mt-20 overflow-hidden bg-brand-950 text-slate-300">
+        <div aria-hidden="true" class="pointer-events-none absolute -top-24 left-1/2 h-48 w-[40rem] max-w-full -translate-x-1/2 rounded-full bg-brand-500/15 blur-3xl"></div>
         <div class="container-page relative grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-12">
             <div class="lg:col-span-4">
                 <a href="{% url 'home' %}" class="flex items-center gap-2.5">
-                    <span class="grid size-10 place-items-center rounded-xl bg-linear-to-br from-emerald-500 to-emerald-700 text-white"><i class="fas fa-basket-shopping"></i></span>
+                    <span class="grid size-10 place-items-center rounded-xl bg-linear-to-br from-brand-500 to-brand-700 text-white"><i class="fas fa-basket-shopping"></i></span>
                     <span class="text-lg font-extrabold text-white">JKC Supermarket</span>
                 </a>
                 <p class="mt-4 max-w-xs text-sm leading-relaxed">Your trusted local supermarket for quality products at affordable prices, supporting farmers and businesses across Zimbabwe.</p>
@@ -221,35 +221,35 @@
             <div class="lg:col-span-2">
                 <h3 class="text-sm font-bold text-white">Shop</h3>
                 <ul class="mt-4 space-y-2.5 text-sm">
-                    <li><a href="{% url 'product_list' %}" class="transition hover:text-emerald-400">All products</a></li>
-                    <li><a href="{% url 'product_list' %}?local=1" class="transition hover:text-emerald-400">Local products</a></li>
-                    <li><a href="{% url 'product_list' %}?filter_type=recent" class="transition hover:text-emerald-400">New arrivals</a></li>
-                    <li><a href="{% url 'gallery' %}" class="transition hover:text-emerald-400">Gallery</a></li>
+                    <li><a href="{% url 'product_list' %}" class="transition hover:text-brand-400">All products</a></li>
+                    <li><a href="{% url 'product_list' %}?local=1" class="transition hover:text-brand-400">Local products</a></li>
+                    <li><a href="{% url 'product_list' %}?filter_type=recent" class="transition hover:text-brand-400">New arrivals</a></li>
+                    <li><a href="{% url 'gallery' %}" class="transition hover:text-brand-400">Gallery</a></li>
                 </ul>
             </div>
             <div class="lg:col-span-2">
                 <h3 class="text-sm font-bold text-white">Account</h3>
                 <ul class="mt-4 space-y-2.5 text-sm">
                     {% if user.is_authenticated %}
-                        <li><a href="{% url 'order_history' %}" class="transition hover:text-emerald-400">My orders</a></li>
-                        <li><a href="{% url 'delivery_bookings' %}" class="transition hover:text-emerald-400">My deliveries</a></li>
-                        <li><a href="{% url 'my_messages' %}" class="transition hover:text-emerald-400">My messages</a></li>
-                        <li><a href="{% url 'profile' %}" class="transition hover:text-emerald-400">Profile</a></li>
+                        <li><a href="{% url 'order_history' %}" class="transition hover:text-brand-400">My orders</a></li>
+                        <li><a href="{% url 'delivery_bookings' %}" class="transition hover:text-brand-400">My deliveries</a></li>
+                        <li><a href="{% url 'my_messages' %}" class="transition hover:text-brand-400">My messages</a></li>
+                        <li><a href="{% url 'profile' %}" class="transition hover:text-brand-400">Profile</a></li>
                     {% else %}
-                        <li><a href="{% url 'login' %}" class="transition hover:text-emerald-400">Log in</a></li>
-                        <li><a href="{% url 'register' %}" class="transition hover:text-emerald-400">Create account</a></li>
+                        <li><a href="{% url 'login' %}" class="transition hover:text-brand-400">Log in</a></li>
+                        <li><a href="{% url 'register' %}" class="transition hover:text-brand-400">Create account</a></li>
                     {% endif %}
-                    <li><a href="{% url 'cart' %}" class="transition hover:text-emerald-400">Cart</a></li>
-                    <li><a href="{% url 'contact' %}" class="transition hover:text-emerald-400">Contact us</a></li>
+                    <li><a href="{% url 'cart' %}" class="transition hover:text-brand-400">Cart</a></li>
+                    <li><a href="{% url 'contact' %}" class="transition hover:text-brand-400">Contact us</a></li>
                 </ul>
             </div>
             <div class="sm:col-span-2 lg:col-span-4">
                 <h3 class="text-sm font-bold text-white">Get in touch</h3>
                 <ul class="mt-4 space-y-3 text-sm">
-                    <li class="flex gap-3"><i class="fas fa-location-dot mt-1 w-4 text-emerald-500"></i> 5637 Westroad, Chiredzi, Zimbabwe</li>
-                    <li class="flex gap-3"><i class="fas fa-phone mt-1 w-4 text-emerald-500"></i> +263 771 938 039 / +263 788 574 080</li>
-                    <li class="flex gap-3"><i class="fas fa-envelope mt-1 w-4 text-emerald-500"></i> jimuronald7@gmail.com</li>
-                    <li class="flex gap-3"><i class="fas fa-clock mt-1 w-4 text-emerald-500"></i> Mon–Fri 8am–6pm · Sat 8am–4pm · Sun 9am–2pm</li>
+                    <li class="flex gap-3"><i class="fas fa-location-dot mt-1 w-4 text-brand-500"></i> 5637 Westroad, Chiredzi, Zimbabwe</li>
+                    <li class="flex gap-3"><i class="fas fa-phone mt-1 w-4 text-brand-500"></i> +263 771 938 039 / +263 788 574 080</li>
+                    <li class="flex gap-3"><i class="fas fa-envelope mt-1 w-4 text-brand-500"></i> jimuronald7@gmail.com</li>
+                    <li class="flex gap-3"><i class="fas fa-clock mt-1 w-4 text-brand-500"></i> Mon–Fri 8am–6pm · Sat 8am–4pm · Sun 9am–2pm</li>
                 </ul>
             </div>
         </div>

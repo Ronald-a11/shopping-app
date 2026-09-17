@@ -24,9 +24,9 @@ shopper stays on the page.
     </a>
 
     <div class="flex flex-1 flex-col p-4">
-        <p class="text-[11px] font-bold tracking-wider text-emerald-600 uppercase">{{ product.category.name }}</p>
+        <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">{{ product.category.name }}</p>
         <h3 class="mt-1 line-clamp-2 text-sm font-bold text-slate-900">
-            <a href="{% url 'product_detail' product.id %}" class="transition hover:text-emerald-700">{{ product.name }}</a>
+            <a href="{% url 'product_detail' product.id %}" class="transition hover:text-brand-700">{{ product.name }}</a>
         </h3>
         <p class="mt-1 line-clamp-2 text-xs text-slate-500">{{ product.description }}</p>
 

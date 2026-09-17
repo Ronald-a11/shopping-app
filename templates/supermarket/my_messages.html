@@ -31,7 +31,7 @@
                         <ol class="space-y-5">
                             <li class="flex justify-end">
                                 <div class="max-w-[88%] sm:max-w-[75%]">
-                                    <div class="rounded-2xl rounded-br-md bg-emerald-600 px-4 py-3 text-sm leading-relaxed text-white shadow-sm">
+                                    <div class="rounded-2xl rounded-br-md bg-brand-600 px-4 py-3 text-sm leading-relaxed text-white shadow-sm">
                                         <p class="break-words">{{ conversation.message|linebreaksbr }}</p>
                                     </div>
                                     <p class="mt-1.5 text-right text-[11px] text-slate-500">You · {{ conversation.created_at|date:"j M, H:i" }}</p>
@@ -41,11 +41,11 @@
                             {% for reply in conversation.replies.all %}
                                 {% if reply.from_staff %}
                                     <li class="flex items-end gap-2.5">
-                                        <span class="grid size-8 shrink-0 place-items-center rounded-full bg-linear-to-br from-emerald-500 to-emerald-700 text-xs text-white shadow-sm" aria-hidden="true">
+                                        <span class="grid size-8 shrink-0 place-items-center rounded-full bg-linear-to-br from-brand-500 to-brand-700 text-xs text-white shadow-sm" aria-hidden="true">
                                             <i class="fas fa-basket-shopping"></i>
                                         </span>
                                         <div class="max-w-[85%] sm:max-w-[75%]">
-                                            <div class="rounded-2xl rounded-bl-md bg-slate-100 px-4 py-3 text-sm leading-relaxed text-slate-800 {% if reply.id in new_reply_ids %}ring-2 ring-emerald-400 animate-pop{% endif %}">
+                                            <div class="rounded-2xl rounded-bl-md bg-slate-100 px-4 py-3 text-sm leading-relaxed text-slate-800 {% if reply.id in new_reply_ids %}ring-2 ring-brand-400 animate-pop{% endif %}">
                                                 <p class="break-words">{{ reply.body|linebreaksbr }}</p>
                                             </div>
                                             <p class="mt-1.5 flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
@@ -58,7 +58,7 @@
                                 {% else %}
                                     <li class="flex justify-end">
                                         <div class="max-w-[88%] sm:max-w-[75%]">
-                                            <div class="rounded-2xl rounded-br-md bg-emerald-600 px-4 py-3 text-sm leading-relaxed text-white shadow-sm">
+                                            <div class="rounded-2xl rounded-br-md bg-brand-600 px-4 py-3 text-sm leading-relaxed text-white shadow-sm">
                                                 <p class="break-words">{{ reply.body|linebreaksbr }}</p>
                                             </div>
                                             <p class="mt-1.5 text-right text-[11px] text-slate-500">You · {{ reply.created_at|date:"j M, H:i" }}</p>
@@ -71,7 +71,7 @@
                         {% if conversation.status == 'open' %}
                             <p class="mt-5 flex items-center gap-2 text-xs text-slate-500"><i class="fas fa-clock text-slate-400"></i> Waiting for our reply. We typically respond within 24 hours.</p>
                         {% elif conversation.status == 'resolved' %}
-                            <p class="mt-5 flex items-center gap-2 text-xs font-medium text-emerald-700"><i class="fas fa-circle-check"></i> We've marked this as resolved. Reply below if you still need help.</p>
+                            <p class="mt-5 flex items-center gap-2 text-xs font-medium text-brand-700"><i class="fas fa-circle-check"></i> We've marked this as resolved. Reply below if you still need help.</p>
                         {% endif %}
                     </div>
 

@@ -4,7 +4,7 @@ WhatsApp / SMS support box.
     {% include 'partials/support_card.html' with title="Need help with your orders?" text="…" %}
 {% endcomment %}
 <div class="card overflow-hidden">
-    <div class="relative overflow-hidden bg-linear-to-br from-emerald-600 to-emerald-800 p-5 text-white">
+    <div class="relative overflow-hidden bg-linear-to-br from-brand-600 to-brand-800 p-5 text-white">
         <div aria-hidden="true" class="absolute -top-10 -right-10 size-32 rounded-full bg-white/10 blur-2xl"></div>
         <div class="relative flex items-center gap-3">
             <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-white/15 text-lg ring-1 ring-white/20">
@@ -12,7 +12,7 @@ WhatsApp / SMS support box.
             </span>
             <div>
                 <p class="font-bold">{{ title|default:"Need help?" }}</p>
-                <p class="text-xs text-emerald-100">{{ text|default:"Chat to our support team directly." }}</p>
+                <p class="text-xs text-brand-100">{{ text|default:"Chat to our support team directly." }}</p>
             </div>
         </div>
     </div>
