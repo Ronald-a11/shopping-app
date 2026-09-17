@@ -36,6 +36,10 @@ class Product(models.Model):
     is_local_product = models.BooleanField(default=False)
     supplier = models.CharField(max_length=200, blank=True)
     
+    # At or below this many units a product counts as "low stock". The shop's
+    # product card already warns customers at the same level.
+    LOW_STOCK_THRESHOLD = 5
+
     class Meta:
         ordering = ['-created_at']
     
@@ -46,6 +50,21 @@ class Product(models.Model):
     def price_in_zwd(self):
         """Convert price to Zimbabwe Dollars (assuming 1 USD = 361 ZWD)"""
         return self.price * 361
+
+    @property
+    def stock_state(self):
+        """'hidden', 'out', 'low' or 'in', as shown on the staff dashboard.
+
+        Hidden wins: a product customers can't see isn't an out-of-stock
+        problem, whatever its stock level.
+        """
+        if not self.is_available:
+            return 'hidden'
+        if self.stock_quantity == 0:
+            return 'out'
+        if self.stock_quantity <= self.LOW_STOCK_THRESHOLD:
+            return 'low'
+        return 'in'
 
 
 class Cart(models.Model):
@@ -118,7 +137,9 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    # PROTECT: deleting a product used to erase it from every past order, and
+    # with it the sales history the dashboard reports on.
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     
@@ -127,6 +148,45 @@ class OrderItem(models.Model):
     
     def __str__(self):
         return f"{self.quantity} x {self.product.name}"
+
+
+class StockEntry(models.Model):
+    """A change to a product's stock made by staff: stock received, or a correction."""
+    KIND_CHOICES = [
+        ('restock', 'Stock received'),
+        ('adjustment', 'Correction'),
+    ]
+
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='stock_entries')
+    kind = models.CharField(max_length=20, choices=KIND_CHOICES)
+    # Signed: a correction can take stock away. Always positive for a restock.
+    quantity = models.IntegerField()
+    # What we paid per unit. Optional, so stock can be logged before the invoice arrives.
+    unit_cost = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    supplier = models.CharField(max_length=200, blank=True)
+    note = models.CharField(max_length=255, blank=True)
+    # The stock level right after this change.
+    stock_after = models.PositiveIntegerField(null=True, blank=True)
+    created_by = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name='stock_entries'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name_plural = 'Stock entries'
+
+    def __str__(self):
+        return f"{self.get_kind_display()}: {self.quantity:+d} x {self.product.name}"
+
+    @property
+    def total_cost(self):
+        """What the whole entry cost, or None when no cost was recorded."""
+        if self.unit_cost is None:
+            return None
+        return (self.unit_cost * self.quantity).quantize(Decimal('0.01'))
 
 
 class UserProfile(models.Model):
@@ -148,7 +208,7 @@ class DeliveryBooking(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
-        ('in_transit', 'In Transit'),
+        ('in_transit', 'In transit'),
         ('delivered', 'Delivered'),
         ('cancelled', 'Cancelled'),
     ]

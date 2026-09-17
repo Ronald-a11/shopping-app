@@ -1,6 +1,8 @@
 from django.contrib import admin
+from django.urls import reverse
+from django.utils.html import format_html
 from .models import (Category, Product, Cart, CartItem, Order, OrderItem, ContactMessage, MessageReply,
-                     UserProfile, DeliveryBooking)
+                     UserProfile, DeliveryBooking, StockEntry)
 
 
 @admin.register(Category)
@@ -15,8 +17,24 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'category', 'price', 'stock_quantity', 'is_available', 'is_local_product', 'created_at']
     list_filter = ['category', 'is_available', 'is_local_product', 'created_at']
     search_fields = ['name', 'description', 'supplier']
-    list_editable = ['price', 'stock_quantity', 'is_available']
+    list_editable = ['price', 'is_available']
+    # Stock moves only through the dashboard's restock and correction forms, so
+    # every change lands in the stock log (StockEntry). Editing it here would
+    # change the shelf figure with no record, and "Stock bought" would miss it.
+    # A product added here starts at 0; its opening stock goes in as a restock.
+    exclude = ['stock_quantity']
+    readonly_fields = ['stock_level']
     prepopulated_fields = {'name': ('name',)}
+
+    @admin.display(description='Stock quantity')
+    def stock_level(self, product):
+        """The stock figure, with the way to the only place it can be changed."""
+        if product.pk is None:
+            return 'Starts at 0. Once the product is saved, record its opening stock on the admin dashboard.'
+        return format_html(
+            '{} &middot; <a href="{}#restock">Record stock received or a correction on the admin dashboard</a>',
+            product.stock_quantity, reverse('dashboard_product_edit', args=[product.pk]),
+        )
 
 
 class CartItemInline(admin.TabularInline):
@@ -117,3 +135,17 @@ class DeliveryBookingAdmin(admin.ModelAdmin):
             'fields': ('created_at', 'updated_at')
         }),
     )
+
+
+@admin.register(StockEntry)
+class StockEntryAdmin(admin.ModelAdmin):
+    list_display = ['product', 'kind', 'quantity', 'unit_cost', 'created_by', 'created_at']
+    list_filter = ['kind', 'created_at']
+    search_fields = ['product__name', 'supplier', 'note']
+    list_select_related = ['product', 'created_by']
+    # The log records what happened to the stock. Editing the figures here
+    # wouldn't move the stock itself, so only the descriptive fields are open.
+    readonly_fields = ['product', 'kind', 'quantity', 'stock_after', 'created_by', 'created_at']
+
+    def has_add_permission(self, request):
+        return False

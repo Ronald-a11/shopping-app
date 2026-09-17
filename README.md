@@ -29,6 +29,7 @@ A comprehensive e-commerce platform designed specifically for Zimbabwe, featurin
 - **Order Management**: Track and update order status
 - **Inventory Control**: Monitor stock levels and availability
 - **Customer Support**: Manage customer inquiries and messages
+- **Admin Dashboard**: Staff work from `/founder/` (overview with revenue, inventory and stock log, orders, deliveries, messages); Django admin at `/admin/` is for categories, users and staff status
 
 ## Technology Stack
 
@@ -167,15 +168,25 @@ zimbabwe-supermarket/
 4. Upload category image (optional)
 
 ### Managing Products
-1. Go to Products in admin panel
-2. Add new products with:
+Staff manage products on the admin dashboard at `/founder/inventory/`
+(staff status required):
+1. Choose "Add product" and fill in:
    - Name and description
    - Category assignment
    - Price in USD
-   - Stock quantity
+   - Opening stock
    - Local product flag
    - Supplier information
-   - Product images
+   - Product image (leave blank for a placeholder picture)
+2. When a delivery arrives from a supplier, record it under "Stock received"
+   on the product's page, or with the quick Restock box in the inventory list
+3. Fix breakage, theft or a miscount with "Correct the stock"
+4. Use "Hide from the shop" to withdraw a product; products are never deleted,
+   so sales history is kept
+
+Do not change stock in the Django admin panel. Stock is read-only there
+because only the dashboard writes each change to the stock log, which is what
+"Stock bought" and the stock history are built from.
 
 ### Styling Customization
 - Edit `frontend/src/app.css` (theme, component classes, animations) or use Tailwind utility classes in templates

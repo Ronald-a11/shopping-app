@@ -4,8 +4,8 @@
 {% block title %}Message from {{ message.name }}{% endblock %}
 
 {% block page_header %}
-    {% url 'founder_dashboard' as dashboard_url %}
-    {% include 'partials/page_header.html' with eyebrow="Customer message" title=message.subject crumb="Message" icon="fa-envelope-open-text" parent_label="Founder dashboard" parent_url=dashboard_url %}
+    {% url 'dashboard_messages' as messages_url %}
+    {% include 'partials/page_header.html' with eyebrow="Customer message" title=message.subject crumb="Message" icon="fa-envelope-open-text" parent_label="Messages" parent_url=messages_url %}
 {% endblock %}
 
 {% block content %}
@@ -195,7 +195,7 @@
                     <i class="fas fa-fire"></i>
                     {% if message.is_urgent %}Remove urgent flag{% else %}Mark as urgent{% endif %}
                 </button>
-                <button type="button" class="btn btn-secondary w-full" data-post-url="{% url 'mark_read' message.id %}"{% if message.is_read %} data-post-redirect="{% url 'founder_dashboard' %}"{% endif %} data-loading-text="Updating…">
+                <button type="button" class="btn btn-secondary w-full" data-post-url="{% url 'mark_read' message.id %}"{% if message.is_read %} data-post-redirect="{% url 'dashboard_messages' %}"{% endif %} data-loading-text="Updating…">
                     <i class="fas {% if message.is_read %}fa-envelope{% else %}fa-check{% endif %}"></i>
                     {% if message.is_read %}Mark as unread{% else %}Mark as read{% endif %}
                 </button>
@@ -210,8 +210,8 @@
                         <i class="fab fa-whatsapp text-base"></i> Open WhatsApp chat
                     </a>
                 {% endif %}
-                <a href="{% url 'founder_dashboard' %}" class="btn btn-ghost w-full">
-                    <i class="fas fa-arrow-left"></i> Back to dashboard
+                <a href="{% url 'dashboard_messages' %}" class="btn btn-ghost w-full">
+                    <i class="fas fa-arrow-left"></i> Back to messages
                 </a>
             </div>
         </aside>

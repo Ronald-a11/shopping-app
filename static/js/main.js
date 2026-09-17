@@ -281,9 +281,13 @@
 
   /* --------------------------------------------------------------- tabs */
 
+  function activeTab(list) {
+    return $$(':scope > .tab', list).find((t) => t.getAttribute('aria-selected') === 'true' || t.classList.contains('is-active'));
+  }
+
   function moveIndicator(list) {
     if (!list || !(list.classList.contains('tabs') || list.classList.contains('tabs-line'))) return;
-    const active = $$(':scope > .tab', list).find((t) => t.getAttribute('aria-selected') === 'true' || t.classList.contains('is-active'));
+    const active = activeTab(list);
     let indicator = $(':scope > .tab-indicator', list);
     if (!active || active.offsetParent === null) {
       if (indicator) indicator.style.opacity = '0';
@@ -305,6 +309,19 @@
 
   function refreshIndicators() {
     $$('.tabs, .tabs-line').forEach(moveIndicator);
+  }
+
+  // Link tabs reload the page with the strip scrolled back to its start. On a
+  // phone that can leave the active tab, the only sign of which filter is on,
+  // out of sight. Kept out of the resize path: mobile browsers fire resize
+  // whenever the URL bar hides, which would undo a strip the user had swiped.
+  function revealActiveTab(list) {
+    const active = activeTab(list);
+    if (!active || active.offsetParent === null) return;
+    const start = active.offsetLeft;
+    const end = start + active.offsetWidth;
+    if (start >= list.scrollLeft && end <= list.scrollLeft + list.clientWidth) return;
+    list.scrollLeft = Math.max(0, start - (list.clientWidth - active.offsetWidth) / 2);
   }
 
   function initTabs() {
@@ -380,13 +397,21 @@
       });
     });
 
+    const revealActiveTabs = () => $$('.tabs, .tabs-line').forEach(revealActiveTab);
     refreshIndicators();
+    revealActiveTabs();
     let resizeTimer;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(refreshIndicators, 100);
     });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(refreshIndicators);
+    // Tab widths change once the web font loads, so both are measured again.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        refreshIndicators();
+        revealActiveTabs();
+      });
+    }
   }
 
   /* ----------------------------------------------------- filter tabs */

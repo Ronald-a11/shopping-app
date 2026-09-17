@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils import timezone
-from .models import ContactMessage, MessageReply, Order, UserProfile, DeliveryBooking
+from .models import ContactMessage, MessageReply, Order, Product, UserProfile, DeliveryBooking
 
 
 class ContactForm(forms.ModelForm):
@@ -220,3 +220,97 @@ class MessageReplyForm(forms.ModelForm):
 
 class StaffReplyForm(MessageReplyForm):
     mark_resolved = forms.BooleanField(required=False, label='Mark as resolved')
+
+
+# Staff dashboard ---------------------------------------------------------------
+
+# Far more than the shop will ever hold of one product. The cap keeps a slip
+# such as a barcode scanned into the quantity box from overflowing the column.
+MAX_STOCK_QUANTITY = 1_000_000
+
+CHECKBOX_CLASS = 'size-4 accent-brand-600'
+
+
+class ProductForm(forms.ModelForm):
+    """Add or edit a product from the staff dashboard.
+
+    Stock isn't edited here: every change to it goes through a restock or a
+    correction so that it is logged. A new product can start with an opening
+    stock, which is logged as its first restock.
+    """
+    opening_stock = forms.IntegerField(
+        required=False, min_value=0, max_value=MAX_STOCK_QUANTITY, initial=0,
+        label='Opening stock',
+        help_text='How many you have on the shelf right now. You can add more later with a restock.',
+        widget=forms.NumberInput(attrs={'class': 'input', 'min': 0, 'step': 1, 'inputmode': 'numeric'}),
+    )
+
+    class Meta:
+        model = Product
+        fields = ['name', 'description', 'category', 'price', 'image', 'supplier',
+                  'is_local_product', 'is_available']
+        labels = {
+            'price': 'Price (USD)',
+            'image': 'Picture',
+            'is_local_product': 'Local product',
+            'is_available': 'Show in the shop',
+        }
+        help_texts = {
+            'image': 'A web address or /static/ path. Leave blank to use a placeholder picture.',
+            'is_available': 'Untick to hide the product from customers without deleting it.',
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'input', 'placeholder': 'Product name'}),
+            'description': forms.Textarea(attrs={
+                'class': 'input',
+                'rows': 3,
+                'placeholder': 'What customers should know about it'
+            }),
+            'category': forms.Select(attrs={'class': 'input'}),
+            'price': forms.NumberInput(attrs={'class': 'input', 'min': 0, 'step': '0.01', 'inputmode': 'decimal'}),
+            'image': forms.TextInput(attrs={'class': 'input', 'placeholder': '/static/images/products/…'}),
+            'supplier': forms.TextInput(attrs={'class': 'input', 'placeholder': 'Who you buy it from'}),
+            'is_local_product': forms.CheckboxInput(attrs={'class': CHECKBOX_CLASS}),
+            'is_available': forms.CheckboxInput(attrs={'class': CHECKBOX_CLASS}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['category'].empty_label = 'Choose a category'
+        if self.instance.pk:
+            # Only a new product has an opening stock.
+            del self.fields['opening_stock']
+
+
+class RestockForm(forms.Form):
+    """Stock received from a supplier."""
+    quantity = forms.IntegerField(
+        min_value=1, max_value=MAX_STOCK_QUANTITY, label='Units received',
+        widget=forms.NumberInput(attrs={'class': 'input', 'min': 1, 'step': 1, 'inputmode': 'numeric'}),
+    )
+    unit_cost = forms.DecimalField(
+        required=False, min_value=0, max_digits=10, decimal_places=2, label='Cost per unit (USD)',
+        help_text="What you paid for each one. Without it the units are still counted, but not their cost.",
+        widget=forms.NumberInput(attrs={'class': 'input', 'min': 0, 'step': '0.01', 'inputmode': 'decimal'}),
+    )
+    supplier = forms.CharField(
+        required=False, max_length=200,
+        help_text="Leave blank to use the product's usual supplier.",
+        widget=forms.TextInput(attrs={'class': 'input', 'placeholder': 'Supplier'}),
+    )
+    note = forms.CharField(
+        required=False, max_length=255,
+        widget=forms.TextInput(attrs={'class': 'input', 'placeholder': 'Invoice number or other note (optional)'}),
+    )
+
+
+class StockAdjustForm(forms.Form):
+    """A corrected stock count, for breakage, theft or a miscount."""
+    new_quantity = forms.IntegerField(
+        min_value=0, max_value=MAX_STOCK_QUANTITY, label='Counted stock',
+        widget=forms.NumberInput(attrs={'class': 'input', 'min': 0, 'step': 1, 'inputmode': 'numeric'}),
+    )
+    note = forms.CharField(
+        required=False, max_length=255,
+        widget=forms.TextInput(attrs={'class': 'input', 'placeholder': 'Reason, e.g. damaged in storage (optional)'}),
+    )

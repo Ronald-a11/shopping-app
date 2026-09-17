@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Messages{% endblock %}
+
+{% block page_header %}
+    {% include 'partials/page_header.html' with eyebrow="Admin dashboard" title="Messages" subtitle="Customer messages and complaints." icon="fa-inbox" %}
+{% endblock %}
+
+{% block content %}
+{% include 'partials/dashboard_nav.html' %}
+<div class="container-page py-8">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <nav class="tabs-line" aria-label="Filter messages">
+            <a class="tab {% if active_filter == 'all' %}is-active{% endif %}" href="?filter=all" {% if active_filter == 'all' %}aria-current="page"{% endif %}>All <span class="tab-count">{{ total_messages }}</span></a>
+            <a class="tab {% if active_filter == 'open' %}is-active{% endif %}" href="?filter=open" {% if active_filter == 'open' %}aria-current="page"{% endif %}>Awaiting reply <span class="tab-count">{{ open_count }}</span></a>
+            <a class="tab {% if active_filter == 'unread' %}is-active{% endif %}" href="?filter=unread" {% if active_filter == 'unread' %}aria-current="page"{% endif %}>Unread <span class="tab-count">{{ unread_messages }}</span></a>
+            <a class="tab {% if active_filter == 'complaints' %}is-active{% endif %}" href="?filter=complaints" {% if active_filter == 'complaints' %}aria-current="page"{% endif %}>Complaints <span class="tab-count">{{ total_complaints }}</span></a>
+            <a class="tab {% if active_filter == 'urgent' %}is-active{% endif %}" href="?filter=urgent" {% if active_filter == 'urgent' %}aria-current="page"{% endif %}>Urgent <span class="tab-count">{{ urgent_count }}</span></a>
+        </nav>
+        {% if contact_messages %}
+            <p class="text-xs font-medium text-slate-500">Showing {{ contact_messages.start_index }}–{{ contact_messages.end_index }} of {{ contact_messages.paginator.count }}</p>
+        {% endif %}
+    </div>
+
+    {% if contact_messages %}
+        <div class="card mt-5 overflow-hidden">
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col" class="hidden xl:table-cell">Phone</th>
+                            <th scope="col" class="hidden lg:table-cell">Type</th>
+                            <th scope="col" class="hidden lg:table-cell">Subject</th>
+                            <th scope="col" class="hidden 2xl:table-cell">Gender</th>
+                            <th scope="col" class="hidden 2xl:table-cell">Age group</th>
+                            <th scope="col" class="hidden lg:table-cell">Date</th>
+                            <th scope="col" class="hidden lg:table-cell">Status</th>
+                            <th scope="col"><span class="sr-only">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for message in contact_messages %}
+                            <tr class="{% if message.is_urgent %}bg-rose-50/40 hover:bg-rose-50/80{% elif not message.is_read %}bg-amber-50/40 hover:bg-amber-50/80{% endif %}">
+                                <td>
+                                    <div class="flex items-center gap-2 whitespace-nowrap">
+                                        {% if not message.is_read %}
+                                            <span class="size-2 shrink-0 rounded-full bg-amber-500" title="Unread"><span class="sr-only">Unread</span></span>
+                                        {% endif %}
+                                        <a href="{% url 'message_detail' message.id %}" class="font-semibold text-slate-900 transition hover:text-brand-700">{{ message.name }}</a>
+                                        {% if message.is_urgent %}
+                                            <i class="fas fa-fire text-rose-500" title="Urgent" aria-label="Urgent"></i>
+                                        {% endif %}
+                                    </div>
+                                    {# Below lg the hidden columns fold into this cell, so the action buttons still fit on a phone. #}
+                                    <div class="mt-1 space-y-1.5 lg:hidden">
+                                        <p class="max-w-[11rem] truncate text-xs text-slate-600 sm:max-w-md">{{ message.subject }}</p>
+                                        <p class="text-[11px] whitespace-nowrap text-slate-500">{{ message.created_at|date:"j M Y, H:i" }}</p>
+                                        <div class="flex flex-wrap items-center gap-1.5">
+                                            <span class="badge {% if message.status == 'resolved' %}badge-green{% elif message.status == 'replied' %}badge-blue{% else %}badge-amber{% endif %}">{{ message.get_status_display }}</span>
+                                            {% if message.message_type == 'complaint' %}<span class="badge badge-red">{{ message.get_message_type_display }}</span>{% endif %}
+                                            {% if message.reply_count %}<span class="inline-flex items-center gap-1 text-[11px] whitespace-nowrap text-slate-500"><i class="fas fa-comments"></i> {{ message.reply_count }}<span class="sr-only"> repl{{ message.reply_count|pluralize:"y,ies" }}</span></span>{% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="hidden whitespace-nowrap xl:table-cell">
+                                    {% if message.phone_number %}<a href="tel:{{ message.phone_number }}" class="text-slate-600 transition hover:text-brand-700">{{ message.phone_number }}</a>{% endif %}
+                                </td>
+                                <td class="hidden lg:table-cell">
+                                    <span class="badge {% if message.message_type == 'complaint' %}badge-red{% elif message.message_type == 'inquiry' %}badge-blue{% elif message.message_type == 'suggestion' %}badge-amber{% elif message.message_type == 'feedback' %}badge-green{% else %}badge-slate{% endif %}">{{ message.get_message_type_display }}</span>
+                                </td>
+                                <td class="hidden max-w-[16rem] lg:table-cell"><p class="truncate text-slate-700" title="{{ message.subject }}">{{ message.subject|truncatechars:40 }}</p></td>
+                                <td class="hidden whitespace-nowrap text-slate-600 2xl:table-cell">{{ message.get_gender_display }}</td>
+                                <td class="hidden whitespace-nowrap text-slate-600 2xl:table-cell">{{ message.get_age_group_display }}</td>
+                                <td class="hidden whitespace-nowrap text-slate-600 lg:table-cell">{{ message.created_at|date:"j M Y, H:i" }}</td>
+                                <td class="hidden lg:table-cell">
+                                    <div class="flex flex-col items-start gap-1">
+                                        <span class="badge {% if message.status == 'resolved' %}badge-green{% elif message.status == 'replied' %}badge-blue{% else %}badge-amber{% endif %}">{{ message.get_status_display }}</span>
+                                        {% if message.reply_count %}
+                                            <span class="inline-flex items-center gap-1 text-[11px] whitespace-nowrap text-slate-500"><i class="fas fa-comments"></i> {{ message.reply_count }} repl{{ message.reply_count|pluralize:"y,ies" }}</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex items-center justify-end gap-1">
+                                        <a href="{% url 'message_detail' message.id %}#reply-form" class="btn btn-icon btn-sm {% if message.status == 'open' %}bg-brand-600 text-white hover:bg-brand-700{% else %}btn-ghost{% endif %}" aria-label="Open and reply to {{ message.name }}" title="Open and reply">
+                                            <i class="fas fa-reply"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-icon btn-sm {% if message.is_urgent %}bg-rose-100 text-rose-600 hover:bg-rose-200{% else %}btn-ghost{% endif %}" data-post-url="{% url 'mark_urgent' message.id %}" aria-label="{% if message.is_urgent %}Remove urgent flag{% else %}Mark as urgent{% endif %}" title="{% if message.is_urgent %}Remove urgent flag{% else %}Mark as urgent{% endif %}">
+                                            <i class="fas fa-fire"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-icon btn-sm {% if message.is_read %}btn-ghost{% else %}bg-brand-100 text-brand-700 hover:bg-brand-200{% endif %}" data-post-url="{% url 'mark_read' message.id %}" aria-label="{% if message.is_read %}Mark as unread{% else %}Mark as read{% endif %}" title="{% if message.is_read %}Mark as unread{% else %}Mark as read{% endif %}">
+                                            <i class="fas {% if message.is_read %}fa-envelope{% else %}fa-check{% endif %}"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {% include 'partials/pagination.html' with page_obj=contact_messages %}
+    {% else %}
+        <div class="mt-5">
+            {% if active_filter == 'all' %}
+                {% include 'partials/empty_state.html' with icon="fa-inbox" title="No messages found" text="No customer messages or complaints at the moment." %}
+            {% else %}
+                {% include 'partials/empty_state.html' with icon="fa-inbox" title="No messages match this filter" text="Nothing here right now. Try another filter." cta_url="?filter=all" cta_label="Show all messages" cta_icon="fa-list" %}
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

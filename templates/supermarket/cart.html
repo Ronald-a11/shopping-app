@@ -59,7 +59,10 @@
                                         {% if item.product.is_local_product %}
                                             <span class="badge badge-amber"><i class="fas fa-leaf text-[10px]"></i> Local</span>
                                         {% endif %}
-                                        {% if item.product.stock_quantity == 0 %}
+                                        {# Staff can hide a product that is already in a cart; checkout refuses it, and the toast saying so is gone in seconds. #}
+                                        {% if not item.product.is_available %}
+                                            <span class="badge badge-red"><i class="fas fa-ban text-[10px]"></i> No longer available</span>
+                                        {% elif item.product.stock_quantity == 0 %}
                                             <span class="badge badge-slate">Out of stock</span>
                                         {% elif item.product.stock_quantity <= 5 %}
                                             <span class="badge badge-red">Only {{ item.product.stock_quantity }} left</span>
@@ -69,15 +72,19 @@
                             </div>
 
                             <div class="flex items-center justify-between gap-3 sm:justify-end sm:gap-5">
-                                <form method="post" action="{% url 'update_cart_item' item.id %}" class="flex items-center gap-2">
-                                    {% csrf_token %}
-                                    <div class="qty qty-sm" data-qty data-qty-autosubmit>
-                                        <button type="button" data-qty-dec aria-label="Decrease quantity of {{ item.product.name }}"><i class="fas fa-minus text-[10px]"></i></button>
-                                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock_quantity }}" inputmode="numeric" aria-label="Quantity of {{ item.product.name }}">
-                                        <button type="button" data-qty-inc aria-label="Increase quantity of {{ item.product.name }}"><i class="fas fa-plus text-[10px]"></i></button>
-                                    </div>
-                                    <button type="submit" class="btn btn-secondary btn-sm js-hidden">Update</button>
-                                </form>
+                                {% if item.product.is_available %}
+                                    <form method="post" action="{% url 'update_cart_item' item.id %}" class="flex items-center gap-2">
+                                        {% csrf_token %}
+                                        <div class="qty qty-sm" data-qty data-qty-autosubmit>
+                                            <button type="button" data-qty-dec aria-label="Decrease quantity of {{ item.product.name }}"><i class="fas fa-minus text-[10px]"></i></button>
+                                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock_quantity }}" inputmode="numeric" aria-label="Quantity of {{ item.product.name }}">
+                                            <button type="button" data-qty-inc aria-label="Increase quantity of {{ item.product.name }}"><i class="fas fa-plus text-[10px]"></i></button>
+                                        </div>
+                                        <button type="submit" class="btn btn-secondary btn-sm js-hidden">Update</button>
+                                    </form>
+                                {% else %}
+                                    <p class="text-sm font-semibold text-slate-500">Qty {{ item.quantity }}</p>
+                                {% endif %}
 
                                 <div class="flex items-center gap-3">
                                     <p class="w-20 text-right font-extrabold text-slate-900">${{ item.get_total }}</p>
@@ -119,7 +126,12 @@
                         </div>
                         <p class="mt-1 text-right text-xs text-slate-500">Excludes delivery</p>
 
-                        {% if user.is_authenticated %}
+                        {% if unavailable_count %}
+                            <div class="alert alert-warning mt-6">
+                                <i class="fas fa-triangle-exclamation mt-0.5"></i>
+                                <p>Remove the item{{ unavailable_count|pluralize }} marked “No longer available” to check out.</p>
+                            </div>
+                        {% elif user.is_authenticated %}
                             <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg mt-6 w-full">
                                 <i class="fas fa-lock"></i> Proceed to checkout
                             </a>

@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Overview{% endblock %}
+
+{% block page_header %}
+    {% url 'admin:index' as admin_url %}
+    {% include 'partials/page_header.html' with eyebrow="Admin dashboard" title="Overview" icon="fa-chart-line" action_url=admin_url action_label="Django admin" action_icon="fa-screwdriver-wrench" %}
+{% endblock %}
+
+{% block content %}
+{% include 'partials/dashboard_nav.html' %}
+<div class="container-page py-8 sm:py-10">
+
+    {# The one filter on the page: everything down to "Top products" covers this period. #}
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <nav class="tabs" aria-label="Period">
+            {% for key, label in range_options %}
+                <a class="tab px-3 sm:px-4 {% if key == range_key %}is-active{% endif %}" href="?range={{ key }}" {% if key == range_key %}aria-current="page"{% endif %}>{{ label }}</a>
+            {% endfor %}
+        </nav>
+        <p class="text-sm text-slate-500">
+            <span class="font-semibold text-slate-700">{% if period_start.year != period_end.year %}{{ period_start|date:"j M Y" }}{% else %}{{ period_start|date:"j M" }}{% endif %} – {{ period_end|date:"j M Y" }}</span>
+            · compared with the {{ previous_label }}
+        </p>
+    </div>
+
+    {# KPI tiles: one hero figure, six supporting tiles (two to a row on a phone). #}
+    <div class="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+        <div class="card col-span-2 flex flex-col p-5 sm:p-6 md:col-span-3 lg:col-span-2 lg:row-span-2">
+            <p class="flex items-center gap-2 text-sm font-semibold text-slate-500"><i class="fas fa-sack-dollar text-brand-500"></i> Total revenue</p>
+            <p class="mt-2 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">${{ kpis.total_revenue|floatformat:"2g" }}</p>
+            <p class="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500">
+                {% if kpis.revenue_change_pct is None %}
+                    <i class="fas fa-circle-info text-slate-400"></i> No sales in the previous period
+                {% else %}
+                    {% if kpis.revenue_change_pct > 0 %}
+                        <span class="badge badge-green"><i class="fas fa-arrow-up"></i> +{{ kpis.revenue_change_pct|floatformat:"1g" }}%</span>
+                    {% elif kpis.revenue_change_pct < 0 %}
+                        <span class="badge badge-red"><i class="fas fa-arrow-down"></i> −{{ kpis.revenue_change_pct|floatformat:"1g"|cut:"-" }}%</span>
+                    {% else %}
+                        <span class="badge badge-slate"><i class="fas fa-minus"></i> 0%</span>
+                    {% endif %}
+                    vs {{ previous_label }} (${{ kpis.prev_total_revenue|floatformat:"2g" }})
+                {% endif %}
+            </p>
+            <p class="mt-auto pt-4 text-xs leading-relaxed text-slate-500">Goods sales plus delivery fees booked in this period. Customers pay on delivery, so only the “delivered” amounts are money already received.</p>
+        </div>
+
+        <div class="card p-4 sm:p-5">
+            <p class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-basket-shopping text-brand-500"></i> Goods sales</p>
+            <p class="mt-1.5 text-xl font-extrabold text-slate-900 sm:text-2xl">${{ kpis.goods_revenue|floatformat:"2g" }}</p>
+            <p class="mt-0.5 text-[11px] text-slate-500">of which delivered ${{ kpis.goods_revenue_delivered|floatformat:"2g" }}</p>
+        </div>
+        <div class="card p-4 sm:p-5">
+            <p class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-truck-fast text-brand-500"></i> Delivery fees</p>
+            <p class="mt-1.5 text-xl font-extrabold text-slate-900 sm:text-2xl">${{ kpis.delivery_revenue|floatformat:"2g" }}</p>
+            <p class="mt-0.5 text-[11px] text-slate-500">of which delivered ${{ kpis.delivery_revenue_delivered|floatformat:"2g" }}</p>
+        </div>
+        <a href="{% url 'dashboard_orders' %}" class="stat-card p-4 sm:p-5">
+            <p class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-receipt text-brand-500"></i> Orders <i class="fas fa-arrow-right ml-auto text-[10px] text-slate-400"></i></p>
+            <p class="mt-1.5 text-xl font-extrabold text-slate-900 sm:text-2xl"><span data-count-to="{{ kpis.orders_count }}">{{ kpis.orders_count|floatformat:"0g" }}</span></p>
+            <p class="mt-0.5 text-[11px] text-slate-500">{{ kpis.deliveries_booked }} deliver{{ kpis.deliveries_booked|pluralize:"y,ies" }} booked</p>
+        </a>
+        <div class="card p-4 sm:p-5">
+            <p class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-cubes text-brand-500"></i> Units sold</p>
+            <p class="mt-1.5 text-xl font-extrabold text-slate-900 sm:text-2xl"><span data-count-to="{{ kpis.units_sold }}">{{ kpis.units_sold|floatformat:"0g" }}</span></p>
+            <p class="mt-0.5 text-[11px] text-slate-500">on orders that weren't cancelled</p>
+        </div>
+        <div class="card p-4 sm:p-5">
+            <p class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-scale-balanced text-brand-500"></i> Average order</p>
+            <p class="mt-1.5 text-xl font-extrabold text-slate-900 sm:text-2xl">${{ kpis.average_order_value|floatformat:"2g" }}</p>
+            <p class="mt-0.5 text-[11px] text-slate-500">goods sales ÷ orders</p>
+        </div>
+        <a href="{% url 'dashboard_stock_history' %}?kind=restock" class="stat-card p-4 sm:p-5">
+            <p class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-dolly text-brand-500"></i> Stock bought <i class="fas fa-arrow-right ml-auto text-[10px] text-slate-400"></i></p>
+            <p class="mt-1.5 text-xl font-extrabold text-slate-900 sm:text-2xl"><span data-count-to="{{ kpis.stock_bought_units }}">{{ kpis.stock_bought_units|floatformat:"0g" }}</span> <span class="text-sm font-semibold text-slate-500">unit{{ kpis.stock_bought_units|pluralize }}</span></p>
+            <p class="mt-0.5 text-[11px] text-slate-500">cost ${{ kpis.stock_bought_cost|floatformat:"2g" }}, where a cost was recorded</p>
+        </a>
+    </div>
+
+    {# Revenue chart. dashboard.js draws it from the JSON below; the table holds the same numbers and is what shows without JavaScript. #}
+    {{ chart|json_script:"revenue-chart-data" }}
+    <section class="chart-card card mt-6" data-chart-card aria-labelledby="revenue-chart-title">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title" id="revenue-chart-title"><i class="fas fa-chart-column text-brand-600"></i> Revenue</h2>
+                <p class="mt-0.5 text-xs text-slate-500">Goods sales and delivery fees per {{ chart.bucket }} · {{ range_label|lower }}</p>
+            </div>
+            {% if chart.has_data %}
+                <button type="button" class="chart-js-only btn btn-secondary btn-sm" data-chart-toggle aria-controls="revenue-chart-view revenue-chart-table">
+                    <i class="fas fa-table"></i> <span data-chart-toggle-label>Table</span>
+                </button>
+            {% endif %}
+        </div>
+
+        {% if chart.has_data %}
+            <div class="card-body">
+                <div class="chart-js-only" id="revenue-chart-view" data-chart-view>
+                    <ul class="chart-legend" aria-label="Legend">
+                        <li><span class="chart-swatch chart-swatch-goods"></span> Goods sales <span class="font-semibold text-slate-900">${{ kpis.goods_revenue|floatformat:"2g" }}</span></li>
+                        <li><span class="chart-swatch chart-swatch-delivery"></span> Delivery fees <span class="font-semibold text-slate-900">${{ kpis.delivery_revenue|floatformat:"2g" }}</span></li>
+                    </ul>
+                    <div class="chart-plot" data-revenue-chart data-chart-label="Revenue per {{ chart.bucket }}, {{ range_label|lower }}: goods sales and delivery fees as stacked columns. Use the left and right arrow keys to read each column. The Table button shows the same numbers."></div>
+                </div>
+
+                <div class="js-hidden" id="revenue-chart-table" data-chart-table>
+                    <div class="table-wrap chart-table-scroll rounded-xl ring-1 ring-slate-200">
+                        <table class="table">
+                            <caption class="sr-only">Revenue per {{ chart.bucket }}, {{ range_label|lower }}</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">{% if chart.bucket == 'week' %}Week<span class="max-sm:hidden"> starting</span>{% elif chart.bucket == 'month' %}Month{% else %}Day{% endif %}</th>
+                                    <th scope="col" class="text-right">Total</th>
+                                    <th scope="col" class="text-right">Goods<span class="max-sm:hidden"> sales</span></th>
+                                    <th scope="col" class="text-right">Delivery<span class="max-sm:hidden"> fees</span></th>
+                                    <th scope="col" class="text-right">Orders</th>
+                                </tr>
+                            </thead>
+                            <tbody class="tabular-nums">
+                                {# Newest first: the latest figures are what the table is opened for. #}
+                                {% for point in chart.points reversed %}
+                                    <tr {% if not point.total and not point.orders %}class="text-slate-400"{% endif %}>
+                                        <th scope="row" class="border-t border-slate-100 py-2.5 pr-1.5 pl-3 font-semibold sm:pr-4 sm:pl-6 sm:whitespace-nowrap">{{ point.label }}</th>
+                                        {# Whole dollars on a phone: with cents, three money columns push Orders off the screen once takings reach $1,000. #}
+                                        <td class="py-2.5 text-right font-semibold"><span class="max-sm:hidden">${{ point.total|floatformat:"2g" }}</span><span class="sm:hidden">${{ point.total|floatformat:"0g" }}</span></td>
+                                        <td class="py-2.5 text-right"><span class="max-sm:hidden">${{ point.goods|floatformat:"2g" }}</span><span class="sm:hidden">${{ point.goods|floatformat:"0g" }}</span></td>
+                                        <td class="py-2.5 text-right"><span class="max-sm:hidden">${{ point.delivery|floatformat:"2g" }}</span><span class="sm:hidden">${{ point.delivery|floatformat:"0g" }}</span></td>
+                                        <td class="py-2.5 text-right">{{ point.orders }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="tabular-nums">
+                                <tr>
+                                    <th scope="row">{{ range_label }}</th>
+                                    <td class="text-right"><span class="max-sm:hidden">${{ kpis.total_revenue|floatformat:"2g" }}</span><span class="sm:hidden">${{ kpis.total_revenue|floatformat:"0g" }}</span></td>
+                                    <td class="text-right"><span class="max-sm:hidden">${{ kpis.goods_revenue|floatformat:"2g" }}</span><span class="sm:hidden">${{ kpis.goods_revenue|floatformat:"0g" }}</span></td>
+                                    <td class="text-right"><span class="max-sm:hidden">${{ kpis.delivery_revenue|floatformat:"2g" }}</span><span class="sm:hidden">${{ kpis.delivery_revenue|floatformat:"0g" }}</span></td>
+                                    <td class="text-right">{{ kpis.orders_count }}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="flex flex-col items-center px-6 py-14 text-center">
+                <span class="grid size-16 place-items-center rounded-full bg-brand-50 text-2xl text-brand-500"><i class="fas fa-chart-column"></i></span>
+                <h3 class="mt-5 text-base font-bold text-slate-900">No sales in the {{ range_label|lower }}</h3>
+                <p class="mt-1.5 max-w-md text-sm text-slate-500">Orders and delivery bookings will show up here as soon as customers place them. Try a longer period to look further back.</p>
+            </div>
+        {% endif %}
+
+        <div class="card-footer rounded-b-2xl text-xs leading-relaxed text-slate-500">
+            <p><i class="fas fa-circle-info mr-1 text-slate-400"></i> <span class="font-semibold text-slate-600">Goods sales</span> are the totals of orders that aren't cancelled, counted on the day the order was placed. <span class="font-semibold text-slate-600">Delivery fees</span> are the fees of delivery bookings that aren't cancelled, counted on the day the booking was made. Payment is cash or mobile money on delivery, so only the “delivered” figures are certain.</p>
+        </div>
+    </section>
+
+    <div class="mt-6 grid gap-6 lg:grid-cols-2">
+        <section class="card reveal" aria-labelledby="top-products-title">
+            <div class="card-header">
+                <h2 class="card-title" id="top-products-title"><i class="fas fa-ranking-star text-brand-600"></i> Top products</h2>
+                <span class="text-xs text-slate-500">By revenue · {{ range_label|lower }}</span>
+            </div>
+            <div class="card-body">
+                {% if top_products %}
+                    <ol class="space-y-4">
+                        {% for p in top_products %}
+                            <li>
+                                <div class="flex items-baseline justify-between gap-3">
+                                    <a href="{% url 'dashboard_product_edit' p.product_id %}" class="truncate text-sm font-semibold text-slate-900 transition hover:text-brand-700">{{ p.name }}</a>
+                                    <span class="shrink-0 text-xs text-slate-500 tabular-nums">{{ p.units }} unit{{ p.units|pluralize }} · <span class="font-semibold text-slate-700">${{ p.revenue|floatformat:"2g" }}</span></span>
+                                </div>
+                                {# One colour for every bar: the length is the only thing that differs. #}
+                                <div class="mt-1.5 h-2.5 rounded-r bg-brand-50" aria-hidden="true">
+                                    <div class="h-full w-[var(--w)] min-w-0.5 rounded-r bg-brand-500" style="--w: {{ p.share_pct }}%"></div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                {% else %}
+                    <p class="py-8 text-center text-sm text-slate-500"><i class="fas fa-basket-shopping mb-3 block text-2xl text-slate-300"></i> Nothing was sold in the {{ range_label|lower }}.</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="card reveal flex flex-col" aria-labelledby="stock-alerts-title">
+            <div class="card-header">
+                <h2 class="card-title" id="stock-alerts-title"><i class="fas fa-triangle-exclamation text-amber-500"></i> Stock alerts</h2>
+                <a href="{% url 'dashboard_inventory' %}" class="link text-xs">Inventory <i class="fas fa-arrow-right text-[10px]"></i></a>
+            </div>
+            <div class="grid grid-cols-4 divide-x divide-slate-100 border-b border-slate-100 text-center">
+                <a href="{% url 'dashboard_inventory' %}?filter=in" class="px-1 py-3 transition hover:bg-slate-50">
+                    <span class="block text-lg font-extrabold text-slate-900">{{ inventory.in_stock }}</span>
+                    <span class="block text-[11px] text-slate-500">In stock</span>
+                </a>
+                <a href="{% url 'dashboard_inventory' %}?filter=low" class="px-1 py-3 transition hover:bg-slate-50">
+                    <span class="block text-lg font-extrabold text-slate-900">{{ inventory.low_stock }}</span>
+                    <span class="block text-[11px] text-slate-500">Low stock</span>
+                </a>
+                <a href="{% url 'dashboard_inventory' %}?filter=out" class="px-1 py-3 transition hover:bg-slate-50">
+                    <span class="block text-lg font-extrabold text-slate-900">{{ inventory.out_of_stock }}</span>
+                    <span class="block text-[11px] text-slate-500">Out of stock</span>
+                </a>
+                <a href="{% url 'dashboard_inventory' %}?filter=hidden" class="px-1 py-3 transition hover:bg-slate-50">
+                    <span class="block text-lg font-extrabold text-slate-900">{{ inventory.hidden }}</span>
+                    <span class="block text-[11px] text-slate-500">Hidden</span>
+                </a>
+            </div>
+            {% if stock_alerts %}
+                <ul class="divide-y divide-slate-100">
+                    {% for product in stock_alerts %}
+                        <li class="flex items-center gap-3 px-5 py-3 sm:px-6">
+                            <div class="min-w-0 flex-1">
+                                <p class="truncate text-sm font-semibold text-slate-900">{{ product.name }}</p>
+                                <p class="truncate text-xs text-slate-500">{{ product.category.name }}</p>
+                            </div>
+                            {% if product.stock_state == 'out' %}
+                                <span class="badge badge-red">Out of stock</span>
+                            {% else %}
+                                <span class="badge badge-amber">Low · {{ product.stock_quantity }} left</span>
+                            {% endif %}
+                            <a href="{% url 'dashboard_product_edit' product.id %}#restock" class="btn btn-secondary btn-sm" aria-label="Restock {{ product.name }}"><i class="fas fa-plus"></i> <span class="hidden sm:inline">Restock</span></a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="px-6 py-10 text-center text-sm text-slate-500"><i class="fas fa-circle-check mb-3 block text-2xl text-slate-300"></i> Nothing in the shop is out of stock or running low.</p>
+            {% endif %}
+            <div class="card-footer mt-auto rounded-b-2xl text-xs text-slate-500">
+                Retail value of the stock in the shop: <span class="font-semibold text-slate-900">${{ inventory.retail_value|floatformat:"2g" }}</span>
+            </div>
+        </section>
+    </div>
+
+    <div class="mt-6 grid items-start gap-6 lg:grid-cols-2">
+        <section class="card reveal" aria-labelledby="upcoming-deliveries-title">
+            <div class="card-header">
+                <h2 class="card-title" id="upcoming-deliveries-title"><i class="fas fa-truck-fast text-brand-600"></i> Upcoming deliveries</h2>
+                <a href="{% url 'dashboard_deliveries' %}?when=upcoming" class="link text-xs">All deliveries <i class="fas fa-arrow-right text-[10px]"></i></a>
+            </div>
+            {# Plain words rather than status badges: a row of pulsing dots would shout over the list below. #}
+            {# Not links either, here or under Recent orders: they count the period only, and the lists a link would open cover all time. #}
+            <p class="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-slate-100 bg-cream-50 px-5 py-2.5 text-xs text-slate-500 sm:px-6">
+                <span class="w-full sm:w-auto">Booked in the {{ range_label|lower }}:</span>
+                {% for row in deliveries_by_status %}
+                    <span>{{ row.label }} <span class="ml-0.5 font-bold text-slate-900">{{ row.count }}</span></span>
+                {% endfor %}
+            </p>
+            {% if upcoming_deliveries %}
+                <ul class="divide-y divide-slate-100">
+                    {% for booking in upcoming_deliveries %}
+                        <li class="flex items-start gap-3 px-5 py-3.5 sm:px-6">
+                            {# period_end is always today. #}
+                            <div class="grid w-12 shrink-0 place-items-center rounded-xl py-1.5 text-center {% if booking.delivery_date == period_end %}bg-amber-100{% else %}bg-brand-50{% endif %}">
+                                <span class="text-[10px] font-bold tracking-wide text-slate-500 uppercase">{{ booking.delivery_date|date:"M" }}</span>
+                                <span class="text-lg leading-none font-extrabold text-slate-900">{{ booking.delivery_date|date:"j" }}</span>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-start justify-between gap-2">
+                                    <p class="truncate text-sm font-semibold text-slate-900">{{ booking.user.get_full_name|default:booking.user.username }}</p>
+                                    {% include 'partials/status_badge.html' with status=booking.status label=booking.get_status_display %}
+                                </div>
+                                <p class="mt-0.5 text-xs text-slate-500">{% if booking.delivery_date == period_end %}<span class="font-bold text-amber-700">Today</span> · {% endif %}{{ booking.get_time_slot_display }}</p>
+                                <p class="truncate text-xs text-slate-500">
+                                    <i class="fas fa-location-dot text-slate-400"></i> {{ booking.delivery_city }}
+                                    {% if booking.order %} · <a href="{% url 'dashboard_order_detail' booking.order.id %}" class="link">Order #{{ booking.order.order_number }}</a>{% endif %}
+                                </p>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="px-6 py-10 text-center text-sm text-slate-500"><i class="fas fa-calendar-check mb-3 block text-2xl text-slate-300"></i> No deliveries are waiting to go out.</p>
+            {% endif %}
+        </section>
+
+        <div class="grid gap-6">
+            <section class="card reveal" aria-labelledby="recent-orders-title">
+                <div class="card-header">
+                    <h2 class="card-title" id="recent-orders-title"><i class="fas fa-receipt text-brand-600"></i> Recent orders</h2>
+                    <a href="{% url 'dashboard_orders' %}" class="link text-xs">All orders <i class="fas fa-arrow-right text-[10px]"></i></a>
+                </div>
+                <p class="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-slate-100 bg-cream-50 px-5 py-2.5 text-xs text-slate-500 sm:px-6">
+                    <span class="w-full sm:w-auto">Placed in the {{ range_label|lower }}:</span>
+                    {% for row in orders_by_status %}
+                        <span>{{ row.label }} <span class="ml-0.5 font-bold text-slate-900">{{ row.count }}</span></span>
+                    {% endfor %}
+                </p>
+                {% if recent_orders %}
+                    <ul class="divide-y divide-slate-100">
+                        {% for order in recent_orders %}
+                            <li class="flex items-center gap-3 px-5 py-3 sm:px-6">
+                                <div class="min-w-0 flex-1">
+                                    <a href="{% url 'dashboard_order_detail' order.id %}" class="block truncate text-sm font-semibold text-slate-900 transition hover:text-brand-700">#{{ order.order_number }}</a>
+                                    <p class="truncate text-xs text-slate-500">{{ order.user.get_full_name|default:order.user.username }} · {{ order.created_at|date:"j M, H:i" }}</p>
+                                </div>
+                                <span class="text-sm font-bold text-slate-900 tabular-nums">${{ order.total_amount|floatformat:"2g" }}</span>
+                                {% include 'partials/status_badge.html' with status=order.status label=order.get_status_display %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="px-6 py-10 text-center text-sm text-slate-500"><i class="fas fa-receipt mb-3 block text-2xl text-slate-300"></i> No orders yet.</p>
+                {% endif %}
+            </section>
+
+            <section class="card reveal overflow-hidden" aria-labelledby="awaiting-messages-title">
+                <div class="card-header">
+                    <h2 class="card-title" id="awaiting-messages-title"><i class="fas fa-inbox text-brand-600"></i> Messages awaiting reply</h2>
+                    <a href="{% url 'dashboard_messages' %}?filter=open" class="link text-xs">All open <i class="fas fa-arrow-right text-[10px]"></i></a>
+                </div>
+                {% if awaiting_messages %}
+                    <ul class="divide-y divide-slate-100">
+                        {% for message in awaiting_messages %}
+                            <li>
+                                <a href="{% url 'message_detail' message.id %}" class="flex items-center gap-3 px-5 py-3 transition hover:bg-slate-50 sm:px-6">
+                                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-brand-50 text-sm font-extrabold text-brand-700">{{ message.name|first|upper }}</span>
+                                    <span class="min-w-0 flex-1">
+                                        <span class="block truncate text-sm font-semibold text-slate-900">{{ message.subject }}</span>
+                                        <span class="block truncate text-xs text-slate-500">{{ message.name }} · {{ message.created_at|timesince }} ago</span>
+                                    </span>
+                                    {% if message.is_urgent %}<span class="badge badge-red"><i class="fas fa-bolt"></i> Urgent</span>{% endif %}
+                                    <i class="fas fa-chevron-right text-xs text-slate-300"></i>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="px-6 py-10 text-center text-sm text-slate-500"><i class="fas fa-circle-check mb-3 block text-2xl text-slate-300"></i> Every message has been answered.</p>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/dashboard.js' %}" defer></script>{% endblock %}

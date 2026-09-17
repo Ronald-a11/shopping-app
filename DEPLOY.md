@@ -99,7 +99,14 @@ change without saving.
 
 ## Admin access
 
-Django admin is at `/admin/`, and the founder dashboard at `/founder/`.
+Django admin is at `/admin/`, and the staff admin dashboard at `/founder/`
+(overview, inventory, orders, deliveries, messages).
+
+Change stock on the dashboard (`/founder/inventory/`), not in Django admin:
+**Stock received** (or the quick Restock box in the list) for a delivery from a
+supplier, **Correct the stock** for breakage, theft or a miscount. Both are
+written to the stock log that "Stock bought" and the stock history are built
+from, which is why stock is read-only in Django admin.
 
 Access to `/founder/` requires **staff status**, which only a superuser can
 grant. Grant it in Django admin under **Users → (pick user) → Staff status**.
@@ -119,7 +126,8 @@ such as `btn`, `card`, `tabs`, `toast`); the compiled, minified stylesheet is
 step.
 
 Tailwind only emits the utility classes it finds in `templates/`,
-`supermarket/` and `static/js/main.js`. After changing any of those, rebuild —
+`supermarket/`, `static/js/main.js` and `static/js/dashboard.js` (the revenue
+chart). After changing any of those, rebuild —
 otherwise newly used classes are simply missing on the live site:
 
 ```bash

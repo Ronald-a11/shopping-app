@@ -122,7 +122,7 @@ class ContactMessageRepliesTests(TestCase):
     def test_awaiting_reply_filter_lists_only_open_messages(self):
         self.staff_reply(self.message, body='Handled.')
 
-        response = self.client.get(reverse('founder_dashboard'), {'filter': 'open'})
+        response = self.client.get(reverse('dashboard_messages'), {'filter': 'open'})
         listed = list(response.context['contact_messages'].object_list)
         self.assertEqual(listed, [self.anonymous_message])
         self.assertEqual(response.context['open_count'], 1)

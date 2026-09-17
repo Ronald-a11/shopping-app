@@ -4,7 +4,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib import messages
 from django.db import transaction, IntegrityError
 from django.http import JsonResponse, Http404, HttpResponseRedirect
-from django.db.models import Q, Sum, F
+from django.db.models import Q, Sum, F, Exists, OuterRef
 from django.core.paginator import Paginator
 from django.utils.crypto import get_random_string
 from django.utils import timezone
@@ -39,6 +39,12 @@ DELIVERY_RATES = {
 }
 DEFAULT_DELIVERY_RATE = (15.00, "4-6 hours")
 
+# Orders that can still take a delivery booking. The staff dashboard moves
+# orders to processing or shipped as routine (marking a delivery "In transit"
+# ships its order), so pending alone would lock a customer out of re-booking
+# after staff cancel that delivery.
+DELIVERABLE_ORDER_STATUSES = ['pending', 'processing', 'shipped']
+
 
 def _whatsapp_url(message):
     """Build a wa.me link for the given message body."""
@@ -48,6 +54,20 @@ def _whatsapp_url(message):
 def _is_ajax(request):
     """True when the request was made by fetch/XHR rather than a plain form post."""
     return request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+
+
+def parse_id(raw):
+    """A database id from user input, or None when it can't be one.
+
+    int() decides, not str.isdigit(): isdigit() accepts characters such as a
+    superscript two that the id field then rejects with ValueError.
+    """
+    try:
+        value = int(raw)
+    except (TypeError, ValueError):
+        return None
+    # Above this SQLite raises OverflowError instead of finding nothing.
+    return value if 0 < value < 2**63 else None
 
 
 def _parse_quantity(raw):
@@ -155,13 +175,10 @@ def product_list(request):
         )
 
     # Category filtering
-    category_id = request.GET.get('category')
+    # A ?category= that isn't a usable id is ignored instead of raising.
+    category_id = parse_id(request.GET.get('category'))
     if category_id:
-        # Ignore a non-numeric ?category= instead of raising ValueError.
-        if str(category_id).isdigit():
-            products = products.filter(category_id=category_id)
-        else:
-            category_id = None
+        products = products.filter(category_id=category_id)
 
     # Local products filter
     local_only = request.GET.get('local')
@@ -203,7 +220,8 @@ def product_list(request):
         'products': products,
         'categories': categories,
         'search_query': search_query,
-        'selected_category': category_id,
+        # A string, because the templates compare it with category.id|stringformat.
+        'selected_category': str(category_id) if category_id else None,
         'local_only': local_only,
         'filter_type': filter_type,
         'sort_by': sort_by,
@@ -314,10 +332,14 @@ def cart_view(request):
     """Shopping cart page"""
     cart = get_or_create_cart(request)
     cart_items = cart.items.select_related('product', 'product__category')
+    # Products staff hid after they were carted: checkout refuses them, so the
+    # page has to say which ones are in the way.
+    unavailable_count = sum(1 for item in cart_items if not item.product.is_available)
 
     context = {
         'cart': cart,
         'cart_items': cart_items,
+        'unavailable_count': unavailable_count,
     }
     return render(request, 'supermarket/cart.html', context)
 
@@ -369,6 +391,14 @@ class InsufficientStock(Exception):
         super().__init__(f"Insufficient stock for {product.name}")
 
 
+class ProductUnavailable(Exception):
+    """Raised when a cart holds a product staff have since hidden from the shop."""
+
+    def __init__(self, product):
+        self.product = product
+        super().__init__(f"{product.name} is no longer available")
+
+
 @login_required
 def checkout(request):
     """Checkout page"""
@@ -391,6 +421,13 @@ def checkout(request):
                     'Please update your cart and try again.'
                 )
                 return redirect('cart')
+            except ProductUnavailable as exc:
+                messages.error(
+                    request,
+                    f'Sorry, "{exc.product.name}" is no longer available. '
+                    'Please remove it from your cart and try again.'
+                )
+                return redirect('cart')
 
             messages.success(request, f'Order {order.order_number} placed successfully!')
             return redirect('order_detail', order_id=order.id)
@@ -411,7 +448,8 @@ def place_order(user, cart, form):
 
     Stock is decremented with a conditional UPDATE so two shoppers checking out
     at the same time can never oversell; if any line fails the whole
-    transaction rolls back.
+    transaction rolls back. The same UPDATE refuses a hidden product: hiding is
+    how staff withdraw a product, and it may already be sitting in a cart.
     """
     cart_items = list(cart.items.select_related('product'))
 
@@ -424,11 +462,15 @@ def place_order(user, cart, form):
     for cart_item in cart_items:
         product = cart_item.product
         updated = Product.objects.filter(
-            id=product.id, stock_quantity__gte=cart_item.quantity
+            id=product.id, is_available=True, stock_quantity__gte=cart_item.quantity
         ).update(stock_quantity=F('stock_quantity') - cart_item.quantity)
 
         if not updated:
-            raise InsufficientStock(product)
+            # Re-read rather than trust the cart's copy: the product may have
+            # been hidden after this request loaded it.
+            if Product.objects.filter(id=product.id, is_available=True).exists():
+                raise InsufficientStock(product)
+            raise ProductUnavailable(product)
 
         OrderItem.objects.create(
             order=order,
@@ -447,9 +489,21 @@ def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     order_items = order.items.select_related('product')
 
+    # Newest first. A cancelled booking only matters while nothing has
+    # replaced it, so a live one always wins.
+    bookings = order.deliverybooking_set.all()
+    delivery = bookings.exclude(status='cancelled').first() or bookings.first()
+
     context = {
         'order': order,
         'order_items': order_items,
+        'delivery': delivery,
+        # The same rule delivery_booking applies, so the page offers a booking
+        # exactly when that view would accept one for this order.
+        'can_book_delivery': (
+            order.status in DELIVERABLE_ORDER_STATUSES
+            and (delivery is None or delivery.status == 'cancelled')
+        ),
     }
     return render(request, 'supermarket/order_detail.html', context)
 
@@ -470,7 +524,9 @@ def cancel_order(request, order_id):
         return redirect('order_detail', order_id=order.id)
 
     if request.method == 'POST':
-        restore_order_to_cart(request.user, order)
+        if not restore_order_to_cart(request.user, order):
+            messages.error(request, 'This order can no longer be cancelled.')
+            return redirect('order_history')
         messages.success(request, 'Order has been cancelled. Items have been added back to your cart for reordering.')
         return redirect('cart')
 
@@ -483,7 +539,20 @@ def cancel_order(request, order_id):
 
 @transaction.atomic
 def restore_order_to_cart(user, order):
-    """Return an order's items to the user's cart and release the reserved stock."""
+    """Return an order's items to the user's cart and release the reserved stock.
+
+    Returns False, changing nothing, when the order is no longer pending.
+    """
+    # Claim the order with a guarded write before touching stock, the same way
+    # dashboard.cancel_order does. Staff can cancel this order at the same
+    # moment (and a customer can double-submit); whoever writes second finds
+    # no row, so the stock is never returned twice.
+    claimed = Order.objects.filter(pk=order.pk, status='pending').update(
+        status='cancelled', updated_at=timezone.now()
+    )
+    if not claimed:
+        return False
+
     cart, _ = Cart.objects.get_or_create(user=user)
 
     for item in order.items.select_related('product'):
@@ -502,6 +571,7 @@ def restore_order_to_cart(user, order):
             cart_item.save(update_fields=['quantity'])
 
     order.delete()
+    return True
 
 
 @login_required
@@ -695,16 +765,19 @@ def profile(request):
 @login_required
 def delivery_booking(request):
     """Delivery booking page"""
-    # Check if user has any orders
-    user_orders = Order.objects.filter(user=request.user, status='pending')
-    if not user_orders.exists():
+    open_orders = Order.objects.filter(user=request.user, status__in=DELIVERABLE_ORDER_STATUSES)
+    if not open_orders.exists():
         messages.warning(request, 'You need to place an order first before booking delivery. Please add items to your cart and complete an order.')
         return redirect('product_list')
 
-    # Check if user already has a delivery booking for pending orders
-    existing_booking = DeliveryBooking.objects.filter(user=request.user, order__in=user_orders).exists()
-    if existing_booking:
-        messages.info(request, 'You already have a delivery booking for your pending order. Please check your delivery bookings.')
+    # Of those, the ones with no live booking. A cancelled booking doesn't
+    # count, or a delivery cancelled by staff could never be booked again.
+    # Checked per order so an older order that is already on its way doesn't
+    # block booking a delivery for a newer one.
+    live_bookings = DeliveryBooking.objects.filter(order=OuterRef('pk')).exclude(status='cancelled')
+    user_orders = open_orders.filter(~Exists(live_bookings)).order_by('-created_at')
+    if not user_orders.exists():
+        messages.info(request, 'You already have a delivery booking for your order. Please check your delivery bookings.')
         return redirect('delivery_bookings')
 
     if request.method == 'POST':
@@ -713,8 +786,9 @@ def delivery_booking(request):
             booking = form.save(commit=False)
             booking.user = request.user
 
-            # Link to the most recent pending order
-            booking.order = user_orders.order_by('-created_at').first()
+            # Link to the newest order still waiting for a delivery; the
+            # template names the same one from user_orders.first.
+            booking.order = user_orders.first()
 
             # Calculate delivery fee based on city (simplified)
             fee, eta = DELIVERY_RATES.get(

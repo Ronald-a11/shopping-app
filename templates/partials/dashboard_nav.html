@@ -1,0 +1,41 @@
+{% comment %}
+Section tabs shown under the page header of every staff dashboard page.
+
+    {% include 'partials/dashboard_nav.html' %}
+
+Include it straight under the page header, outside the page's own container:
+it brings its own `container-page` and top margin.
+
+Reads `nav` from the page context: active (overview, inventory, orders,
+deliveries or messages) and the badge counts out_of_stock, pending_orders,
+pending_deliveries and open_messages. A badge only shows when there is
+something waiting.
+
+On a phone the five sections share the width, icon above label, so none of
+them hides off-screen; from `md` up it is the usual pill bar.
+{% endcomment %}
+{% with tab_class="tab min-w-0 flex-1 flex-col gap-1 px-1 py-2 text-[11px] leading-tight md:flex-none md:flex-row md:gap-2 md:px-3 md:text-sm lg:px-4" count_class="tab-count absolute top-1 left-1/2 ml-2.5 md:static md:ml-0" %}
+<div class="container-page mt-6">
+    <nav class="tabs w-full md:w-fit" aria-label="Dashboard sections">
+        <a class="{{ tab_class }} {% if nav.active == 'overview' %}is-active{% endif %}" href="{% url 'founder_dashboard' %}" {% if nav.active == 'overview' %}aria-current="page"{% endif %}>
+            <i class="fas fa-chart-line" aria-hidden="true"></i> Overview
+        </a>
+        <a class="{{ tab_class }} {% if nav.active == 'inventory' %}is-active{% endif %}" href="{% url 'dashboard_inventory' %}" {% if nav.active == 'inventory' %}aria-current="page"{% endif %}>
+            <i class="fas fa-boxes-stacked" aria-hidden="true"></i> Inventory
+            {% if nav.out_of_stock %}<span class="{{ count_class }}">{{ nav.out_of_stock }}<span class="sr-only"> out of stock</span></span>{% endif %}
+        </a>
+        <a class="{{ tab_class }} {% if nav.active == 'orders' %}is-active{% endif %}" href="{% url 'dashboard_orders' %}" {% if nav.active == 'orders' %}aria-current="page"{% endif %}>
+            <i class="fas fa-receipt" aria-hidden="true"></i> Orders
+            {% if nav.pending_orders %}<span class="{{ count_class }}">{{ nav.pending_orders }}<span class="sr-only"> pending</span></span>{% endif %}
+        </a>
+        <a class="{{ tab_class }} {% if nav.active == 'deliveries' %}is-active{% endif %}" href="{% url 'dashboard_deliveries' %}" {% if nav.active == 'deliveries' %}aria-current="page"{% endif %}>
+            <i class="fas fa-truck-fast" aria-hidden="true"></i> Deliveries
+            {% if nav.pending_deliveries %}<span class="{{ count_class }}">{{ nav.pending_deliveries }}<span class="sr-only"> pending</span></span>{% endif %}
+        </a>
+        <a class="{{ tab_class }} {% if nav.active == 'messages' %}is-active{% endif %}" href="{% url 'dashboard_messages' %}" {% if nav.active == 'messages' %}aria-current="page"{% endif %}>
+            <i class="fas fa-inbox" aria-hidden="true"></i> Messages
+            {% if nav.open_messages %}<span class="{{ count_class }}">{{ nav.open_messages }}<span class="sr-only"> awaiting a reply</span></span>{% endif %}
+        </a>
+    </nav>
+</div>
+{% endwith %}

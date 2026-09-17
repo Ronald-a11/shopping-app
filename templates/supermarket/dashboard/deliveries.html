@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load shop_tags %}
+
+{% block title %}Deliveries{% endblock %}
+
+{% block page_header %}
+    {% include 'partials/page_header.html' with eyebrow="Admin dashboard" title="Deliveries" subtitle="The deliveries customers have booked: when, where, and how far along each one is." icon="fa-truck-fast" %}
+{% endblock %}
+
+{% block content %}
+{% include 'partials/dashboard_nav.html' %}
+<div class="container-page py-8">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <nav class="flex flex-wrap items-center gap-2" aria-label="Filter deliveries by date">
+            <a class="chip {% if active_when == 'all' %}is-active{% endif %}" href="?{% query_transform when=None page=None %}" {% if active_when == 'all' %}aria-current="page"{% endif %}><i class="fas fa-calendar"></i> All dates</a>
+            <a class="chip {% if active_when == 'today' %}is-active{% endif %}" href="?{% query_transform when='today' page=None %}" {% if active_when == 'today' %}aria-current="page"{% endif %}><i class="fas fa-calendar-day"></i> Today</a>
+            <a class="chip {% if active_when == 'upcoming' %}is-active{% endif %}" href="?{% query_transform when='upcoming' page=None %}" {% if active_when == 'upcoming' %}aria-current="page"{% endif %}><i class="fas fa-calendar-week"></i> Upcoming</a>
+        </nav>
+
+        <form method="get" class="flex w-full flex-wrap items-center gap-2 sm:w-auto" role="search" aria-label="Search deliveries">
+            {# Searching keeps the date and status filters that are open. #}
+            {% if active_when != 'all' %}<input type="hidden" name="when" value="{{ active_when }}">{% endif %}
+            {% if active_status != 'all' %}<input type="hidden" name="status" value="{{ active_status }}">{% endif %}
+            <label class="relative block min-w-0 flex-1 sm:w-80 sm:flex-none">
+                <span class="sr-only">Search deliveries</span>
+                <i class="fas fa-magnifying-glass pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-sm text-slate-400"></i>
+                <input type="search" name="search" value="{{ search_query }}" placeholder="Customer, phone, city or address" class="input pl-10">
+            </label>
+            <button type="submit" class="btn btn-primary" data-loading-text=""><i class="fas fa-magnifying-glass sm:hidden"></i><span class="sr-only sm:not-sr-only">Search</span></button>
+            {% if search_query %}
+                <a href="?{% query_transform search=None page=None %}" class="btn btn-ghost"><i class="fas fa-xmark"></i> Clear</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+        <nav class="tabs-line" aria-label="Filter deliveries by status">
+            <a class="tab {% if active_status == 'all' %}is-active{% endif %}" href="?{% query_transform status=None page=None %}" {% if active_status == 'all' %}aria-current="page"{% endif %}>All <span class="tab-count">{{ counts.all }}</span></a>
+            <a class="tab {% if active_status == 'pending' %}is-active{% endif %}" href="?{% query_transform status='pending' page=None %}" {% if active_status == 'pending' %}aria-current="page"{% endif %}>Pending <span class="tab-count">{{ counts.pending }}</span></a>
+            <a class="tab {% if active_status == 'confirmed' %}is-active{% endif %}" href="?{% query_transform status='confirmed' page=None %}" {% if active_status == 'confirmed' %}aria-current="page"{% endif %}>Confirmed <span class="tab-count">{{ counts.confirmed }}</span></a>
+            <a class="tab {% if active_status == 'in_transit' %}is-active{% endif %}" href="?{% query_transform status='in_transit' page=None %}" {% if active_status == 'in_transit' %}aria-current="page"{% endif %}>In transit <span class="tab-count">{{ counts.in_transit }}</span></a>
+            <a class="tab {% if active_status == 'delivered' %}is-active{% endif %}" href="?{% query_transform status='delivered' page=None %}" {% if active_status == 'delivered' %}aria-current="page"{% endif %}>Delivered <span class="tab-count">{{ counts.delivered }}</span></a>
+            <a class="tab {% if active_status == 'cancelled' %}is-active{% endif %}" href="?{% query_transform status='cancelled' page=None %}" {% if active_status == 'cancelled' %}aria-current="page"{% endif %}>Cancelled <span class="tab-count">{{ counts.cancelled }}</span></a>
+        </nav>
+        {% if bookings %}
+            <p class="text-xs font-medium text-slate-500">Showing {{ bookings.start_index }}–{{ bookings.end_index }} of {{ bookings.paginator.count }}</p>
+        {% endif %}
+    </div>
+
+    <p class="mt-4 flex items-start gap-2 text-xs text-slate-500">
+        <i class="fas fa-circle-info mt-0.5 text-slate-400"></i>
+        Marking a delivery In transit also marks its order Shipped, and marking it Delivered marks the order Delivered.
+    </p>
+
+    {% if bookings %}
+        <div class="mt-5 grid gap-5 xl:grid-cols-2">
+            {% for booking in bookings %}
+                <article class="card flex flex-col overflow-hidden {% if booking.delivery_date == today and booking.status != 'cancelled' %}ring-2 ring-amber-400{% endif %}" aria-label="Delivery booking #{{ booking.id }}">
+                    <div class="card-body flex-1">
+                        <div class="flex items-start gap-4">
+                            <div class="flex w-16 shrink-0 flex-col overflow-hidden rounded-xl text-center ring-1 ring-slate-200">
+                                <span class="py-1 text-[11px] font-bold tracking-wider text-white uppercase {% if booking.status == 'cancelled' %}bg-slate-400{% elif booking.delivery_date == today %}bg-amber-500{% else %}bg-brand-600{% endif %}">{{ booking.delivery_date|date:"M" }}</span>
+                                <span class="bg-white py-1.5 text-2xl leading-none font-extrabold {% if booking.status == 'cancelled' %}text-slate-400 line-through{% else %}text-slate-900{% endif %}">{{ booking.delivery_date|date:"j" }}</span>
+                                <span class="bg-white pb-1.5 text-[10px] font-semibold text-slate-500">{{ booking.delivery_date|date:"D" }}</span>
+                            </div>
+
+                            <div class="min-w-0 flex-1">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <h2 class="font-bold text-slate-900">{{ booking.delivery_date|date:"D, j M Y" }}</h2>
+                                    {% if booking.delivery_date == today %}
+                                        <span class="badge badge-amber"><i class="fas fa-sun text-[10px]"></i> Today</span>
+                                    {% elif booking.delivery_date < today and booking.status != 'delivered' and booking.status != 'cancelled' %}
+                                        <span class="badge badge-red"><i class="fas fa-triangle-exclamation text-[10px]"></i> Date has passed</span>
+                                    {% endif %}
+                                    <span class="ml-auto">{% include 'partials/status_badge.html' with status=booking.status label=booking.get_status_display %}</span>
+                                </div>
+                                <p class="mt-1 flex items-center gap-1.5 text-sm text-slate-600"><i class="fas fa-clock text-xs text-slate-400"></i> {{ booking.get_time_slot_display }}</p>
+                                <p class="mt-0.5 text-xs text-slate-500">Booking #{{ booking.id }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 grid gap-4 border-t border-slate-100 pt-4 sm:grid-cols-2">
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold tracking-wide text-slate-500 uppercase">Customer</p>
+                                <p class="mt-1 truncate font-semibold text-slate-900">{{ booking.user.get_full_name|default:booking.user.username }}</p>
+                                <p class="text-sm text-slate-600">{{ booking.delivery_phone }}</p>
+                                {% with booking_id=booking.id|stringformat:"s" %}
+                                {% with wa_text="Hello, this is JKC Supermarket about your delivery booking #"|add:booking_id %}
+                                    <div class="mt-2 flex flex-wrap gap-2">
+                                        <a href="tel:{{ booking.delivery_phone }}" class="btn btn-secondary btn-sm"><i class="fas fa-phone"></i> Call</a>
+                                        <a href="{% whatsapp_url booking.delivery_phone wa_text %}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-sm"><i class="fab fa-whatsapp text-sm"></i> WhatsApp</a>
+                                    </div>
+                                {% endwith %}
+                                {% endwith %}
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold tracking-wide text-slate-500 uppercase">Deliver to</p>
+                                <p class="mt-1 text-sm font-semibold break-words text-slate-900">{{ booking.delivery_address|linebreaksbr }}</p>
+                                <p class="text-sm text-slate-600"><i class="fas fa-location-dot text-xs text-slate-400"></i> {{ booking.delivery_city }}{% if booking.delivery_province and booking.delivery_province != booking.delivery_city %}, {{ booking.delivery_province }}{% endif %}</p>
+                            </div>
+                        </div>
+
+                        <dl class="mt-4 border-t border-slate-100 pt-2">
+                            <div class="kv"><dt>Delivery fee</dt><dd>${{ booking.delivery_fee }}</dd></div>
+                            <div class="kv">
+                                <dt>Order</dt>
+                                {% if booking.order %}
+                                    <dd><a href="{% url 'dashboard_order_detail' booking.order.id %}" class="link">#{{ booking.order.order_number }}</a> <span class="font-medium text-slate-500">· ${{ booking.order.total_amount }} · {{ booking.order.get_status_display }}</span></dd>
+                                {% else %}
+                                    <dd class="font-medium text-slate-500">Not linked to an order</dd>
+                                {% endif %}
+                            </div>
+                            {% if booking.special_instructions %}
+                                <div class="kv"><dt>Instructions</dt><dd class="font-medium break-words">{{ booking.special_instructions|linebreaksbr }}</dd></div>
+                            {% endif %}
+                            {# Bookings cancelled outside the site (e.g. in the Django admin) carry no time or reason. #}
+                            {% if booking.cancelled_at or booking.cancellation_reason or booking.cancellation_notes %}
+                                <div class="kv">
+                                    <dt>Cancelled</dt>
+                                    <dd class="font-medium">{{ booking.cancelled_at|date:"j M Y, H:i" }}{% if booking.cancellation_reason %} · {{ booking.get_cancellation_reason_display }}{% endif %}{% if booking.cancellation_notes %}<br><span class="text-slate-500">{{ booking.cancellation_notes }}</span>{% endif %}</dd>
+                                </div>
+                            {% endif %}
+                        </dl>
+                    </div>
+
+                    <div class="card-footer">
+                        {% if booking.status != 'cancelled' %}
+                            <form method="post" action="{% url 'dashboard_delivery_status' booking.id %}" class="flex items-center gap-2">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <select name="status" class="input w-32 rounded-lg py-1.5 pr-8 pl-3 text-xs" aria-label="Status of delivery booking #{{ booking.id }}">
+                                    {% for value, label in status_choices %}{% if value != 'cancelled' %}<option value="{{ value }}" {% if value == booking.status %}selected{% endif %}>{{ label }}</option>{% endif %}{% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-secondary btn-sm" data-loading-text="">Update</button>
+                            </form>
+                            <form method="post" action="{% url 'dashboard_delivery_status' booking.id %}" class="ml-auto">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <input type="hidden" name="status" value="cancelled">
+                                <button type="submit" class="btn btn-danger-outline btn-sm" data-confirm="This cancels the delivery booking. It can't be undone. The order itself is not cancelled." data-confirm-title="Cancel delivery booking #{{ booking.id }}?" data-confirm-ok="Yes, cancel delivery" data-loading-text="">
+                                    <i class="fas fa-ban"></i> Cancel<span class="sr-only"> delivery booking #{{ booking.id }}</span>
+                                </button>
+                            </form>
+                        {% else %}
+                            <p class="text-xs text-slate-500">Cancelled deliveries can't be changed.</p>
+                        {% endif %}
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+        {% include 'partials/pagination.html' with page_obj=bookings %}
+    {% else %}
+        <div class="mt-5">
+            {% url 'dashboard_deliveries' as all_deliveries_url %}
+            {% if search_query or active_status != 'all' or active_when != 'all' %}
+                {% include 'partials/empty_state.html' with icon="fa-truck-fast" title="No deliveries match" text="Nothing fits these filters. Try another tab or clear the search." cta_url=all_deliveries_url cta_label="Show all deliveries" cta_icon="fa-list" %}
+            {% else %}
+                {% include 'partials/empty_state.html' with icon="fa-truck-fast" title="No deliveries booked yet" text="Bookings appear here as soon as customers book a delivery." %}
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -86,11 +86,12 @@
                 <a href="{% url 'contact' %}" class="nav-link {% if url_name == 'contact' %}is-active{% endif %}">Contact</a>
             </nav>
 
+            {# Staff lists use ?search= too, so only the shop's own term is echoed here (and in the mobile copy below). #}
             <form method="get" action="{% url 'product_list' %}" class="ml-auto hidden w-full max-w-xs md:block" role="search">
                 <label class="relative block">
                     <span class="sr-only">Search products</span>
                     <i class="fas fa-magnifying-glass pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-sm text-slate-400"></i>
-                    <input type="search" name="search" value="{{ request.GET.search }}" placeholder="Search products…" class="input rounded-full bg-slate-100 pl-10 ring-transparent focus:bg-white focus:ring-brand-500">
+                    <input type="search" name="search" value="{% if url_name == 'product_list' %}{{ request.GET.search }}{% endif %}" placeholder="Search products…" class="input rounded-full bg-slate-100 pl-10 ring-transparent focus:bg-white focus:ring-brand-500">
                 </label>
             </form>
 
@@ -129,7 +130,7 @@
                             <a href="{% url 'delivery_booking' %}" class="dropdown-item" role="menuitem"><i class="fas fa-calendar-plus"></i> Book a delivery</a>
                             {% if user.is_staff %}
                                 <div class="my-1 border-t border-slate-100"></div>
-                                <a href="{% url 'founder_dashboard' %}" class="dropdown-item" role="menuitem"><i class="fas fa-chart-line"></i> Founder dashboard</a>
+                                <a href="{% url 'founder_dashboard' %}" class="dropdown-item" role="menuitem"><i class="fas fa-chart-line"></i> Admin dashboard</a>
                                 <a href="{% url 'admin:index' %}" class="dropdown-item" role="menuitem"><i class="fas fa-screwdriver-wrench"></i> Django admin</a>
                             {% endif %}
                             <div class="my-1 border-t border-slate-100"></div>
@@ -156,7 +157,7 @@
                         <label class="relative block">
                             <span class="sr-only">Search products</span>
                             <i class="fas fa-magnifying-glass pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-sm text-slate-400"></i>
-                            <input type="search" name="search" value="{{ request.GET.search }}" placeholder="Search products…" class="input pl-10">
+                            <input type="search" name="search" value="{% if url_name == 'product_list' %}{{ request.GET.search }}{% endif %}" placeholder="Search products…" class="input pl-10">
                         </label>
                     </form>
                     <nav class="grid gap-1" aria-label="Mobile">

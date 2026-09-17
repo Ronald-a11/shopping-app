@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load shop_tags %}
+
+{% block title %}Inventory{% endblock %}
+
+{% block page_header %}
+    {% url 'dashboard_product_add' as add_url %}
+    {% include 'partials/page_header.html' with eyebrow="Admin dashboard" title="Inventory" subtitle="Every product and how much of it is on the shelf, including products hidden from the shop." icon="fa-boxes-stacked" action_url=add_url action_label="Add product" action_icon="fa-plus" %}
+{% endblock %}
+
+{% block content %}
+{% include 'partials/dashboard_nav.html' %}
+<div class="container-page py-10">
+    {# These tiles describe the whole catalogue, so their links drop any search. #}
+    <div class="grid grid-cols-2 gap-4 lg:grid-cols-5">
+        <a href="?filter=in" class="stat-card">
+            <p class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-circle-check text-brand-500"></i> In stock</p>
+            <p class="mt-1.5 text-2xl font-extrabold text-slate-900">{{ inventory.in_stock }}</p>
+            <p class="text-[11px] text-slate-500">of {{ inventory.total }} product{{ inventory.total|pluralize }}</p>
+        </a>
+        <a href="?filter=low" class="stat-card">
+            <p class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-triangle-exclamation text-amber-500"></i> Low stock</p>
+            <p class="mt-1.5 text-2xl font-extrabold text-slate-900">{{ inventory.low_stock }}</p>
+            <p class="text-[11px] text-slate-500">Running out, restock soon</p>
+        </a>
+        <a href="?filter=out" class="stat-card">
+            <p class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-circle-xmark text-rose-500"></i> Out of stock</p>
+            <p class="mt-1.5 text-2xl font-extrabold text-slate-900">{{ inventory.out_of_stock }}</p>
+            <p class="text-[11px] text-slate-500">Customers can't buy these</p>
+        </a>
+        <a href="?filter=hidden" class="stat-card">
+            <p class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-eye-slash text-slate-400"></i> Hidden</p>
+            <p class="mt-1.5 text-2xl font-extrabold text-slate-900">{{ inventory.hidden }}</p>
+            <p class="text-[11px] text-slate-500">Not shown in the shop</p>
+        </a>
+        <div class="stat-card col-span-2 lg:col-span-1">
+            <p class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-tags text-brand-500"></i> Retail value</p>
+            <p class="mt-1.5 text-2xl font-extrabold text-slate-900">${{ inventory.retail_value|floatformat:"2g" }}</p>
+            <p class="text-[11px] text-slate-500">Stock × price of products shown in the shop</p>
+        </div>
+    </div>
+
+    <div class="mt-8 flex flex-wrap items-center justify-between gap-3">
+        <nav class="tabs-line" aria-label="Filter by stock level">
+            <a class="tab {% if active_filter == 'all' %}is-active{% endif %}" href="?{% query_transform filter=None page=None %}" {% if active_filter == 'all' %}aria-current="page"{% endif %}>All <span class="tab-count">{{ counts.all }}</span></a>
+            <a class="tab {% if active_filter == 'in' %}is-active{% endif %}" href="?{% query_transform filter='in' page=None %}" {% if active_filter == 'in' %}aria-current="page"{% endif %}>In stock <span class="tab-count">{{ counts.in }}</span></a>
+            <a class="tab {% if active_filter == 'low' %}is-active{% endif %}" href="?{% query_transform filter='low' page=None %}" {% if active_filter == 'low' %}aria-current="page"{% endif %}>Low stock <span class="tab-count">{{ counts.low }}</span></a>
+            <a class="tab {% if active_filter == 'out' %}is-active{% endif %}" href="?{% query_transform filter='out' page=None %}" {% if active_filter == 'out' %}aria-current="page"{% endif %}>Out of stock <span class="tab-count">{{ counts.out }}</span></a>
+            <a class="tab {% if active_filter == 'hidden' %}is-active{% endif %}" href="?{% query_transform filter='hidden' page=None %}" {% if active_filter == 'hidden' %}aria-current="page"{% endif %}>Hidden <span class="tab-count">{{ counts.hidden }}</span></a>
+        </nav>
+        <a href="{% url 'dashboard_stock_history' %}" class="btn btn-secondary btn-sm"><i class="fas fa-clock-rotate-left"></i> Stock history</a>
+    </div>
+
+    <form method="get" class="card mt-5 grid gap-4 p-4 sm:grid-cols-2 sm:p-5 lg:flex lg:items-end">
+        {# The stock tab stays selected while searching. #}
+        {% if active_filter != 'all' %}<input type="hidden" name="filter" value="{{ active_filter }}">{% endif %}
+        <div class="sm:col-span-2 lg:flex-1">
+            <label for="inventory-search" class="label">Search</label>
+            <div class="relative">
+                <i class="fas fa-magnifying-glass pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-sm text-slate-400"></i>
+                <input type="search" id="inventory-search" name="search" value="{{ search_query }}" placeholder="Product, supplier or category…" class="input pl-10">
+            </div>
+        </div>
+        <div class="lg:w-56">
+            <label for="inventory-category" class="label">Category</label>
+            <select id="inventory-category" name="category" class="input">
+                <option value="">All categories</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="lg:w-56">
+            <label for="inventory-sort" class="label">Sort by</label>
+            <select id="inventory-sort" name="sort" class="input">
+                <option value="stock_low" {% if sort == 'stock_low' %}selected{% endif %}>Lowest stock first</option>
+                <option value="stock_high" {% if sort == 'stock_high' %}selected{% endif %}>Highest stock first</option>
+                <option value="name" {% if sort == 'name' %}selected{% endif %}>Name A–Z</option>
+                <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest first</option>
+            </select>
+        </div>
+        <div class="flex items-center gap-2 sm:col-span-2">
+            <button type="submit" class="btn btn-primary" data-loading-text=""><i class="fas fa-filter"></i> Apply</button>
+            {% if search_query or selected_category %}
+                <a href="?{% query_transform search=None category=None page=None %}" class="btn btn-ghost"><i class="fas fa-xmark"></i> Clear</a>
+            {% endif %}
+        </div>
+    </form>
+
+    {% if products %}
+        <p class="mt-5 text-xs font-medium text-slate-500">Showing {{ products.start_index }}–{{ products.end_index }} of {{ products.paginator.count }}</p>
+
+        <div class="card mt-3 overflow-hidden">
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Product</th>
+                            <th scope="col" class="hidden xl:table-cell">Supplier</th>
+                            <th scope="col" class="hidden text-right md:table-cell">Price</th>
+                            <th scope="col" class="hidden md:table-cell">Stock</th>
+                            <th scope="col" class="hidden text-right lg:table-cell">Sold</th>
+                            <th scope="col" class="text-right"><span class="max-md:sr-only">Restock and</span> actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                            <tr class="{% if product.stock_state == 'out' %}bg-rose-50/40 hover:bg-rose-50/80{% elif product.stock_state == 'low' %}bg-amber-50/40 hover:bg-amber-50/80{% endif %}">
+                                <td>
+                                    <div class="flex items-center gap-3">
+                                        <div class="img-frame size-11 shrink-0 rounded-xl {% if not product.image %}is-error{% endif %}">
+                                            {% if product.image %}<img src="{{ product.image }}" alt="" loading="lazy" class="size-full object-cover">{% endif %}
+                                            <span class="img-fallback"><i class="fas fa-basket-shopping"></i></span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <a href="{% url 'dashboard_product_edit' product.id %}" class="font-semibold text-slate-900 transition hover:text-brand-700">{{ product.name }}</a>
+                                            <p class="text-xs text-slate-500">{{ product.category.name }}<span class="md:hidden"> · ${{ product.price }}</span></p>
+                                            {# Phones have no room for the Stock column, so the level moves under the name. #}
+                                            <p class="mt-1.5 flex flex-wrap items-center gap-1.5 md:hidden">
+                                                <span class="text-sm font-bold text-slate-900">{{ product.stock_quantity }}</span>
+                                                {% if product.stock_state == 'in' %}
+                                                    <span class="badge badge-green"><i class="fas fa-circle-check text-[10px]"></i> In stock</span>
+                                                {% elif product.stock_state == 'low' %}
+                                                    <span class="badge badge-amber"><i class="fas fa-triangle-exclamation text-[10px]"></i> Low · {{ product.stock_quantity }} left</span>
+                                                {% elif product.stock_state == 'out' %}
+                                                    <span class="badge badge-red"><i class="fas fa-circle-xmark text-[10px]"></i> Out of stock</span>
+                                                {% else %}
+                                                    <span class="badge badge-slate"><i class="fas fa-eye-slash text-[10px]"></i> Hidden</span>
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="hidden text-slate-600 xl:table-cell">{{ product.supplier|default:"—" }}</td>
+                                <td class="hidden text-right whitespace-nowrap text-slate-900 tabular-nums md:table-cell">${{ product.price }}</td>
+                                <td class="hidden md:table-cell">
+                                    <div class="flex items-center gap-2.5 whitespace-nowrap">
+                                        <span class="min-w-8 text-right text-base font-bold text-slate-900 tabular-nums">{{ product.stock_quantity }}</span>
+                                        {% if product.stock_state == 'in' %}
+                                            <span class="badge badge-green"><i class="fas fa-circle-check text-[10px]"></i> In stock</span>
+                                        {% elif product.stock_state == 'low' %}
+                                            <span class="badge badge-amber"><i class="fas fa-triangle-exclamation text-[10px]"></i> Low · {{ product.stock_quantity }} left</span>
+                                        {% elif product.stock_state == 'out' %}
+                                            <span class="badge badge-red"><i class="fas fa-circle-xmark text-[10px]"></i> Out of stock</span>
+                                        {% else %}
+                                            <span class="badge badge-slate"><i class="fas fa-eye-slash text-[10px]"></i> Hidden</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td class="hidden text-right text-slate-600 tabular-nums lg:table-cell">{{ product.units_sold }}</td>
+                                <td>
+                                    {# Stacked on phones so the restock box never scrolls out of reach. #}
+                                    <div class="flex flex-col items-end gap-2 md:flex-row md:items-center md:justify-end">
+                                        <form method="post" action="{% url 'dashboard_restock' product.id %}" class="flex items-center gap-1">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                            <label for="restock-{{ product.id }}" class="sr-only">Units of {{ product.name }} received</label>
+                                            {# Left empty on purpose: a pre-filled 1 would turn a stray click into a logged restock. #}
+                                            <input type="number" id="restock-{{ product.id }}" name="quantity" min="1" step="1" inputmode="numeric" required placeholder="Qty" class="input w-16 px-2 py-1.5 text-center">
+                                            <button type="submit" class="btn btn-outline btn-sm" data-loading-text="" aria-label="Add these units to {{ product.name }}" title="Add these units to the stock">
+                                                <i class="fas fa-plus"></i><span class="hidden xl:inline">Restock</span>
+                                            </button>
+                                        </form>
+                                        <div class="flex items-center gap-1">
+                                            <a href="{% url 'dashboard_product_edit' product.id %}" class="btn btn-ghost btn-icon btn-sm" aria-label="Edit {{ product.name }}" title="Edit, restock with a cost, or correct the stock">
+                                                <i class="fas fa-pen"></i>
+                                            </a>
+                                            {% if product.is_available %}
+                                                <button type="button" class="btn btn-ghost btn-icon btn-sm" data-post-url="{% url 'dashboard_toggle_available' product.id %}" aria-label="Hide {{ product.name }} from the shop" title="Hide from the shop">
+                                                    <i class="fas fa-eye-slash"></i>
+                                                </button>
+                                            {% else %}
+                                                <button type="button" class="btn btn-icon btn-sm bg-brand-100 text-brand-700 hover:bg-brand-200" data-post-url="{% url 'dashboard_toggle_available' product.id %}" aria-label="Show {{ product.name }} in the shop" title="Show in the shop">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {# No wrapping: on a phone the sentence would drop below the icon and leave it alone on its own line. #}
+            <div class="card-footer flex-nowrap items-start text-xs text-slate-500">
+                <i class="fas fa-circle-info mt-0.5 text-slate-400"></i>
+                <span class="min-w-0 flex-1">Quick restock adds units without a cost. To record what you paid, or to correct a miscount, open the product with <i class="fas fa-pen text-[10px]"></i> Edit.</span>
+            </div>
+        </div>
+
+        {% include 'partials/pagination.html' with page_obj=products %}
+    {% else %}
+        <div class="mt-5">
+            {% url 'dashboard_inventory' as inventory_url %}
+            {% if not inventory.total %}
+                {% url 'dashboard_product_add' as add_url %}
+                {% include 'partials/empty_state.html' with icon="fa-boxes-stacked" title="No products yet" text="Add your first product to start tracking its stock." cta_url=add_url cta_label="Add product" cta_icon="fa-plus" %}
+            {% elif search_query or selected_category %}
+                {% include 'partials/empty_state.html' with icon="fa-magnifying-glass" title="No products match" text="Nothing fits this search. Try another word, category or stock level." cta_url=inventory_url cta_label="Show all products" cta_icon="fa-list" %}
+            {% else %}
+                {% include 'partials/empty_state.html' with icon="fa-box-open" title="Nothing at this stock level" text="No products are in this group right now." cta_url=inventory_url cta_label="Show all products" cta_icon="fa-list" %}
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

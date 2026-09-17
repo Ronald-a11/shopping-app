@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load shop_tags %}
+
+{% block title %}Stock history{% endblock %}
+
+{% block page_header %}
+    {% url 'dashboard_inventory' as inventory_url %}
+    {% include 'partials/page_header.html' with eyebrow="Admin dashboard" title="Stock history" subtitle="Every delivery received from a supplier and every correction to a stock level, newest first." icon="fa-clock-rotate-left" parent_label="Inventory" parent_url=inventory_url action_url=inventory_url action_label="Back to inventory" action_icon="fa-arrow-left" %}
+{% endblock %}
+
+{% block content %}
+{% include 'partials/dashboard_nav.html' %}
+<div class="container-page py-10">
+    {% if product %}
+        <div class="alert alert-info mb-6 flex-col sm:flex-row sm:items-center">
+            <p class="flex min-w-0 flex-1 gap-3">
+                <i class="fas fa-filter mt-0.5"></i>
+                <span>Showing changes to <strong class="font-semibold">{{ product.name }}</strong> only.</span>
+            </p>
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="{% url 'dashboard_product_edit' product.id %}" class="btn btn-secondary btn-sm"><i class="fas fa-pen"></i> Edit product</a>
+                <a href="?{% query_transform product=None page=None %}" class="btn btn-secondary btn-sm"><i class="fas fa-xmark"></i> Show all products</a>
+            </div>
+        </div>
+    {% endif %}
+
+    {# Totals cover the whole filtered list, not just the page on screen. #}
+    <div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
+        <div class="stat-card">
+            <p class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-truck-ramp-box text-brand-500"></i> Units received</p>
+            <p class="mt-1.5 text-2xl font-extrabold text-slate-900">{{ totals.units_in|floatformat:"0g" }}</p>
+            <p class="text-[11px] text-slate-500">From stock received in this list</p>
+        </div>
+        <div class="stat-card">
+            <p class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-dollar-sign text-brand-500"></i> Cost of stock received</p>
+            <p class="mt-1.5 text-2xl font-extrabold text-slate-900">${{ totals.cost|floatformat:"2g" }}</p>
+            <p class="text-[11px] text-slate-500">Entries without a cost aren't counted</p>
+        </div>
+        <div class="stat-card col-span-2 lg:col-span-1">
+            <p class="flex items-center gap-2 text-xs font-semibold text-slate-500"><i class="fas fa-list-check text-brand-500"></i> Changes listed</p>
+            <p class="mt-1.5 text-2xl font-extrabold text-slate-900">{{ entries.paginator.count|floatformat:"0g" }}</p>
+            <p class="text-[11px] text-slate-500">{% if product %}For this product{% else %}Across all products{% endif %}</p>
+        </div>
+    </div>
+
+    <div class="mt-8 flex flex-wrap items-center justify-between gap-3">
+        <nav class="tabs-line" aria-label="Filter by kind of change">
+            <a class="tab {% if active_kind == 'all' %}is-active{% endif %}" href="?{% query_transform kind=None page=None %}" {% if active_kind == 'all' %}aria-current="page"{% endif %}>All <span class="tab-count">{{ counts.all }}</span></a>
+            <a class="tab {% if active_kind == 'restock' %}is-active{% endif %}" href="?{% query_transform kind='restock' page=None %}" {% if active_kind == 'restock' %}aria-current="page"{% endif %}>Stock received <span class="tab-count">{{ counts.restock }}</span></a>
+            <a class="tab {% if active_kind == 'adjustment' %}is-active{% endif %}" href="?{% query_transform kind='adjustment' page=None %}" {% if active_kind == 'adjustment' %}aria-current="page"{% endif %}>Corrections <span class="tab-count">{{ counts.adjustment }}</span></a>
+        </nav>
+        {% if entries %}
+            <p class="text-xs font-medium text-slate-500">Showing {{ entries.start_index }}–{{ entries.end_index }} of {{ entries.paginator.count }}</p>
+        {% endif %}
+    </div>
+
+    {% if entries %}
+        <div class="card mt-5 overflow-hidden">
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="hidden md:table-cell">Date</th>
+                            <th scope="col">Product</th>
+                            <th scope="col" class="hidden md:table-cell">Change</th>
+                            <th scope="col" class="text-right">Quantity</th>
+                            <th scope="col" class="text-right"><span class="max-sm:sr-only">Stock</span> after</th>
+                            <th scope="col" class="hidden text-right lg:table-cell">Cost</th>
+                            <th scope="col" class="hidden lg:table-cell">Supplier and note</th>
+                            <th scope="col" class="hidden xl:table-cell">By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in entries %}
+                            <tr>
+                                <td class="hidden whitespace-nowrap text-slate-600 md:table-cell">
+                                    {{ entry.created_at|date:"j M Y" }}
+                                    <span class="block text-xs text-slate-500">{{ entry.created_at|date:"H:i" }}</span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'dashboard_product_edit' entry.product_id %}" class="font-semibold text-slate-900 transition hover:text-brand-700">{{ entry.product.name }}</a>
+                                    {# Phones have no room for the Date and Change columns, so both move under the name. #}
+                                    <div class="mt-1.5 md:hidden">
+                                        {% if entry.kind == 'restock' %}
+                                            <span class="badge badge-blue"><i class="fas fa-truck-ramp-box text-[10px]"></i> {{ entry.get_kind_display }}</span>
+                                        {% else %}
+                                            <span class="badge badge-slate"><i class="fas fa-scale-balanced text-[10px]"></i> {{ entry.get_kind_display }}</span>
+                                        {% endif %}
+                                        <p class="mt-1 text-xs whitespace-nowrap text-slate-500">{{ entry.created_at|date:"j M Y, H:i" }}</p>
+                                    </div>
+                                    {# The log is the audit trail, so what a hidden column held moves here too: cost, supplier and note below lg, who made the change below xl. #}
+                                    <div class="mt-1 space-y-0.5 text-xs text-slate-500 xl:hidden">
+                                        <div class="space-y-0.5 lg:hidden">
+                                            {% if entry.total_cost is not None %}<p class="tabular-nums"><span class="font-semibold text-slate-700">${{ entry.total_cost }}</span> · ${{ entry.unit_cost }} each</p>{% endif %}
+                                            {% if entry.supplier %}<p>{{ entry.supplier }}</p>{% endif %}
+                                            {% if entry.note %}<p>{{ entry.note }}</p>{% endif %}
+                                        </div>
+                                        {% if entry.created_by %}<p>By {{ entry.created_by.get_full_name|default:entry.created_by.username }}</p>{% endif %}
+                                    </div>
+                                    {% if not product %}
+                                        <a href="?{% query_transform product=entry.product_id page=None %}" class="mt-0.5 block w-fit text-xs text-slate-500 underline-offset-4 transition hover:text-brand-700 hover:underline">Only this product</a>
+                                    {% endif %}
+                                </td>
+                                <td class="hidden md:table-cell">
+                                    {% if entry.kind == 'restock' %}
+                                        <span class="badge badge-blue"><i class="fas fa-truck-ramp-box text-[10px]"></i> {{ entry.get_kind_display }}</span>
+                                    {% else %}
+                                        <span class="badge badge-slate"><i class="fas fa-scale-balanced text-[10px]"></i> {{ entry.get_kind_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-right font-bold whitespace-nowrap tabular-nums {% if entry.quantity < 0 %}text-rose-600{% else %}text-slate-900{% endif %}">
+                                    {% if entry.quantity < 0 %}
+                                        <i class="fas fa-arrow-down text-[10px]" aria-hidden="true"></i> &minus;{{ entry.quantity|cut:"-" }}
+                                    {% else %}
+                                        <i class="fas fa-arrow-up text-[10px] text-slate-400" aria-hidden="true"></i> +{{ entry.quantity }}
+                                    {% endif %}
+                                </td>
+                                <td class="text-right text-slate-900 tabular-nums">{{ entry.stock_after|default_if_none:"—" }}</td>
+                                <td class="hidden text-right whitespace-nowrap tabular-nums lg:table-cell">
+                                    {% if entry.total_cost is not None %}
+                                        <span class="text-slate-900">${{ entry.total_cost }}</span>
+                                        <span class="block text-xs text-slate-500">${{ entry.unit_cost }} each</span>
+                                    {% else %}
+                                        <span class="text-slate-400" title="No cost was recorded">—</span>
+                                    {% endif %}
+                                </td>
+                                <td class="hidden text-slate-600 lg:table-cell">
+                                    {% if entry.supplier %}{{ entry.supplier }}{% elif not entry.note %}—{% endif %}
+                                    {% if entry.note %}<span class="block text-xs text-slate-500">{{ entry.note }}</span>{% endif %}
+                                </td>
+                                <td class="hidden whitespace-nowrap text-slate-600 xl:table-cell">{% if entry.created_by %}{{ entry.created_by.get_full_name|default:entry.created_by.username }}{% else %}—{% endif %}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {% include 'partials/pagination.html' with page_obj=entries %}
+    {% else %}
+        <div class="mt-5">
+            {% if product or active_kind != 'all' %}
+                {% url 'dashboard_stock_history' as history_url %}
+                {% include 'partials/empty_state.html' with icon="fa-clock-rotate-left" title="No stock changes match" text="Nothing has been logged for this filter yet." cta_url=history_url cta_label="Show the full history" cta_icon="fa-list" %}
+            {% else %}
+                {% url 'dashboard_inventory' as inventory_url %}
+                {% include 'partials/empty_state.html' with icon="fa-clock-rotate-left" title="No stock changes yet" text="Restocks and corrections you make from the inventory page are logged here." cta_url=inventory_url cta_label="Go to inventory" cta_icon="fa-boxes-stacked" %}
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
