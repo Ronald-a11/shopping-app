@@ -1,4 +1,4 @@
-{% load static %}<!DOCTYPE html>
+{% load static shop_tags %}<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -27,7 +27,7 @@
            `display: inline-block` on icons beats Tailwind utilities like `hidden`. */
         @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css") layer(vendor);
     </style>
-    <link href="{% static 'css/app.css' %}" rel="stylesheet">
+    <link href="{% static_versioned 'css/app.css' %}" rel="stylesheet">
     {% block extra_css %}{% endblock %}
 </head>
 <body class="flex min-h-screen flex-col">
@@ -264,7 +264,7 @@
 
     <button type="button" class="back-to-top" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
 
-    <script src="{% static 'js/main.js' %}" defer></script>
+    <script src="{% static_versioned 'js/main.js' %}" defer></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

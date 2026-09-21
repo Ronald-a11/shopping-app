@@ -207,6 +207,7 @@ Errors appear in the **error log** on the Web tab (`<username>.pythonanywhere.co
 | "Something went wrong :-(" on every page | An exception at startup — read the error log. Usually the virtualenv path on the Web tab, or the WSGI file not yet installed. |
 | Site loads with no styling | `collectstatic` has not run, or the Web tab's static files mapping is missing or misspelt. Re-run the setup script, check the mapping, Reload. |
 | A new Tailwind class has no effect | `static/css/app.css` was not rebuilt and committed. Run `npm run build` in `frontend/`. |
+| Right colours and buttons, but no layout — menus and panels stacked, icons above their boxes | The browser has a half-downloaded stylesheet. Everything that positions things (`hidden`, `flex`, `absolute`, the breakpoints) sits in the second half of the file, so a partial copy styles the page without laying it out. Press Ctrl+Shift+R. It should not happen again: `npm run build` now writes to `frontend/.build/` and moves the finished file into place, and in development the stylesheet URL carries a stamp that changes with the file. |
 | Changes don't show up | The Reload button was not pressed. Code changes need it every time. |
 | Redirect loop | Django and PythonAnywhere both redirecting to HTTPS. Keep `DJANGO_SECURE_SSL_REDIRECT=0` in `~/.jkc_env` and leave it to Force HTTPS. |
 | Site stopped after months of working | The three-month free-plan renewal. Press the button on the Web tab. |

@@ -1,8 +1,50 @@
+import hashlib
+from pathlib import Path
 from urllib.parse import quote
 
 from django import template
+from django.conf import settings
+from django.contrib.staticfiles import finders
+from django.templatetags.static import static
 
 register = template.Library()
+
+_STAMPS = {}
+
+
+@register.simple_tag
+def static_versioned(path):
+    """Like {% static %}, but with a stamp that changes when the file does.
+
+    A browser that picked up a half-written stylesheet - which happens while
+    Tailwind is rebuilding one - would otherwise keep reusing it, and the page
+    renders with its colours but none of its layout. A new stamp gives the
+    file a new address, so a stale or partial copy can never be reused.
+
+    Off the development server the file names already carry a hash, so this
+    returns the plain URL.
+    """
+    url = static(path)
+    if not settings.DEBUG:
+        return url
+
+    found = finders.find(path)
+    if not found:
+        return url
+
+    file = Path(found)
+    try:
+        info = file.stat()
+    except OSError:
+        return url
+
+    key = (str(file), info.st_mtime_ns, info.st_size)
+    stamp = _STAMPS.get(key)
+    if stamp is None:
+        digest = hashlib.blake2b(file.read_bytes(), digest_size=6).hexdigest()
+        _STAMPS.clear()          # only the current version of each file matters
+        _STAMPS[key] = stamp = digest
+    return f'{url}?v={stamp}'
 
 
 @register.simple_tag(takes_context=True)

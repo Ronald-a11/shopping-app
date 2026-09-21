@@ -162,3 +162,6 @@ Thumbs.db
 
 # Claude Code local config
 .claude/
+
+# Tailwind builds here before the finished file is moved into static/
+frontend/.build/

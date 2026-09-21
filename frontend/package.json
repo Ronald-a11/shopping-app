@@ -3,7 +3,7 @@
   "private": true,
   "description": "Tailwind CSS build for the Django templates. Output: ../static/css/app.css",
   "scripts": {
-    "build": "tailwindcss -i ./src/app.css -o ../static/css/app.css --minify",
+    "build": "tailwindcss -i ./src/app.css -o ./.build/app.css --minify && node publish.js ./.build/app.css ../static/css/app.css",
     "watch": "tailwindcss -i ./src/app.css -o ../static/css/app.css --watch"
   },
   "devDependencies": {
