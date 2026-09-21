@@ -1,45 +1,41 @@
-# Zimbabwe Supermarket - Stock Images
+# Product pictures
 
-This directory contains references to stock images used in the Zimbabwe Supermarket application.
+Every product and category picture lives in [`products/`](products/) as an
+800×600 WebP file, about 7 KB each. They are part of the repository, so the
+shop looks the same on every machine and never depends on an outside site.
 
-## Image Sources
+The file name is the product or category name in lower case with the spaces and
+punctuation turned into hyphens — Django's `slugify`:
 
-All images are sourced from [Unsplash](https://unsplash.com/), which provides free, high-quality stock photos.
+| Name in the shop | File |
+| --- | --- |
+| Fresh Tomatoes (1kg) | `fresh-tomatoes-1kg.webp` |
+| Water (1.5L) | `water-15l.webp` |
+| Meat & Poultry (a category) | `category-meat-poultry.webp` |
 
-## Image Categories
+`default.webp` is the picture for anything without one of its own.
 
-### Hero Images
-- **Main Hero**: Shopping scene for homepage
-- **About Hero**: Business/team image for about page
+## Giving a product its picture
 
-### Category Images
-- **Fresh Produce**: Fruits and vegetables
-- **Meat & Poultry**: Meat products and chicken
-- **Dairy & Eggs**: Milk, cheese, and eggs
-- **Bakery**: Bread and baked goods
-- **Pantry Staples**: Rice, flour, and cooking essentials
-- **Beverages**: Soft drinks, juices, and water
-- **Snacks**: Chips, nuts, and cookies
-- **Household**: Cleaning supplies and toiletries
+```bash
+python manage.py add_product_images          # only fills in the blank ones
+python manage.py add_product_images --force  # replaces every picture
+python manage.py add_product_images --dry-run
+```
 
-### Product Images
-Each product has been assigned an appropriate image based on its category and name. Images are loaded dynamically from Unsplash URLs.
+It looks for the product's own file, then its category's, then `default.webp`.
 
-## Usage
+## Real photographs
 
-Images are loaded directly from Unsplash URLs in the templates. This approach:
-- Reduces server storage requirements
-- Ensures high-quality images
-- Provides automatic optimization
-- Maintains fast loading times
+When you have photographs of the real shelves, put them in this folder and set
+each product's **Image** field in Django admin to
+`/static/images/products/<your-file>.jpg`. Without `--force`,
+`add_product_images` leaves a picture that is already set alone.
 
-## Customization
+Photographs are better than these drawings — they are only here so the shop
+never shows an empty square.
 
-To use your own images:
-1. Replace the Unsplash URLs in the database
-2. Upload images to the `static/images/` directory
-3. Update the image field references in templates
-
-## License
-
-All images from Unsplash are free to use under the Unsplash License.
+> Earlier versions pulled pictures from Unsplash by URL. That is why the shop
+> once showed a gym for toilet paper and a living room for matches: the links
+> were guessed from product names, and several were dead. Do not go back to
+> linking pictures from other sites.

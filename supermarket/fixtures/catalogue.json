@@ -1,0 +1,1146 @@
+[
+{
+  "model": "supermarket.category",
+  "pk": 11,
+  "fields": {
+    "name": "Fresh Produce",
+    "description": "Fresh fruits and vegetables from local farms",
+    "image": "/static/images/products/category-fresh-produce.webp",
+    "created_at": "2025-10-19T20:42:22.567Z"
+  }
+},
+{
+  "model": "supermarket.category",
+  "pk": 12,
+  "fields": {
+    "name": "Meat & Poultry",
+    "description": "Fresh meat and poultry products",
+    "image": "/static/images/products/category-meat-poultry.webp",
+    "created_at": "2025-10-19T20:42:22.584Z"
+  }
+},
+{
+  "model": "supermarket.category",
+  "pk": 13,
+  "fields": {
+    "name": "Dairy & Eggs",
+    "description": "Fresh dairy products and eggs",
+    "image": "/static/images/products/category-dairy-eggs.webp",
+    "created_at": "2025-10-19T20:42:22.600Z"
+  }
+},
+{
+  "model": "supermarket.category",
+  "pk": 14,
+  "fields": {
+    "name": "Bakery & Grains",
+    "description": "Fresh bread, maize meal, and baked goods",
+    "image": "/static/images/products/category-bakery-grains.webp",
+    "created_at": "2025-10-19T20:42:22.618Z"
+  }
+},
+{
+  "model": "supermarket.category",
+  "pk": 15,
+  "fields": {
+    "name": "Pantry Staples",
+    "description": "Rice, cooking oil, salt, sugar and other essentials",
+    "image": "/static/images/products/category-pantry-staples.webp",
+    "created_at": "2025-10-19T20:42:22.636Z"
+  }
+},
+{
+  "model": "supermarket.category",
+  "pk": 16,
+  "fields": {
+    "name": "Beverages",
+    "description": "Soft drinks, juices, water and other beverages",
+    "image": "/static/images/products/category-beverages.webp",
+    "created_at": "2025-10-19T20:42:22.652Z"
+  }
+},
+{
+  "model": "supermarket.category",
+  "pk": 17,
+  "fields": {
+    "name": "Snacks & Confectionery",
+    "description": "Chips, sweets, biscuits and snack foods",
+    "image": "/static/images/products/category-snacks-confectionery.webp",
+    "created_at": "2025-10-19T20:42:22.668Z"
+  }
+},
+{
+  "model": "supermarket.category",
+  "pk": 18,
+  "fields": {
+    "name": "Household Items",
+    "description": "Cleaning supplies and household essentials",
+    "image": "/static/images/products/category-household-items.webp",
+    "created_at": "2025-10-19T20:42:22.684Z"
+  }
+},
+{
+  "model": "supermarket.category",
+  "pk": 22,
+  "fields": {
+    "name": "Personal Care",
+    "description": "Toiletries and personal hygiene products",
+    "image": "/static/images/products/category-personal-care.webp",
+    "created_at": "2025-10-22T14:08:36.871Z"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 46,
+  "fields": {
+    "name": "Fresh Tomatoes (1kg)",
+    "description": "Fresh, locally grown tomatoes perfect for cooking and salads",
+    "category": 11,
+    "price": "3.50",
+    "image": "/static/images/products/fresh-tomatoes-1kg.webp",
+    "stock_quantity": 50,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.702Z",
+    "updated_at": "2025-10-22T15:12:48.290Z",
+    "is_local_product": true,
+    "supplier": "Harare Fresh Farms"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 47,
+  "fields": {
+    "name": "Green Bananas (1 bunch)",
+    "description": "Fresh green bananas, perfect for cooking",
+    "category": 11,
+    "price": "4.20",
+    "image": "/static/images/products/green-bananas-1-bunch.webp",
+    "stock_quantity": 30,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.722Z",
+    "updated_at": "2025-10-19T20:42:22.722Z",
+    "is_local_product": true,
+    "supplier": "Mashonaland Farms"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 48,
+  "fields": {
+    "name": "Red Onions (1kg)",
+    "description": "Fresh red onions, essential for cooking",
+    "category": 11,
+    "price": "2.80",
+    "image": "/static/images/products/red-onions-1kg.webp",
+    "stock_quantity": 40,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.742Z",
+    "updated_at": "2025-10-19T20:42:22.742Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Onion Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 50,
+  "fields": {
+    "name": "Carrots (1kg)",
+    "description": "Fresh orange carrots, rich in vitamins",
+    "category": 11,
+    "price": "2.50",
+    "image": "/static/images/products/carrots-1kg.webp",
+    "stock_quantity": 35,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.776Z",
+    "updated_at": "2025-10-22T15:12:48.342Z",
+    "is_local_product": true,
+    "supplier": "Mashonaland Farms"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 51,
+  "fields": {
+    "name": "Potatoes (2kg)",
+    "description": "Fresh potatoes, perfect for various cooking methods",
+    "category": 11,
+    "price": "4.50",
+    "image": "/static/images/products/potatoes-2kg.webp",
+    "stock_quantity": 45,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.790Z",
+    "updated_at": "2025-10-19T20:42:22.790Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Potato Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 52,
+  "fields": {
+    "name": "Beef Steak (500g)",
+    "description": "Premium beef steak, perfect for grilling",
+    "category": 12,
+    "price": "12.50",
+    "image": "/static/images/products/beef-steak-500g.webp",
+    "stock_quantity": 20,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.806Z",
+    "updated_at": "2025-10-19T20:42:22.806Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Beef Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 53,
+  "fields": {
+    "name": "Chicken Breast (1kg)",
+    "description": "Fresh chicken breast, skinless and boneless",
+    "category": 12,
+    "price": "8.50",
+    "image": "/static/images/products/chicken-breast-1kg.webp",
+    "stock_quantity": 35,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.820Z",
+    "updated_at": "2025-10-22T15:12:48.397Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Poultry Ltd"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 54,
+  "fields": {
+    "name": "Pork Chops (500g)",
+    "description": "Fresh pork chops, perfect for grilling or frying",
+    "category": 12,
+    "price": "7.80",
+    "image": "/static/images/products/pork-chops-500g.webp",
+    "stock_quantity": 15,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.835Z",
+    "updated_at": "2025-10-19T20:42:22.835Z",
+    "is_local_product": true,
+    "supplier": "Local Pork Farm"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 55,
+  "fields": {
+    "name": "Chicken Thighs (1kg)",
+    "description": "Fresh chicken thighs, perfect for stews and grilling",
+    "category": 12,
+    "price": "6.50",
+    "image": "/static/images/products/chicken-thighs-1kg.webp",
+    "stock_quantity": 25,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.851Z",
+    "updated_at": "2025-10-19T20:42:22.851Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Poultry Ltd"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 56,
+  "fields": {
+    "name": "Fresh Milk (1L)",
+    "description": "Fresh whole milk from local dairy farms",
+    "category": 13,
+    "price": "4.20",
+    "image": "/static/images/products/fresh-milk-1l.webp",
+    "stock_quantity": 60,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.868Z",
+    "updated_at": "2025-10-22T15:12:48.425Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Dairy Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 57,
+  "fields": {
+    "name": "Free Range Eggs (12 pack)",
+    "description": "Fresh free-range eggs from local farms",
+    "category": 13,
+    "price": "5.50",
+    "image": "/static/images/products/free-range-eggs-12-pack.webp",
+    "stock_quantity": 45,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.886Z",
+    "updated_at": "2025-10-19T20:42:22.886Z",
+    "is_local_product": true,
+    "supplier": "Mashonaland Poultry"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 58,
+  "fields": {
+    "name": "Cheddar Cheese (250g)",
+    "description": "Aged cheddar cheese, perfect for cooking and snacking",
+    "category": 13,
+    "price": "6.80",
+    "image": "/static/images/products/cheddar-cheese-250g.webp",
+    "stock_quantity": 30,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.904Z",
+    "updated_at": "2025-10-22T15:12:48.441Z",
+    "is_local_product": false,
+    "supplier": "Imported"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 59,
+  "fields": {
+    "name": "Butter (250g)",
+    "description": "Fresh butter, perfect for cooking and baking",
+    "category": 13,
+    "price": "4.50",
+    "image": "/static/images/products/butter-250g.webp",
+    "stock_quantity": 25,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.921Z",
+    "updated_at": "2025-10-22T15:12:48.458Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Dairy Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 60,
+  "fields": {
+    "name": "Fresh White Bread (1 loaf)",
+    "description": "Freshly baked white bread, perfect for breakfast",
+    "category": 14,
+    "price": "2.20",
+    "image": "/static/images/products/fresh-white-bread-1-loaf.webp",
+    "stock_quantity": 25,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.937Z",
+    "updated_at": "2025-10-19T20:42:22.937Z",
+    "is_local_product": true,
+    "supplier": "Harare Bakery"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 61,
+  "fields": {
+    "name": "Brown Bread (1 loaf)",
+    "description": "Freshly baked brown bread, healthier option",
+    "category": 14,
+    "price": "2.80",
+    "image": "/static/images/products/brown-bread-1-loaf.webp",
+    "stock_quantity": 20,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.953Z",
+    "updated_at": "2025-10-19T20:42:22.953Z",
+    "is_local_product": true,
+    "supplier": "Harare Bakery"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 62,
+  "fields": {
+    "name": "Maize Meal (2kg)",
+    "description": "Fine maize meal, staple food in Zimbabwe",
+    "category": 14,
+    "price": "5.20",
+    "image": "/static/images/products/maize-meal-2kg.webp",
+    "stock_quantity": 40,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.969Z",
+    "updated_at": "2025-10-22T15:12:48.475Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Grain Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 63,
+  "fields": {
+    "name": "Rice (2kg)",
+    "description": "Long grain white rice, perfect for everyday cooking",
+    "category": 14,
+    "price": "6.80",
+    "image": "/static/images/products/rice-2kg.webp",
+    "stock_quantity": 35,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:22.988Z",
+    "updated_at": "2025-10-22T15:12:48.492Z",
+    "is_local_product": false,
+    "supplier": "Imported"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 64,
+  "fields": {
+    "name": "Cooking Oil (1L)",
+    "description": "Vegetable cooking oil, essential for cooking",
+    "category": 15,
+    "price": "4.80",
+    "image": "/static/images/products/cooking-oil-1l.webp",
+    "stock_quantity": 50,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:23.003Z",
+    "updated_at": "2025-10-19T20:42:23.004Z",
+    "is_local_product": false,
+    "supplier": "Imported"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 65,
+  "fields": {
+    "name": "Salt (500g)",
+    "description": "Table salt, essential seasoning",
+    "category": 15,
+    "price": "1.20",
+    "image": "/static/images/products/salt-500g.webp",
+    "stock_quantity": 60,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:23.019Z",
+    "updated_at": "2025-10-19T20:42:23.019Z",
+    "is_local_product": false,
+    "supplier": "Imported"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 66,
+  "fields": {
+    "name": "Sugar (1kg)",
+    "description": "White granulated sugar",
+    "category": 15,
+    "price": "3.80",
+    "image": "/static/images/products/sugar-1kg.webp",
+    "stock_quantity": 40,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:23.034Z",
+    "updated_at": "2025-10-19T20:42:23.034Z",
+    "is_local_product": false,
+    "supplier": "Imported"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 67,
+  "fields": {
+    "name": "Flour (2kg)",
+    "description": "All-purpose flour for baking and cooking",
+    "category": 15,
+    "price": "4.50",
+    "image": "/static/images/products/flour-2kg.webp",
+    "stock_quantity": 30,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:23.051Z",
+    "updated_at": "2025-10-19T20:42:23.051Z",
+    "is_local_product": false,
+    "supplier": "Imported"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 68,
+  "fields": {
+    "name": "Coca Cola (2L)",
+    "description": "Classic Coca Cola soft drink",
+    "category": 16,
+    "price": "4.20",
+    "image": "/static/images/products/coca-cola-2l.webp",
+    "stock_quantity": 30,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:23.068Z",
+    "updated_at": "2025-10-19T20:42:23.068Z",
+    "is_local_product": false,
+    "supplier": "Coca Cola Zimbabwe"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 69,
+  "fields": {
+    "name": "Orange Juice (1L)",
+    "description": "Fresh orange juice, no added sugar",
+    "category": 16,
+    "price": "5.50",
+    "image": "/static/images/products/orange-juice-1l.webp",
+    "stock_quantity": 25,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:23.085Z",
+    "updated_at": "2025-10-22T15:12:48.541Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Juice Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 70,
+  "fields": {
+    "name": "Water (1.5L)",
+    "description": "Pure drinking water",
+    "category": 16,
+    "price": "1.80",
+    "image": "/static/images/products/water-15l.webp",
+    "stock_quantity": 80,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:23.102Z",
+    "updated_at": "2025-10-19T20:42:23.102Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Water Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 71,
+  "fields": {
+    "name": "Tea Bags (50 pack)",
+    "description": "Black tea bags, perfect for morning tea",
+    "category": 16,
+    "price": "3.50",
+    "image": "/static/images/products/tea-bags-50-pack.webp",
+    "stock_quantity": 40,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:23.119Z",
+    "updated_at": "2025-10-19T20:42:23.119Z",
+    "is_local_product": false,
+    "supplier": "Imported"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 72,
+  "fields": {
+    "name": "Potato Chips (150g)",
+    "description": "Crispy potato chips, salted flavor",
+    "category": 17,
+    "price": "3.20",
+    "image": "/static/images/products/potato-chips-150g.webp",
+    "stock_quantity": 35,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:23.136Z",
+    "updated_at": "2025-10-22T15:12:48.611Z",
+    "is_local_product": false,
+    "supplier": "Imported"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 73,
+  "fields": {
+    "name": "Chocolate Bar (100g)",
+    "description": "Milk chocolate bar",
+    "category": 17,
+    "price": "4.50",
+    "image": "/static/images/products/chocolate-bar-100g.webp",
+    "stock_quantity": 40,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:23.152Z",
+    "updated_at": "2025-10-22T15:12:48.625Z",
+    "is_local_product": false,
+    "supplier": "Imported"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 74,
+  "fields": {
+    "name": "Biscuits (200g)",
+    "description": "Sweet biscuits, perfect with tea",
+    "category": 17,
+    "price": "2.80",
+    "image": "/static/images/products/biscuits-200g.webp",
+    "stock_quantity": 30,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:23.169Z",
+    "updated_at": "2025-10-19T20:42:23.169Z",
+    "is_local_product": false,
+    "supplier": "Imported"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 75,
+  "fields": {
+    "name": "Dish Soap (500ml)",
+    "description": "Liquid dish soap, effective cleaning",
+    "category": 18,
+    "price": "4.20",
+    "image": "/static/images/products/dish-soap-500ml.webp",
+    "stock_quantity": 30,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:23.190Z",
+    "updated_at": "2025-10-22T15:12:48.641Z",
+    "is_local_product": false,
+    "supplier": "Imported"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 77,
+  "fields": {
+    "name": "Laundry Detergent (2kg)",
+    "description": "Powder laundry detergent, effective cleaning",
+    "category": 18,
+    "price": "9.50",
+    "image": "/static/images/products/laundry-detergent-2kg.webp",
+    "stock_quantity": 20,
+    "is_available": true,
+    "created_at": "2025-10-19T20:42:23.219Z",
+    "updated_at": "2025-10-19T20:42:23.219Z",
+    "is_local_product": false,
+    "supplier": "Imported"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 79,
+  "fields": {
+    "name": "Sweet Potatoes (1kg)",
+    "description": "Fresh sweet potatoes, perfect for roasting and traditional dishes",
+    "category": 11,
+    "price": "2.80",
+    "image": "/static/images/products/sweet-potatoes-1kg.webp",
+    "stock_quantity": 30,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:56.968Z",
+    "updated_at": "2025-10-19T21:26:56.968Z",
+    "is_local_product": true,
+    "supplier": "Mashonaland Farms"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 80,
+  "fields": {
+    "name": "Green Beans (500g)",
+    "description": "Fresh green beans, perfect for stir-fries and salads",
+    "category": 11,
+    "price": "2.20",
+    "image": "/static/images/products/green-beans-500g.webp",
+    "stock_quantity": 25,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:56.994Z",
+    "updated_at": "2025-10-19T21:26:56.994Z",
+    "is_local_product": true,
+    "supplier": "Local Vegetable Growers"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 81,
+  "fields": {
+    "name": "Spinach (1 bunch)",
+    "description": "Fresh spinach leaves, rich in iron and vitamins",
+    "category": 11,
+    "price": "1.80",
+    "image": "/static/images/products/spinach-1-bunch.webp",
+    "stock_quantity": 20,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.009Z",
+    "updated_at": "2025-10-19T21:26:57.009Z",
+    "is_local_product": true,
+    "supplier": "Local Vegetable Growers"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 82,
+  "fields": {
+    "name": "Avocado (3 pieces)",
+    "description": "Fresh avocados, perfect for salads and healthy eating",
+    "category": 11,
+    "price": "4.50",
+    "image": "/static/images/products/avocado-3-pieces.webp",
+    "stock_quantity": 15,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.025Z",
+    "updated_at": "2025-10-19T21:26:57.025Z",
+    "is_local_product": true,
+    "supplier": "Mashonaland Farms"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 83,
+  "fields": {
+    "name": "Goat Meat (1kg)",
+    "description": "Fresh goat meat, popular in traditional Zimbabwe cuisine",
+    "category": 12,
+    "price": "9.50",
+    "image": "/static/images/products/goat-meat-1kg.webp",
+    "stock_quantity": 12,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.041Z",
+    "updated_at": "2025-10-19T21:26:57.041Z",
+    "is_local_product": true,
+    "supplier": "Local Goat Farm"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 84,
+  "fields": {
+    "name": "Fish (Tilapia) (500g)",
+    "description": "Fresh tilapia fish from Zimbabwe waters",
+    "category": 12,
+    "price": "6.80",
+    "image": "/static/images/products/fish-tilapia-500g.webp",
+    "stock_quantity": 18,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.057Z",
+    "updated_at": "2025-10-19T21:26:57.057Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Fisheries"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 85,
+  "fields": {
+    "name": "Yogurt (500ml)",
+    "description": "Fresh yogurt from local dairy farms",
+    "category": 13,
+    "price": "3.50",
+    "image": "/static/images/products/yogurt-500ml.webp",
+    "stock_quantity": 25,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.072Z",
+    "updated_at": "2025-10-19T21:26:57.072Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Dairy Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 86,
+  "fields": {
+    "name": "Sour Milk (500ml)",
+    "description": "Traditional sour milk, popular in Zimbabwe",
+    "category": 13,
+    "price": "2.80",
+    "image": "/static/images/products/sour-milk-500ml.webp",
+    "stock_quantity": 20,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.089Z",
+    "updated_at": "2025-10-19T21:26:57.089Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Dairy Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 87,
+  "fields": {
+    "name": "Sadza (Ready Mix) (1kg)",
+    "description": "Traditional Zimbabwe sadza ready mix",
+    "category": 14,
+    "price": "3.20",
+    "image": "/static/images/products/sadza-ready-mix-1kg.webp",
+    "stock_quantity": 35,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.105Z",
+    "updated_at": "2025-10-19T21:26:57.106Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Grain Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 88,
+  "fields": {
+    "name": "Sorghum Meal (1kg)",
+    "description": "Traditional sorghum meal for healthy eating",
+    "category": 14,
+    "price": "2.50",
+    "image": "/static/images/products/sorghum-meal-1kg.webp",
+    "stock_quantity": 25,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.122Z",
+    "updated_at": "2025-10-19T21:26:57.122Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Grain Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 89,
+  "fields": {
+    "name": "Millet (1kg)",
+    "description": "Traditional millet grain, nutritious and healthy",
+    "category": 14,
+    "price": "3.80",
+    "image": "/static/images/products/millet-1kg.webp",
+    "stock_quantity": 20,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.138Z",
+    "updated_at": "2025-10-19T21:26:57.139Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Grain Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 90,
+  "fields": {
+    "name": "Peanut Butter (500g)",
+    "description": "Creamy peanut butter, locally made",
+    "category": 15,
+    "price": "4.20",
+    "image": "/static/images/products/peanut-butter-500g.webp",
+    "stock_quantity": 30,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.155Z",
+    "updated_at": "2025-10-19T21:26:57.156Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Nut Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 91,
+  "fields": {
+    "name": "Honey (250g)",
+    "description": "Pure natural honey from Zimbabwe beekeepers",
+    "category": 15,
+    "price": "5.50",
+    "image": "/static/images/products/honey-250g.webp",
+    "stock_quantity": 20,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.172Z",
+    "updated_at": "2025-10-19T21:26:57.172Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Honey Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 92,
+  "fields": {
+    "name": "Groundnuts (500g)",
+    "description": "Roasted groundnuts, perfect for snacking",
+    "category": 15,
+    "price": "3.50",
+    "image": "/static/images/products/groundnuts-500g.webp",
+    "stock_quantity": 25,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.189Z",
+    "updated_at": "2025-10-19T21:26:57.189Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Nut Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 93,
+  "fields": {
+    "name": "Maheu (500ml)",
+    "description": "Traditional Zimbabwe maheu drink",
+    "category": 16,
+    "price": "2.50",
+    "image": "/static/images/products/maheu-500ml.webp",
+    "stock_quantity": 40,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.206Z",
+    "updated_at": "2025-10-19T21:26:57.206Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Beverage Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 94,
+  "fields": {
+    "name": "Mango Juice (1L)",
+    "description": "Fresh mango juice from local mangoes",
+    "category": 16,
+    "price": "4.80",
+    "image": "/static/images/products/mango-juice-1l.webp",
+    "stock_quantity": 30,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.223Z",
+    "updated_at": "2025-10-22T15:12:48.556Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Juice Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 95,
+  "fields": {
+    "name": "Passion Fruit Juice (1L)",
+    "description": "Refreshing passion fruit juice",
+    "category": 16,
+    "price": "5.20",
+    "image": "/static/images/products/passion-fruit-juice-1l.webp",
+    "stock_quantity": 25,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.238Z",
+    "updated_at": "2025-10-22T15:12:48.573Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Juice Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 96,
+  "fields": {
+    "name": "Maputi (Popcorn) (200g)",
+    "description": "Traditional Zimbabwe popcorn snack",
+    "category": 17,
+    "price": "2.20",
+    "image": "/static/images/products/maputi-popcorn-200g.webp",
+    "stock_quantity": 35,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.256Z",
+    "updated_at": "2025-10-19T21:26:57.256Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Snacks Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 97,
+  "fields": {
+    "name": "Roasted Maize (500g)",
+    "description": "Traditional roasted maize snack",
+    "category": 17,
+    "price": "2.80",
+    "image": "/static/images/products/roasted-maize-500g.webp",
+    "stock_quantity": 30,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.270Z",
+    "updated_at": "2025-10-19T21:26:57.270Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Snacks Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 98,
+  "fields": {
+    "name": "Dried Mango (200g)",
+    "description": "Sweet dried mango slices",
+    "category": 17,
+    "price": "4.50",
+    "image": "/static/images/products/dried-mango-200g.webp",
+    "stock_quantity": 20,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.285Z",
+    "updated_at": "2025-10-19T21:26:57.285Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Dried Fruits Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 99,
+  "fields": {
+    "name": "Candles (Pack of 6)",
+    "description": "Emergency candles for power outages",
+    "category": 18,
+    "price": "3.50",
+    "image": "/static/images/products/candles-pack-of-6.webp",
+    "stock_quantity": 40,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.299Z",
+    "updated_at": "2025-10-19T21:26:57.299Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Candle Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 100,
+  "fields": {
+    "name": "Matches (Box of 10)",
+    "description": "Safety matches for lighting",
+    "category": 18,
+    "price": "1.50",
+    "image": "/static/images/products/matches-box-of-10.webp",
+    "stock_quantity": 50,
+    "is_available": true,
+    "created_at": "2025-10-19T21:26:57.314Z",
+    "updated_at": "2025-10-19T21:26:57.314Z",
+    "is_local_product": true,
+    "supplier": "Zimbabwe Match Co."
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 101,
+  "fields": {
+    "name": "Onions (1kg)",
+    "description": "Fresh white onions, essential for cooking",
+    "category": 11,
+    "price": "1.80",
+    "image": "/static/images/products/onions-1kg.webp",
+    "stock_quantity": 30,
+    "is_available": true,
+    "created_at": "2025-10-22T14:08:36.890Z",
+    "updated_at": "2025-10-22T15:12:48.310Z",
+    "is_local_product": true,
+    "supplier": "Local Farm"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 102,
+  "fields": {
+    "name": "Green Cabbage (1 head)",
+    "description": "Fresh green cabbage, great for salads and cooking",
+    "category": 11,
+    "price": "1.20",
+    "image": "/static/images/products/green-cabbage-1-head.webp",
+    "stock_quantity": 25,
+    "is_available": true,
+    "created_at": "2025-10-22T14:08:36.908Z",
+    "updated_at": "2025-10-22T15:12:48.326Z",
+    "is_local_product": true,
+    "supplier": "Local Farm"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 103,
+  "fields": {
+    "name": "Bananas (1 bunch)",
+    "description": "Fresh yellow bananas, perfect for snacking",
+    "category": 11,
+    "price": "1.50",
+    "image": "/static/images/products/bananas-1-bunch.webp",
+    "stock_quantity": 20,
+    "is_available": true,
+    "created_at": "2025-10-22T14:08:36.930Z",
+    "updated_at": "2025-10-22T15:12:48.364Z",
+    "is_local_product": true,
+    "supplier": "Local Farm"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 104,
+  "fields": {
+    "name": "Beef Steak (1kg)",
+    "description": "Fresh beef steak, perfect for grilling",
+    "category": 12,
+    "price": "8.50",
+    "image": "/static/images/products/beef-steak-1kg.webp",
+    "stock_quantity": 15,
+    "is_available": true,
+    "created_at": "2025-10-22T14:08:36.944Z",
+    "updated_at": "2025-10-22T15:12:48.380Z",
+    "is_local_product": true,
+    "supplier": "Local Butcher"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 105,
+  "fields": {
+    "name": "Pork Chops (1kg)",
+    "description": "Fresh pork chops, great for grilling",
+    "category": 12,
+    "price": "7.00",
+    "image": "/static/images/products/pork-chops-1kg.webp",
+    "stock_quantity": 12,
+    "is_available": true,
+    "created_at": "2025-10-22T14:08:36.960Z",
+    "updated_at": "2025-10-22T15:12:48.411Z",
+    "is_local_product": true,
+    "supplier": "Local Butcher"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 107,
+  "fields": {
+    "name": "Coca Cola (500ml)",
+    "description": "Classic Coca Cola soft drink",
+    "category": 16,
+    "price": "1.50",
+    "image": "/static/images/products/coca-cola-500ml.webp",
+    "stock_quantity": 100,
+    "is_available": true,
+    "created_at": "2025-10-22T14:08:37.005Z",
+    "updated_at": "2025-10-22T15:12:48.525Z",
+    "is_local_product": false,
+    "supplier": "Coca Cola Zimbabwe"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 108,
+  "fields": {
+    "name": "Water (500ml)",
+    "description": "Pure drinking water, safe and clean",
+    "category": 16,
+    "price": "0.80",
+    "image": "/static/images/products/water-500ml.webp",
+    "stock_quantity": 80,
+    "is_available": true,
+    "created_at": "2025-10-22T14:08:37.024Z",
+    "updated_at": "2025-10-22T15:12:48.591Z",
+    "is_local_product": true,
+    "supplier": "Local Water Company"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 109,
+  "fields": {
+    "name": "Toilet Paper (4 rolls)",
+    "description": "Soft toilet paper, 4-pack",
+    "category": 18,
+    "price": "3.50",
+    "image": "/static/images/products/toilet-paper-4-rolls.webp",
+    "stock_quantity": 40,
+    "is_available": true,
+    "created_at": "2025-10-22T14:08:37.053Z",
+    "updated_at": "2025-10-22T15:12:48.657Z",
+    "is_local_product": false,
+    "supplier": "Household Products Ltd"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 110,
+  "fields": {
+    "name": "Toothpaste (100g)",
+    "description": "Fluoride toothpaste, mint flavor",
+    "category": 22,
+    "price": "2.80",
+    "image": "/static/images/products/toothpaste-100g.webp",
+    "stock_quantity": 30,
+    "is_available": true,
+    "created_at": "2025-10-22T14:08:37.068Z",
+    "updated_at": "2025-10-22T15:12:48.673Z",
+    "is_local_product": false,
+    "supplier": "Personal Care Co"
+  }
+},
+{
+  "model": "supermarket.product",
+  "pk": 111,
+  "fields": {
+    "name": "Shampoo (400ml)",
+    "description": "Moisturizing shampoo for all hair types",
+    "category": 22,
+    "price": "4.50",
+    "image": "/static/images/products/shampoo-400ml.webp",
+    "stock_quantity": 25,
+    "is_available": true,
+    "created_at": "2025-10-22T14:08:37.084Z",
+    "updated_at": "2025-10-22T15:12:48.691Z",
+    "is_local_product": false,
+    "supplier": "Personal Care Co"
+  }
+}
+]

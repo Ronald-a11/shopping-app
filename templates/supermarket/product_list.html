@@ -21,7 +21,7 @@
 {% url 'product_list' as shop_url %}
 <div class="container-page py-10">
     <!-- Category tabs -->
-    <nav class="tabs w-fit animate-fade-up" aria-label="Categories">
+    <nav class="tabs tabs-wrap w-fit animate-fade-up" aria-label="Categories">
         <a href="?{% query_transform category=None page=None %}" class="tab {% if not selected_category %}is-active{% endif %}">
             <i class="fas fa-border-all text-xs"></i> All
         </a>
@@ -99,7 +99,8 @@
                 <div>
                     <label for="filter-sort" class="label">Sort by</label>
                     <select id="filter-sort" name="sort" class="input">
-                        <option value="" {% if not sort_by or sort_by == 'newest' %}selected{% endif %}>Newest first</option>
+                        <option value="" {% if not sort_by %}selected{% endif %}>Aisle order</option>
+                        <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest first</option>
                         <option value="oldest" {% if sort_by == 'oldest' %}selected{% endif %}>Oldest first</option>
                         <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name A–Z</option>
                         <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: low to high</option>

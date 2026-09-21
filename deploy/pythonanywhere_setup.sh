@@ -85,7 +85,7 @@ run_py manage.py collectstatic --noinput --clear
 say "Products"
 PRODUCT_COUNT="$(run_py -c 'import django; django.setup(); from supermarket.models import Product; print(Product.objects.count())')"
 if [ "$PRODUCT_COUNT" = "0" ]; then
-    echo "Empty catalogue — adding the sample products."
+    echo "Empty catalogue — loading it from supermarket/fixtures/catalogue.json."
     run_py manage.py populate_data
 else
     echo "$PRODUCT_COUNT products already in the shop — leaving them alone."

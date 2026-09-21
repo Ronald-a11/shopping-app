@@ -114,13 +114,25 @@ Useful ones:
 ```bash
 python manage.py createsuperuser      # another admin login
 python manage.py changepassword <username>
-python manage.py populate_data        # sample products (get_or_create, so it can't duplicate)
-python manage.py add_product_images   # placeholder pictures for products that have none
+python manage.py populate_data        # the catalogue, into an empty shop
+python manage.py add_product_images   # pictures for products that have none
+python manage.py dump_catalogue       # save catalogue changes back to the repository
 ```
 
-`add_product_images` only fills products and categories whose image is blank,
-so a real photo URL set in Django admin is never overwritten. `--force`
-replaces every image; `--dry-run` shows what would change without saving.
+`populate_data` loads `supermarket/fixtures/catalogue.json` — the nine
+categories and the products on sale, with prices, stock and pictures — and
+refuses to run if the shop already has products, so it can never duplicate
+them. After changing the catalogue on your own computer, run `dump_catalogue`
+and commit the fixture; the next deploy then starts from the same shop.
+
+`add_product_images` matches a product to
+`static/images/products/<slugified name>.webp` and only fills in a blank
+picture, so a photo set in Django admin is never overwritten. `--force`
+replaces every picture; `--dry-run` shows what would change.
+
+`tidy_catalogue` is a one-off that merged the duplicate categories and products
+left by the old seed scripts. It has already been run; it is kept because it
+documents which entries were merged and why.
 
 ## Admin access
 

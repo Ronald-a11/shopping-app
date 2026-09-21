@@ -3,282 +3,68 @@
 {% block title %}Gallery{% endblock %}
 
 {% block page_header %}
-    {% include 'partials/page_header.html' with title="Gallery" subtitle="Explore our wide range of products available in Zimbabwe supermarkets — fresh produce, local goods and everyday essentials." icon="fa-images" %}
+    {% include 'partials/page_header.html' with title="Gallery" subtitle="Every product on our shelves — fresh produce, local goods and everyday essentials." icon="fa-images" %}
 {% endblock %}
 
 {% block content %}
 {% url 'product_list' as shop_url %}
 <div class="container-page py-10" data-filter-group>
     <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div class="tabs w-fit" role="group" aria-label="Filter the gallery">
-            <button type="button" class="tab is-active" data-filter="all">All <span class="tab-count">20</span></button>
-            <button type="button" class="tab" data-filter="produce"><i class="fas fa-carrot"></i> Fresh produce <span class="tab-count">4</span></button>
-            <button type="button" class="tab" data-filter="meat"><i class="fas fa-drumstick-bite"></i> Meat &amp; poultry <span class="tab-count">4</span></button>
-            <button type="button" class="tab" data-filter="dairy"><i class="fas fa-cheese"></i> Dairy &amp; eggs <span class="tab-count">4</span></button>
-            <button type="button" class="tab" data-filter="staples"><i class="fas fa-wheat-awn"></i> Staple foods <span class="tab-count">4</span></button>
-            <button type="button" class="tab" data-filter="drinks"><i class="fas fa-mug-hot"></i> Beverages &amp; snacks <span class="tab-count">4</span></button>
+        <div class="table-wrap -mx-4 px-4 lg:mx-0 lg:px-0">
+            <div class="tabs tabs-wrap w-fit" role="group" aria-label="Filter the gallery">
+                <button type="button" class="tab is-active" data-filter="all">All <span class="tab-count">{{ total_products }}</span></button>
+                {% for group in groups %}
+                    <button type="button" class="tab" data-filter="{{ group.slug }}">
+                        <i class="fas {{ group.icon }}"></i> {{ group.name }}
+                        <span class="tab-count">{{ group.products|length }}</span>
+                    </button>
+                {% endfor %}
+            </div>
         </div>
-        <p class="flex items-center gap-2 text-sm text-slate-500">
-            <i class="fas fa-magnifying-glass-plus text-brand-600"></i> Tap a photo to see it bigger
+        <p class="flex shrink-0 items-center gap-2 text-sm text-slate-500">
+            <i class="fas fa-magnifying-glass-plus text-brand-600"></i> Tap a picture to see it bigger
         </p>
     </div>
 
     <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4" data-reveal-stagger="60">
-
-        {# ---------------------------------------------------------- Fresh produce #}
-        <article class="card card-hover group overflow-hidden" data-filter-item="produce">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1546470427-5c4b0a0a0b0b?w=400&h=300&fit=crop" alt="Fresh Tomatoes" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-green absolute top-3 left-3 shadow-sm"><i class="fas fa-leaf"></i> Local product</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Fresh produce</p>
-                <h3 class="mt-1 font-bold text-slate-900">Fresh Tomatoes</h3>
-                <p class="mt-1 text-sm text-slate-500">Locally grown tomatoes from Zimbabwe farms</p>
-            </div>
-        </article>
-        <article class="card card-hover group overflow-hidden" data-filter-item="produce">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=300&fit=crop" alt="Green Bananas" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-green absolute top-3 left-3 shadow-sm"><i class="fas fa-leaf"></i> Local product</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Fresh produce</p>
-                <h3 class="mt-1 font-bold text-slate-900">Green Bananas</h3>
-                <p class="mt-1 text-sm text-slate-500">Perfect for cooking traditional Zimbabwe dishes</p>
-            </div>
-        </article>
-        <article class="card card-hover group overflow-hidden" data-filter-item="produce">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1518977956812-cd3dbadaaf31?w=400&h=300&fit=crop" alt="Red Onions" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-green absolute top-3 left-3 shadow-sm"><i class="fas fa-leaf"></i> Local product</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Fresh produce</p>
-                <h3 class="mt-1 font-bold text-slate-900">Red Onions</h3>
-                <p class="mt-1 text-sm text-slate-500">Essential ingredient in Zimbabwean cuisine</p>
-            </div>
-        </article>
-        <article class="card card-hover group overflow-hidden" data-filter-item="produce">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&h=300&fit=crop" alt="Fresh Carrots" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-green absolute top-3 left-3 shadow-sm"><i class="fas fa-leaf"></i> Local product</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Fresh produce</p>
-                <h3 class="mt-1 font-bold text-slate-900">Fresh Carrots</h3>
-                <p class="mt-1 text-sm text-slate-500">Rich in vitamins, grown locally</p>
-            </div>
-        </article>
-
-        {# -------------------------------------------------------- Meat & poultry #}
-        <article class="card card-hover group overflow-hidden" data-filter-item="meat">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=400&h=300&fit=crop" alt="Beef Steak" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-green absolute top-3 left-3 shadow-sm"><i class="fas fa-leaf"></i> Local product</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Meat &amp; poultry</p>
-                <h3 class="mt-1 font-bold text-slate-900">Beef Steak</h3>
-                <p class="mt-1 text-sm text-slate-500">Premium Zimbabwe beef, perfect for grilling</p>
-            </div>
-        </article>
-        <article class="card card-hover group overflow-hidden" data-filter-item="meat">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400&h=300&fit=crop" alt="Chicken Breast" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-green absolute top-3 left-3 shadow-sm"><i class="fas fa-leaf"></i> Local product</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Meat &amp; poultry</p>
-                <h3 class="mt-1 font-bold text-slate-900">Chicken Breast</h3>
-                <p class="mt-1 text-sm text-slate-500">Fresh chicken from local poultry farms</p>
-            </div>
-        </article>
-        <article class="card card-hover group overflow-hidden" data-filter-item="meat">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=400&h=300&fit=crop" alt="Pork Chops" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-green absolute top-3 left-3 shadow-sm"><i class="fas fa-leaf"></i> Local product</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Meat &amp; poultry</p>
-                <h3 class="mt-1 font-bold text-slate-900">Pork Chops</h3>
-                <p class="mt-1 text-sm text-slate-500">Fresh pork from local farms</p>
-            </div>
-        </article>
-        <article class="card card-hover group overflow-hidden" data-filter-item="meat">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400&h=300&fit=crop" alt="Chicken Thighs" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-green absolute top-3 left-3 shadow-sm"><i class="fas fa-leaf"></i> Local product</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Meat &amp; poultry</p>
-                <h3 class="mt-1 font-bold text-slate-900">Chicken Thighs</h3>
-                <p class="mt-1 text-sm text-slate-500">Perfect for traditional Zimbabwe stews</p>
-            </div>
-        </article>
-
-        {# ---------------------------------------------------------- Dairy & eggs #}
-        <article class="card card-hover group overflow-hidden" data-filter-item="dairy">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&h=300&fit=crop" alt="Fresh Milk" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-green absolute top-3 left-3 shadow-sm"><i class="fas fa-leaf"></i> Local product</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Dairy &amp; eggs</p>
-                <h3 class="mt-1 font-bold text-slate-900">Fresh Milk</h3>
-                <p class="mt-1 text-sm text-slate-500">Daily fresh milk from Zimbabwe dairy farms</p>
-            </div>
-        </article>
-        <article class="card card-hover group overflow-hidden" data-filter-item="dairy">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1518569656558-1f25e69d93d3?w=400&h=300&fit=crop" alt="Free Range Eggs" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-green absolute top-3 left-3 shadow-sm"><i class="fas fa-leaf"></i> Local product</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Dairy &amp; eggs</p>
-                <h3 class="mt-1 font-bold text-slate-900">Free Range Eggs</h3>
-                <p class="mt-1 text-sm text-slate-500">Fresh eggs from free-range chickens</p>
-            </div>
-        </article>
-        <article class="card card-hover group overflow-hidden" data-filter-item="dairy">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=400&h=300&fit=crop" alt="Cheddar Cheese" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-amber absolute top-3 left-3 shadow-sm"><i class="fas fa-globe"></i> Imported</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Dairy &amp; eggs</p>
-                <h3 class="mt-1 font-bold text-slate-900">Cheddar Cheese</h3>
-                <p class="mt-1 text-sm text-slate-500">Aged cheddar cheese for cooking and snacking</p>
-            </div>
-        </article>
-        <article class="card card-hover group overflow-hidden" data-filter-item="dairy">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=400&h=300&fit=crop" alt="Fresh Butter" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-green absolute top-3 left-3 shadow-sm"><i class="fas fa-leaf"></i> Local product</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Dairy &amp; eggs</p>
-                <h3 class="mt-1 font-bold text-slate-900">Fresh Butter</h3>
-                <p class="mt-1 text-sm text-slate-500">Perfect for cooking and baking</p>
-            </div>
-        </article>
-
-        {# ---------------------------------------------------------- Staple foods #}
-        <article class="card card-hover group overflow-hidden" data-filter-item="staples">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop" alt="Fresh Bread" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-green absolute top-3 left-3 shadow-sm"><i class="fas fa-leaf"></i> Local product</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Staple foods</p>
-                <h3 class="mt-1 font-bold text-slate-900">Fresh Bread</h3>
-                <p class="mt-1 text-sm text-slate-500">Daily fresh bread from local bakeries</p>
-            </div>
-        </article>
-        <article class="card card-hover group overflow-hidden" data-filter-item="staples">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop" alt="Maize Meal" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-green absolute top-3 left-3 shadow-sm"><i class="fas fa-leaf"></i> Local product</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Staple foods</p>
-                <h3 class="mt-1 font-bold text-slate-900">Maize Meal (2kg)</h3>
-                <p class="mt-1 text-sm text-slate-500">Fine maize meal - Zimbabwe's staple food</p>
-            </div>
-        </article>
-        <article class="card card-hover group overflow-hidden" data-filter-item="staples">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop" alt="Rice" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-amber absolute top-3 left-3 shadow-sm"><i class="fas fa-globe"></i> Imported</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Staple foods</p>
-                <h3 class="mt-1 font-bold text-slate-900">Rice (2kg)</h3>
-                <p class="mt-1 text-sm text-slate-500">Long grain white rice for everyday cooking</p>
-            </div>
-        </article>
-        <article class="card card-hover group overflow-hidden" data-filter-item="staples">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop" alt="Cooking Oil" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-amber absolute top-3 left-3 shadow-sm"><i class="fas fa-globe"></i> Imported</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Staple foods</p>
-                <h3 class="mt-1 font-bold text-slate-900">Cooking Oil (1L)</h3>
-                <p class="mt-1 text-sm text-slate-500">Essential vegetable cooking oil</p>
-            </div>
-        </article>
-
-        {# ---------------------------------------------------- Beverages & snacks #}
-        <article class="card card-hover group overflow-hidden" data-filter-item="drinks">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&h=300&fit=crop" alt="Coca Cola" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-amber absolute top-3 left-3 shadow-sm"><i class="fas fa-globe"></i> Imported</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Beverages &amp; snacks</p>
-                <h3 class="mt-1 font-bold text-slate-900">Coca Cola (2L)</h3>
-                <p class="mt-1 text-sm text-slate-500">Classic soft drink available in Zimbabwe</p>
-            </div>
-        </article>
-        <article class="card card-hover group overflow-hidden" data-filter-item="drinks">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1613478223719-4ab8038ded72?w=400&h=300&fit=crop" alt="Orange Juice" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-green absolute top-3 left-3 shadow-sm"><i class="fas fa-leaf"></i> Local product</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Beverages &amp; snacks</p>
-                <h3 class="mt-1 font-bold text-slate-900">Orange Juice (1L)</h3>
-                <p class="mt-1 text-sm text-slate-500">Fresh orange juice, locally produced</p>
-            </div>
-        </article>
-        <article class="card card-hover group overflow-hidden" data-filter-item="drinks">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=400&h=300&fit=crop" alt="Potato Chips" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-amber absolute top-3 left-3 shadow-sm"><i class="fas fa-globe"></i> Imported</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Beverages &amp; snacks</p>
-                <h3 class="mt-1 font-bold text-slate-900">Potato Chips (150g)</h3>
-                <p class="mt-1 text-sm text-slate-500">Crispy potato chips, popular snack</p>
-            </div>
-        </article>
-        <article class="card card-hover group overflow-hidden" data-filter-item="drinks">
-            <div class="img-frame aspect-[4/3]">
-                <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop" alt="Chocolate Bar" loading="lazy" data-lightbox class="size-full cursor-zoom-in object-cover group-hover:scale-105">
-                <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
-                <span class="badge badge-amber absolute top-3 left-3 shadow-sm"><i class="fas fa-globe"></i> Imported</span>
-            </div>
-            <div class="p-4">
-                <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">Beverages &amp; snacks</p>
-                <h3 class="mt-1 font-bold text-slate-900">Chocolate Bar (100g)</h3>
-                <p class="mt-1 text-sm text-slate-500">Sweet treat for any time of day</p>
-            </div>
-        </article>
+        {% for group in groups %}
+            {% for product in group.products %}
+                <article class="card card-hover group overflow-hidden" data-filter-item="{{ group.slug }}">
+                    <div class="img-frame aspect-[4/3]">
+                        {% if product.image %}
+                            <img src="{{ product.image }}" alt="{{ product.name }}" loading="lazy" data-lightbox
+                                 class="size-full cursor-zoom-in object-cover group-hover:scale-105">
+                        {% endif %}
+                        <span class="img-fallback"><i class="fas fa-image text-3xl"></i></span>
+                        {% if product.stock_state == 'out' %}
+                            <span class="badge badge-slate absolute top-3 left-3 shadow-sm"><i class="fas fa-clock"></i> Back soon</span>
+                        {% else %}
+                            <span class="badge badge-green absolute top-3 left-3 shadow-sm"><i class="fas fa-leaf"></i> In store</span>
+                        {% endif %}
+                    </div>
+                    <div class="p-4">
+                        <p class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">{{ group.name }}</p>
+                        <h3 class="mt-1 font-bold text-slate-900">{{ product.name }}</h3>
+                        <p class="mt-1 line-clamp-2 text-sm text-slate-500">{{ product.description }}</p>
+                        <p class="mt-3 flex items-center justify-between">
+                            <span class="font-extrabold text-brand-700">${{ product.price }}</span>
+                            <a href="{% url 'product_detail' product.id %}" class="text-sm font-semibold text-brand-600 hover:text-brand-800">
+                                Details <i class="fas fa-arrow-right text-xs"></i>
+                            </a>
+                        </p>
+                    </div>
+                </article>
+            {% endfor %}
+        {% endfor %}
     </div>
 
     <div class="mt-8" data-filter-empty hidden>
-        {% include 'partials/empty_state.html' with icon="fa-images" title="Nothing to show here" text="There are no photos in this category yet." cta_url=shop_url cta_label="Browse the shop" cta_icon="fa-store" %}
+        {% include 'partials/empty_state.html' with icon="fa-images" title="Nothing to show here" text="There are no pictures in this category yet." cta_url=shop_url cta_label="Browse the shop" cta_icon="fa-store" %}
     </div>
+
+    {% if not groups %}
+        {% include 'partials/empty_state.html' with icon="fa-images" title="The gallery is empty" text="Once products are added to the shop, their pictures appear here." cta_url=shop_url cta_label="Browse the shop" cta_icon="fa-store" %}
+    {% endif %}
 
     <div class="reveal relative isolate mt-14 overflow-hidden rounded-3xl bg-linear-to-br from-brand-600 to-brand-800 px-6 py-10 text-center text-white sm:px-10">
         <div aria-hidden="true" class="page-header-pattern"></div>

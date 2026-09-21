@@ -10,6 +10,7 @@ from django.utils.crypto import get_random_string
 from django.utils import timezone
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.text import slugify
 from django.views.decorators.http import require_POST
 from datetime import timedelta
 import logging
@@ -146,8 +147,26 @@ def send_sms_notification(phone_number, message):
 @login_required
 def home(request):
     """Home page with featured products and categories - requires login"""
-    featured_products = Product.objects.filter(is_available=True).select_related('category')[:8]
-    categories = Category.objects.all()[:6]
+    # One product from each aisle rather than simply the eight newest, which
+    # used to open the shop with shampoo, toothpaste and toilet paper. Local
+    # products come first within a category, and anything out of stock is
+    # left for last so the front page is not advertising what we cannot sell.
+    featured_products = []
+    seen_categories = set()
+    candidates = (
+        Product.objects.filter(is_available=True)
+        .select_related('category')
+        .order_by('category__name', '-is_local_product', 'name')
+    )
+    for product in candidates:
+        if product.category_id in seen_categories or product.stock_quantity == 0:
+            continue
+        seen_categories.add(product.category_id)
+        featured_products.append(product)
+        if len(featured_products) == 8:
+            break
+
+    categories = Category.objects.all()[:9]
     local_products = Product.objects.filter(
         is_local_product=True, is_available=True
     ).select_related('category')[:4]
@@ -203,13 +222,16 @@ def product_list(request):
     # Price sorting
     sort_by = request.GET.get('sort')
     sort_fields = {
-        'price_low': 'price',
-        'price_high': '-price',
-        'name': 'name',
-        'newest': '-created_at',
-        'oldest': 'created_at',
+        'price_low': ('price',),
+        'price_high': ('-price',),
+        'name': ('name',),
+        'newest': ('-created_at',),
+        'oldest': ('created_at',),
     }
-    products = products.order_by(sort_fields.get(sort_by, '-created_at'))
+    # By default walk the aisles in order, as the shelves are arranged. Sorting
+    # by newest first — which this used to do — opened the shop with whatever
+    # happened to be added last, which was shampoo, toothpaste and toilet paper.
+    products = products.order_by(*sort_fields.get(sort_by, ('category__name', 'name')))
 
     # Pagination
     paginator = Paginator(products, 12)
@@ -681,10 +703,67 @@ def about(request):
     return render(request, 'supermarket/about.html')
 
 
+# A word per category for the tab strip on the gallery. Anything not listed
+# falls back to a basket, so a new category still looks right.
+GALLERY_ICONS = {
+    'produce': 'fa-carrot',
+    'fruit': 'fa-apple-whole',
+    'vegetable': 'fa-carrot',
+    'meat': 'fa-drumstick-bite',
+    'poultry': 'fa-drumstick-bite',
+    'dairy': 'fa-cheese',
+    'egg': 'fa-egg',
+    'bakery': 'fa-bread-slice',
+    'bread': 'fa-bread-slice',
+    'grain': 'fa-wheat-awn',
+    'cereal': 'fa-wheat-awn',
+    'pantry': 'fa-jar',
+    'staple': 'fa-jar',
+    'beverage': 'fa-mug-hot',
+    'drink': 'fa-mug-hot',
+    'snack': 'fa-cookie-bite',
+    'confection': 'fa-cookie-bite',
+    'household': 'fa-soap',
+    'personal': 'fa-pump-soap',
+}
+
+
+def gallery_icon(category_name):
+    """The Font Awesome icon that suits a category name."""
+    lowered = category_name.lower()
+    for word, icon in GALLERY_ICONS.items():
+        if word in lowered:
+            return icon
+    return 'fa-basket-shopping'
+
+
 @login_required
 def gallery(request):
-    """Image gallery page - requires login"""
-    return render(request, 'supermarket/gallery.html')
+    """Image gallery page - requires login.
+
+    Built from the catalogue rather than a hand-written list, so the pictures
+    here are always the ones in the shop.
+    """
+    products = (
+        Product.objects.filter(is_available=True)
+        .select_related('category')
+        .order_by('category__name', 'name')
+    )
+    groups = []
+    for product in products:
+        if not groups or groups[-1]['name'] != product.category.name:
+            groups.append({
+                'name': product.category.name,
+                'slug': slugify(product.category.name),
+                'icon': gallery_icon(product.category.name),
+                'products': [],
+            })
+        groups[-1]['products'].append(product)
+
+    return render(request, 'supermarket/gallery.html', {
+        'groups': groups,
+        'total_products': len(products),
+    })
 
 
 def cart_count(request):

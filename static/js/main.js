@@ -304,7 +304,15 @@
     }
     indicator.style.opacity = '1';
     indicator.style.width = active.offsetWidth + 'px';
-    indicator.style.transform = 'translateX(' + active.offsetLeft + 'px)';
+    // A wrapped strip puts its tabs on more than one row, so the pill has to
+    // follow the active tab down as well as across. The underline variant
+    // (.tabs-line) keeps its own height and stays on the bottom edge.
+    if (list.classList.contains('tabs')) {
+      indicator.style.height = active.offsetHeight + 'px';
+      indicator.style.transform = 'translate(' + active.offsetLeft + 'px, ' + active.offsetTop + 'px)';
+    } else {
+      indicator.style.transform = 'translateX(' + active.offsetLeft + 'px)';
+    }
   }
 
   function refreshIndicators() {
